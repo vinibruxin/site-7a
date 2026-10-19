@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>7A Produtora</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="7A Produtora: produtora e incubadora de artistas de rock em Betim, MG. Contrate shows de Ordem Mor, Sub Rosa, Ossos do Banquete, Athos Tibães, Ænima e DJ Ivan Lennon.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;600;700&family=Space+Mono&display=swap">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* Direção: cartaz de rua (loud and flat). Campos chapados da marca, um por seção, tipo Anton enorme,
+   o artista como peça 5:7 com filete ouro. Paleta e fontes do manual 7A. */
+:root {
+  --preto: #0A0A0A;
+  --vermelho: #B5121B;
+  --offwhite: #F2EFEA;
+  --grafite: #2B2B2B;
+  --ouro: #F2D27C;
+  --cinza: #B8B2AA;
+  --cinza-tinta: #5E5852;
+
+  --f-display: "Anton", "Impact", "Arial Narrow Bold", sans-serif;
+  --f-texto: "Montserrat", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --f-serial: "Space Mono", Consolas, "Courier New", monospace;
+
+  /* cinco degraus */
+  --t-cartaz: clamp(84px, 13vw, 210px);
+  --t-titulo: clamp(40px, 5.2vw, 84px);
+  --t-sub: clamp(26px, 2.6vw, 40px);
+  --t-lead: 20px;
+  --t-texto: 17px;
+  --t-nota: 14px;
+
+  --m: max(20px, env(safe-area-inset-left, 0px));
+  --m-r: max(20px, env(safe-area-inset-right, 0px));
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  --seam: 50%;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--preto); scroll-behavior: smooth; }
+body {
+  margin: 0; background: var(--preto); color: var(--offwhite);
+  font-family: var(--f-texto); font-size: var(--t-texto); line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+img, video { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--ouro); outline-offset: 3px; }
+.so-leitor { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.margem { padding-left: var(--m); padding-right: var(--m-r); }
+.display { font-family: var(--f-display); font-weight: 400; text-transform: uppercase; letter-spacing: -0.01em; line-height: .92; margin: 0; text-wrap: balance; }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+  font: 700 15px/1 var(--f-texto); text-decoration: none; cursor: pointer; border: 0;
+  padding: 16px 22px; background: var(--vermelho); color: var(--offwhite);
+  transition: transform .15s var(--ease), background-color .2s;
+}
+.btn:hover { background: #9A0F17; }
+.btn:active { transform: scale(.97); }
+
+/* ---------- Cartaz (abertura) ---------- */
+.cartaz { position: relative; height: 100svh; min-height: 620px; max-height: 1100px; overflow: hidden; }
+.cartaz .campo-cima, .cartaz .campo-baixo { position: absolute; left: 0; right: 0; }
+.cartaz .campo-cima { top: 0; height: var(--seam); background: var(--preto); }
+.cartaz .campo-baixo { top: var(--seam); bottom: 0; background: var(--vermelho); }
+.cartaz .camada { position: absolute; inset: 0; pointer-events: none; }
+.cartaz .camada.cima { pointer-events: auto; clip-path: inset(0 0 calc(100% - var(--seam)) 0); color: var(--offwhite); }
+.cartaz .camada.baixo { clip-path: inset(var(--seam) 0 0 0); color: var(--preto); }
+.cartaz h1, .cartaz .h1-copia {
+  position: absolute; left: 0; right: 0; text-align: center;
+  font-size: var(--t-cartaz); line-height: 1.08; letter-spacing: -0.015em;
+  top: calc(var(--seam) - 1.62em);
+}
+.linha { display: block; overflow: hidden; padding-block: .14em .08em; margin-block: -.14em -.08em; }
+.linha > span { display: block; white-space: nowrap; }
+.topo-cartaz {
+  position: absolute; z-index: 3; top: calc(env(safe-area-inset-top, 0px) + 24px); left: var(--m); right: var(--m-r);
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--offwhite); }
+.marca img { width: 48px; height: auto; }
+.marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; }
+.cartaz .apoio {
+  position: absolute; z-index: 2; left: var(--m); right: var(--m-r); bottom: 40px;
+  margin: 0; max-width: 30em; text-align: left; font-size: var(--t-lead); line-height: 1.45; color: var(--offwhite);
+}
+.foto-colada {
+  position: absolute; z-index: 2; right: 6vw; top: calc(var(--seam) + 0.08 * var(--t-cartaz));
+  width: clamp(200px, 22vw, 340px); aspect-ratio: 4 / 5; height: auto; object-fit: cover; object-position: 50% 30%;
+  transform: rotate(4deg);
+}
+.adesivo {
+  position: absolute; z-index: 2; width: clamp(150px, 13vw, 210px); height: auto;
+  left: calc(var(--m) + 1vw); top: calc(var(--seam) - 7vw);
+}
+
+/* ---------- Casting ---------- */
+.casting { background: var(--preto); padding-block: 140px 160px; }
+.casting h2 { font-size: var(--t-sub); }
+.casting-intro { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px 48px; margin-bottom: 40px; }
+.casting-intro p { margin: 0; max-width: 34em; font-size: var(--t-lead); color: var(--offwhite); }
+.grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.artista { display: block; text-decoration: none; color: var(--offwhite); min-width: 0; }
+.peca {
+  position: relative; display: flex; flex-direction: column; aspect-ratio: 5 / 7; max-width: 100%;
+  overflow: hidden; background: var(--grafite); transition: transform .35s var(--ease);
+}
+.artista:hover .peca { transform: translateY(-4px); }
+.peca::after { /* filete ouro do manual */
+  content: ""; position: absolute; inset: 10px; border: 1px solid var(--ouro); pointer-events: none; z-index: 2;
+}
+.peca .arte { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; background: var(--preto); }
+.peca .arte img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s var(--ease); }
+.artista:hover .peca .arte img { transform: scale(1.04); }
+.peca .arte.campo { display: grid; place-items: center; }
+.peca .arte.campo .grande { font: 400 clamp(84px, 10vw, 160px)/.85 var(--f-display); text-transform: uppercase; text-align: center; }
+.peca .arte.vermelha { background: var(--vermelho); }
+.peca .arte.vermelha .grande { color: var(--offwhite); }
+.peca .arte.clara { background: var(--offwhite); }
+.peca .arte.clara .grande { color: var(--vermelho); }
+.peca:has(.arte.clara) .indice:not(.inf), .peca:has(.arte.fundo-claro) .indice:not(.inf) { color: var(--preto); }
+.peca .arte.grafite { background: var(--grafite); }
+.peca .arte.grafite .grande { color: var(--offwhite); }
+.peca .indice {
+  position: absolute; z-index: 3; top: 22px; left: 22px; display: grid; justify-items: center; gap: 5px;
+  font: 400 20px/1 var(--f-display); color: var(--offwhite);
+}
+.peca .indice.inf { top: auto; left: auto; bottom: 22px; right: 22px; transform: rotate(180deg); }
+.peca .indice i { width: 10px; height: 10px; background: var(--vermelho); transform: rotate(45deg); }
+.peca .info { position: relative; z-index: 1; display: grid; gap: 6px; padding: 16px 26px 26px; background: var(--grafite); }
+.artista .nome { font: 400 var(--t-sub)/1 var(--f-display); text-transform: uppercase; }
+.artista .papel { margin: 0; font-size: var(--t-nota); color: var(--cinza); line-height: 1.45; }
+.artista .rodape { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px; margin-top: 8px; padding-right: 30px; white-space: nowrap; }
+.artista .serial { font: 400 13px/1 var(--f-serial); color: var(--offwhite); letter-spacing: .06em; text-transform: uppercase; }
+.artista .pedir { font-weight: 700; font-size: var(--t-nota); color: var(--offwhite); text-decoration: underline; text-decoration-color: var(--vermelho); text-underline-offset: 5px; text-decoration-thickness: 2px; }
+
+/* ---------- Formatos (tabela de uma medida) ---------- */
+.formatos { background: var(--offwhite); color: var(--preto); padding-block: 140px 160px; }
+.programa { width: 100%; color: inherit; border-collapse: collapse; font-size: clamp(22px, 2.6vw, 40px); line-height: 1.5; }
+.programa th, .programa td { padding: 0; text-align: left; font-weight: 400; vertical-align: baseline; }
+.programa .grupo th { font-family: var(--f-display); text-transform: uppercase; color: var(--vermelho); padding-top: 72px; padding-bottom: 12px; font-size: 1em; }
+.programa tbody:first-of-type .grupo th { padding-top: 0; }
+.programa td:first-child { width: 40%; padding-right: 32px; }
+.programa .n { font-family: var(--f-display); text-transform: uppercase; }
+.programa td:nth-child(2) { width: 20%; }
+.programa td:nth-child(3) { width: 16%; }
+.programa td:last-child { text-align: right; }
+.programa td { font-family: var(--f-texto); font-size: .62em; font-weight: 600; }
+.programa td:first-child { font-size: 1em; font-weight: 400; }
+.programa tr.linha-artista { cursor: pointer; transition: color .2s; }
+.programa tr.linha-artista:hover { color: var(--vermelho); }
+.programa .sobre { display: block; max-width: 34em; margin: 6px 0 18px; font: 500 16px/1.5 var(--f-texto); color: var(--grafite); }
+.programa tr.linha-artista:hover .sobre { color: var(--grafite); }
+.formatos .nota { margin: 48px 0 0; font-size: var(--t-nota); color: var(--cinza-tinta); max-width: 52em; }
+
+/* ---------- Pedir data (faixa de fotos + barra) ---------- */
+.pedir-data { background: var(--grafite); padding-block: 48px 120px; overflow: hidden; }
+.faixa-fotos { display: flex; gap: 8px; width: max-content; animation: corre 60s linear infinite; }
+.faixa-fotos img { height: 150px; width: auto; object-fit: cover; flex: none; filter: grayscale(1); }
+.faixa-fotos img.r34 { aspect-ratio: 3 / 4; }
+.faixa-fotos img.r11 { aspect-ratio: 1; }
+.faixa-fotos img.r32 { aspect-ratio: 3 / 2; }
+.pedir-data:hover .faixa-fotos { animation-play-state: paused; }
+@keyframes corre { to { transform: translateX(-50%); } }
+.pedir-data h2 { font-size: var(--t-titulo); margin-top: 72px; }
+.pedir-data .lead { margin: 18px 0 40px; max-width: 38em; font-size: var(--t-lead); }
+.barra { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.celula { position: relative; background: var(--preto); min-width: 0; transition: background-color .2s; }
+.celula:focus-within { background: #3A3A3A; }
+.celula label { position: absolute; top: 14px; left: 18px; font-size: var(--t-nota); font-weight: 600; color: var(--cinza); pointer-events: none; }
+.celula input, .celula select {
+  width: 100%; height: 96px; padding: 38px 18px 14px; background: transparent; border: 0; border-radius: 0;
+  color: var(--offwhite); font: 600 var(--t-lead) var(--f-texto); appearance: none; -webkit-appearance: none;
+}
+.celula input:focus, .celula select:focus { outline: none; }
+.celula select { cursor: pointer; }
+.celula select option { background: var(--preto); color: var(--offwhite); }
+.celula.envio { background: var(--vermelho); display: grid; }
+.celula.envio a {
+  display: grid; place-items: center; height: 96px; text-decoration: none; color: var(--offwhite);
+  font: 700 var(--t-lead)/1.2 var(--f-texto); text-align: center; padding-inline: 12px;
+  transition: background-color .2s, color .2s;
+}
+.celula.envio a:hover, .celula.envio a:focus-visible { background: var(--offwhite); color: var(--vermelho); }
+.mensagem { margin-top: 8px; background: var(--preto); padding: 24px 22px; display: grid; gap: 8px; }
+.mensagem span { font-size: var(--t-nota); font-weight: 600; color: var(--cinza); }
+.mensagem pre { margin: 0; white-space: pre-wrap; font: 400 var(--t-texto)/1.55 var(--f-texto); color: var(--offwhite); }
+.pedir-data .letra-miuda { margin: 16px 0 0; font-size: var(--t-nota); color: var(--cinza); }
+.pedir-data .letra-miuda b { color: var(--offwhite); user-select: all; }
+
+/* ---------- O que a 7A faz ---------- */
+.faz { background: var(--preto); padding-block: 22vh; }
+.lista-faz { list-style: none; margin: 0; padding: 0; display: grid; gap: .35em; }
+.lista-faz li {
+  display: grid; grid-template-columns: minmax(0, 8fr) minmax(0, 4fr); gap: 32px; align-items: first baseline;
+  transition: color .25s;
+}
+.lista-faz .item { margin: 0; font: 400 var(--t-titulo)/1 var(--f-display); text-transform: uppercase; letter-spacing: -0.01em; }
+.lista-faz li:first-child .item { color: var(--cinza); }
+.lista-faz p { margin: 0; font-size: var(--t-texto); max-width: 30em; }
+.lista-faz:hover li:not(:first-child) .item { color: var(--cinza); }
+.lista-faz li:not(:first-child):hover .item { color: var(--offwhite); }
+
+/* ---------- Uma palavra é o botão ---------- */
+.mande {
+  position: relative; display: block; height: 60svh; min-height: 380px; background: var(--vermelho); color: var(--preto);
+  text-decoration: none; overflow: hidden;
+}
+.mande .frase { position: absolute; top: 20px; left: var(--m); max-width: 26em; margin: 0; font-size: var(--t-lead); color: var(--offwhite); font-weight: 600; }
+.mande svg { position: absolute; top: 20px; right: var(--m-r); width: 48px; height: 48px; }
+.mande .palavra {
+  position: absolute; left: var(--m); right: var(--m-r); bottom: 24px;
+  font: 400 clamp(120px, 27vw, 420px)/.78 var(--f-display); text-transform: uppercase; letter-spacing: -0.02em;
+}
+.mande:hover, .mande:focus-visible { background: var(--preto); color: var(--vermelho); }
+.mande:hover .frase, .mande:focus-visible .frase { color: var(--offwhite); }
+
+/* ---------- Rodapé: vídeo metade, menu metade ---------- */
+.fim { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: 100svh; background: var(--preto); }
+.fim .filme { position: relative; overflow: hidden; background: var(--grafite); }
+.fim .filme video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.fim .menu-fim { padding: 80px var(--m-r) 32px 8%; display: flex; flex-direction: column; gap: 56px; }
+.fim .marca img { width: 40px; }
+.fim nav { display: grid; gap: 20px; }
+.fim nav a { font: 400 clamp(30px, 2.8vw, 48px)/1 var(--f-display); text-transform: uppercase; text-decoration: none; transition: transform .25s var(--ease), color .2s; justify-self: start; }
+.fim nav:hover a { color: var(--cinza); }
+.fim nav a:hover, .fim nav a:focus-visible { color: var(--offwhite); transform: translateX(12px); }
+.fim .blocos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; font-size: var(--t-nota); }
+.fim .blocos p { margin: 0; }
+.fim .blocos b { display: block; font-weight: 700; margin-bottom: 4px; }
+.fim .blocos .copiar { background: none; border: 0; padding: 0; color: var(--offwhite); font: 600 var(--t-nota) var(--f-texto); text-decoration: underline; text-decoration-color: var(--vermelho); text-underline-offset: 4px; cursor: pointer; }
+.fim .legal { margin: auto 0 0; font-size: 13px; color: var(--cinza); }
+
+/* ---------- Movimento ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js .cartaz [data-line] { transform: translateY(105%); animation: sobe 900ms var(--ease) forwards; animation-delay: calc(var(--i) * 110ms + 150ms); }
+  .js .cartaz .apoio, .js .cartaz .adesivo, .js .topo-cartaz { opacity: 0; animation: aparece 700ms var(--ease) 700ms forwards; }
+  .js .foto-colada { opacity: 0; transform: rotate(4deg) translateY(40px); animation: cola 900ms var(--ease) 500ms forwards; }
+  .js [data-revela] { opacity: 0; transform: translateY(24px); transition: opacity 700ms var(--ease), transform 900ms var(--ease); transition-delay: calc(var(--d, 0) * 80ms); }
+  .js [data-revela].dentro { opacity: 1; transform: none; }
+}
+@keyframes sobe { to { transform: none; } }
+@keyframes aparece { to { opacity: 1; } }
+@keyframes cola { to { opacity: 1; transform: rotate(4deg); } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .faixa-fotos { animation: none; }
+  * { transition-duration: 0s !important; }
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 1000px) {
+  .grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 12px; }
+  .adesivo { display: none; }
+  .foto-colada { top: calc(var(--seam) + 0.62 * var(--t-cartaz) + 12px); }
+  :root { --t-cartaz: 17vw; }
+}
+@media (max-width: 700px) {
+  :root { --t-cartaz: 28vw; --seam: 46%; --m: max(16px, env(safe-area-inset-left, 0px)); --m-r: max(16px, env(safe-area-inset-right, 0px)); }
+  .cartaz { height: 88svh; min-height: 560px; }
+  .cartaz .apoio { font-size: 17px; bottom: 28px; }
+  .foto-colada { width: 34vw; right: 6vw; }
+  .marca span { display: none; }
+  .topo-cartaz .btn { padding: 12px 16px; font-size: 14px; }
+  .casting, .formatos { padding-block: 96px 110px; }
+  .grade { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .artista .peca { max-width: 440px; margin-inline: auto; }
+  .artista .nome { font-size: 24px; }
+  .programa, .programa tbody, .programa tr, .programa td, .programa th { display: block; width: auto !important; text-align: left !important; }
+  .programa .grupo th { padding-top: 56px; font-size: 26px; }
+  .programa tr.linha-artista { display: grid; grid-template-columns: 1fr auto; column-gap: 12px; margin-bottom: 18px; }
+  .programa tr.linha-artista td:first-child { grid-column: 1 / -1; font-size: 26px; }
+  .programa tr.linha-artista td { font-size: 14px; }
+  .programa tr.linha-artista td:nth-child(3) { display: none; }
+  .programa tr.linha-artista td:last-child { text-align: right !important; }
+  .faixa-fotos img { height: 110px; }
+  .barra { grid-template-columns: minmax(0, 1fr); }
+  .celula input, .celula select { height: 72px; padding-top: 32px; font-size: 17px; }
+  .celula.envio a { height: 72px; }
+  .faz { padding-block: 96px; }
+  .lista-faz { gap: 28px; }
+  .lista-faz li { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .lista-faz .item { font-size: 11vw; }
+  .lista-faz p { padding-left: 16px; }
+  .mande { height: 46svh; min-height: 300px; }
+  .mande .frase { font-size: 17px; max-width: 15em; }
+  .mande svg { width: 32px; height: 32px; }
+  .mande .palavra { font-size: 30vw; }
+  .fim { grid-template-columns: minmax(0, 1fr); }
+  .fim .filme { height: 50svh; }
+  .fim .menu-fim { padding: 48px var(--m-r) 28px var(--m); gap: 40px; }
+  .fim nav a { font-size: 8vw; }
+  .fim .blocos { grid-template-columns: minmax(0, 1fr); }
+}
+</style>
+<link rel="icon" href="img/logo-7a.png">
+</head>
+<body>
+
+
+<header class="cartaz" id="inicio">
+  <div class="campo-cima"></div>
+  <div class="campo-baixo"></div>
+
+  <div class="topo-cartaz">
+    <a class="marca" href="#inicio" aria-label="7A Produtora, início">
+      <img src="img/logo-7a.png" srcset="img/logo-7a.png 1x, img/logo-7a-g.png 3x" alt="Logo 7A" width="48" height="56">
+      <span>7A Produtora</span>
+    </a>
+    <a class="btn" href="#pedir">Pedir data</a>
+  </div>
+
+  <div class="camada baixo" aria-hidden="true">
+    <div class="h1-copia display"><span class="linha"><span data-line style="--i:0">Levado</span></span><span class="linha"><span data-line style="--i:1">a sério</span></span></div>
+  </div>
+  <div class="camada cima">
+    <h1 class="display"><span class="linha"><span data-line style="--i:0">Levado</span></span><span class="linha"><span data-line style="--i:1">a sério</span></span></h1>
+  </div>
+
+  <img class="foto-colada" src="img/v2.jpg" alt="Vocalista de uma banda da 7A cantando, foto em preto e branco" width="800" height="769">
+  <img class="adesivo" src="img/logo-7a-g.png" alt="" width="640" height="751">
+  <p class="apoio">Aqui o artista é levado a sério. Somos uma produtora e incubadora de rock em Betim, MG, com seis artistas prontos para o seu palco.</p>
+</header>
+
+<main>
+  <!-- CASTING -->
+  <section class="casting margem" id="casting" aria-labelledby="t-casting">
+    <div class="casting-intro">
+      <h2 class="display" id="t-casting" data-revela>O casting da 7A</h2>
+      <p data-revela style="--d:1">Três bandas autorais, um cantor, um duo acústico e um DJ. Toque em um artista para ler o resumo, ouvir e ver os trabalhos.</p>
+    </div>
+
+    <div class="grade">
+      <a class="artista" href="ordem-mor.html" data-revela>
+        <div class="peca">
+          <span class="indice">7A<i></i></span>
+          <div class="arte fundo-claro"><img src="img/ordem-mor.jpg" alt="Ordem Mor, os cinco integrantes em preto e branco" loading="lazy" width="1000" height="1064" style="object-position:50% 100%"></div>
+          <div class="info"><span class="nome">Ordem Mor</span><p class="papel">Rock autoral</p><div class="rodape"><span class="serial">Série 7A-001</span><span class="pedir">Ver artista</span></div></div>
+          <span class="indice inf">7A<i></i></span>
+        </div>
+      </a>
+
+      <a class="artista" href="sub-rosa.html" data-revela style="--d:1">
+        <div class="peca">
+          <span class="indice">7A<i></i></span>
+          <div class="arte"><img src="img/sub-rosa.jpg" alt="Sub Rosa, foto em preto e branco dos quatro integrantes no palco" loading="lazy" width="526" height="526"></div>
+          <div class="info"><span class="nome">Sub Rosa</span><p class="papel">Rock progressivo autoral</p><div class="rodape"><span class="serial">Série 7A-002</span><span class="pedir">Ver artista</span></div></div>
+          <span class="indice inf">7A<i></i></span>
+        </div>
+      </a>
+
+      <a class="artista" href="ossos-do-banquete.html" data-revela style="--d:2">
+        <div class="peca">
+          <span class="indice">7A<i></i></span>
+          <div class="arte"><img src="img/ossos.jpg" alt="Ossos do Banquete, foto em preto e branco com a guitarra vermelha" loading="lazy" width="1200" height="800" style="object-position:47% 50%"></div>
+          <div class="info"><span class="nome">Ossos do Banquete</span><p class="papel">Punk rock autoral</p><div class="rodape"><span class="serial">Série 7A-003</span><span class="pedir">Ver artista</span></div></div>
+          <span class="indice inf">7A<i></i></span>
+        </div>
+      </a>
+
+      <a class="artista" href="athos-tibaes.html" data-revela>
+        <div class="peca">
+          <span class="indice">7A<i></i></span>
+          <div class="arte"><img src="img/athos.jpg" alt="Athos Tibães com a guitarra na frente do rosto" loading="lazy" width="800" height="1009" style="object-position:50% 25%"></div>
+          <div class="info"><span class="nome">Athos Tibães</span><p class="papel">MPB e pop rock, voz e violão</p><div class="rodape"><span class="serial">Série 7A-004</span><span class="pedir">Ver artista</span></div></div>
+          <span class="indice inf">7A<i></i></span>
+        </div>
+      </a>
+
+      <a class="artista" href="aenima.html" data-revela style="--d:1">
+        <div class="peca">
+          <span class="indice">7A<i></i></span>
+          <div class="arte fundo-claro"><img src="img/aenima.jpg" alt="Ænima: Athos Tibães com a guitarra e Bruno Bizonni com o microfone, foto em preto e branco" loading="lazy" width="599" height="610" style="object-position:50% 30%"></div>
+          <div class="info"><span class="nome">Ænima</span><p class="papel">Athos Tibães e Bruno Bizonni, clássicos do rock em versões acústicas</p><div class="rodape"><span class="serial">Série 7A-005</span><span class="pedir">Ver artista</span></div></div>
+          <span class="indice inf">7A<i></i></span>
+        </div>
+      </a>
+
+      <a class="artista" href="dj-ivan-lennon.html" data-revela style="--d:2">
+        <div class="peca">
+          <span class="indice">7A<i></i></span>
+          <div class="arte"><img src="img/dj-ivan.jpg" alt="DJ Ivan Lennon de fones na cabine, foto em preto e branco" loading="lazy" width="680" height="690" style="object-position:55% 40%"></div>
+          <div class="info"><span class="nome">DJ Ivan Lennon</span><p class="papel">Pop e pop rock na pista</p><div class="rodape"><span class="serial">Série 7A-006</span><span class="pedir">Ver artista</span></div></div>
+          <span class="indice inf">7A<i></i></span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- FORMATOS -->
+  <section class="formatos margem" id="formatos" aria-labelledby="t-formatos">
+    <h2 class="so-leitor" id="t-formatos">Formatos de show</h2>
+    <table class="programa">
+      <tbody>
+        <tr class="grupo"><th colspan="4" scope="colgroup" data-revela>Bandas autorais</th></tr>
+        <tr class="linha-artista" data-artista="Ordem Mor" data-revela><td><span class="n">Ordem Mor</span><span class="sobre">Voltou depois de um hiato, em nova fase. Show intenso e emocional, com presença firme do início ao fim.</span></td><td>Rock autoral</td><td>Banda completa</td><td>Casas, festivais e eventos</td></tr>
+        <tr class="linha-artista" data-artista="Sub Rosa" data-revela style="--d:1"><td><span class="n">Sub Rosa</span><span class="sobre">Composições próprias entre ambientações, passagens técnicas e explosões de intensidade. Música para ouvir com atenção.</span></td><td>Rock progressivo</td><td>Banda completa</td><td>Festivais e eventos culturais</td></tr>
+        <tr class="linha-artista" data-artista="Ossos do Banquete" data-revela style="--d:2"><td><span class="n">Ossos do Banquete</span><span class="sobre">Mais de 20 anos de estrada, turnê nos EUA e palco dividido com Raimundos, Velhas Virgens e Cólera.</span></td><td>Punk rock</td><td>Banda completa</td><td>Casas, festivais e eventos</td></tr>
+      </tbody>
+      <tbody>
+        <tr class="grupo"><th colspan="4" scope="colgroup" data-revela>Acústico</th></tr>
+        <tr class="linha-artista" data-artista="Athos Tibães" data-revela><td><span class="n">Athos Tibães</span><span class="sobre">Show intimista que valoriza a interpretação e a proximidade com o público.</span></td><td>MPB</td><td>Voz e violão</td><td>Eventos privados e restaurantes</td></tr>
+        <tr class="linha-artista" data-artista="Ænima" data-revela style="--d:1"><td><span class="n">Ænima</span><span class="sobre">Rock dos anos 80, 90 e 2000 em arranjos acústicos próprios, alternando momentos intimistas e picos de energia.</span></td><td>Clássicos do rock</td><td>Duo acústico</td><td>Empresas, bares e celebrações</td></tr>
+      </tbody>
+      <tbody>
+        <tr class="grupo"><th colspan="4" scope="colgroup" data-revela>Pista</th></tr>
+        <tr class="linha-artista" data-artista="DJ Ivan Lennon" data-revela><td><span class="n">DJ Ivan Lennon</span><span class="sobre">Hits nacionais e internacionais, com leitura de pista para manter a energia do começo ao fim.</span></td><td>Pop e pop rock</td><td>Cabine de DJ</td><td>Empresas, festas e celebrações</td></tr>
+      </tbody>
+    </table>
+    <p class="nota">Toque em uma linha para pedir uma data com o artista. Valores, duração e rider técnico vão na proposta.</p>
+  </section>
+
+  <!-- PEDIR DATA -->
+  <section class="pedir-data" id="pedir" aria-labelledby="t-pedir">
+    <div class="faixa-fotos" aria-hidden="true">
+      <img class="r34" src="img/v1.jpg" alt="" loading="lazy"><img class="r32" src="img/faixa-4.jpg" alt="" loading="lazy"><img class="r11" src="img/v2.jpg" alt="" loading="lazy"><img class="r32" src="img/faixa-2.jpg" alt="" loading="lazy"><img class="r34" src="img/faixa-1.jpg" alt="" loading="lazy"><img class="r32" src="img/faixa-5.jpg" alt="" loading="lazy"><img class="r11" src="img/v3.jpg" alt="" loading="lazy"><img class="r32" src="img/faixa-3.jpg" alt="" loading="lazy"><img class="r34" src="img/athos.jpg" alt="" loading="lazy"><img class="r32" src="img/faixa-6.jpg" alt="" loading="lazy"><img class="r11" src="img/ossos.jpg" alt="" loading="lazy"><img class="r32" src="img/hero.jpg" alt="" loading="lazy"><img class="r34" src="img/v1.jpg" alt="" loading="lazy"><img class="r32" src="img/faixa-4.jpg" alt="" loading="lazy"><img class="r11" src="img/v2.jpg" alt="" loading="lazy"><img class="r32" src="img/faixa-2.jpg" alt="" loading="lazy"><img class="r34" src="img/faixa-1.jpg" alt="" loading="lazy"><img class="r32" src="img/faixa-5.jpg" alt="" loading="lazy"><img class="r11" src="img/v3.jpg" alt="" loading="lazy"><img class="r32" src="img/faixa-3.jpg" alt="" loading="lazy"><img class="r34" src="img/athos.jpg" alt="" loading="lazy"><img class="r32" src="img/faixa-6.jpg" alt="" loading="lazy"><img class="r11" src="img/ossos.jpg" alt="" loading="lazy"><img class="r32" src="img/hero.jpg" alt="" loading="lazy">
+    </div>
+
+    <div class="margem">
+      <h2 class="display" id="t-pedir" data-revela>Peça uma data</h2>
+      <p class="lead" data-revela style="--d:1">Escolha o artista, conte do evento e mande. A mensagem chega pronta no WhatsApp da 7A, e a resposta vem com formato, rider e valores.</p>
+
+      <form id="pedido" novalidate data-revela style="--d:2">
+        <div class="barra">
+          <div class="celula"><label for="f-artista">Artista</label>
+            <select id="f-artista" name="artista">
+              <option>Quero uma indicação</option><option>Ordem Mor</option><option>Sub Rosa</option><option>Ossos do Banquete</option><option>Athos Tibães</option><option>Ænima</option><option>DJ Ivan Lennon</option>
+            </select></div>
+          <div class="celula"><label for="f-evento">Tipo de evento</label>
+            <select id="f-evento" name="evento">
+              <option>Bar ou casa de show</option><option>Festival</option><option>Evento de empresa</option><option>Festa particular</option><option>Outro</option>
+            </select></div>
+          <div class="celula"><label for="f-data">Data</label><input id="f-data" name="data" type="date"></div>
+          <div class="celula"><label for="f-cidade">Cidade</label><input id="f-cidade" name="cidade" type="text" placeholder="Betim" autocomplete="address-level2"></div>
+          <div class="celula"><label for="f-nome">Seu nome</label><input id="f-nome" name="nome" type="text" autocomplete="name"></div>
+          <div class="celula envio"><a id="enviar-whats" href="https://wa.me/5531992233295" target="_blank" rel="noopener">Enviar no WhatsApp</a></div>
+        </div>
+        <div class="mensagem" aria-live="polite"><span>Sua mensagem</span><pre id="previa">Olá, 7A! Quero um orçamento de show.</pre></div>
+      </form>
+      <p class="letra-miuda">Prefere ligar ou mandar e-mail? <b>(31) 99223-3295</b> · <b>7a.produtora@gmail.com</b></p>
+    </div>
+  </section>
+
+  <!-- O QUE A 7A FAZ -->
+  <section class="faz margem" id="faz" aria-labelledby="t-faz">
+    <ul class="lista-faz">
+      <li data-revela><h2 class="item" id="t-faz">O que a 7A faz</h2></li>
+      <li data-revela><h3 class="item">Criar</h3><p>Identidade, repertório e fotos. O artista sabe quem é antes de subir no palco.</p></li>
+      <li data-revela><h3 class="item">Produzir</h3><p>Gravação, clipes, lançamentos e conteúdo para as redes.</p></li>
+      <li data-revela><h3 class="item">Transformar</h3><p>Planejamento de carreira para o artista crescer com método.</p></li>
+      <li data-revela><h3 class="item">Vender shows</h3><p>A gente procura casas, festivais e eventos e fecha a agenda.</p></li>
+      <li data-revela><h3 class="item">Cuidar do palco</h3><p>Contrato, logística, rider e passagem de som, do convite ao último acorde.</p></li>
+      <li data-revela><h3 class="item">Divulgar</h3><p>Cartazes, posts e contato com a imprensa para encher a casa.</p></li>
+    </ul>
+  </section>
+
+  <!-- MANDE -->
+  <a class="mande" id="artistas" href="https://wa.me/5531992233295?text=Ol%C3%A1%2C%207A!%20Sou%20artista%20e%20quero%20mandar%20meu%20material." target="_blank" rel="noopener">
+    <p class="frase">Tem uma banda? Mande seu som, suas fotos e onde já tocou. Abre o WhatsApp da 7A.</p>
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36 36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="4"/></svg>
+    <span class="palavra">Mande</span>
+  </a>
+</main>
+
+<footer class="fim">
+  <div class="filme">
+    <video src="img/ossos-ao-vivo.mp4" poster="img/ossos-ao-vivo.jpg" autoplay muted loop playsinline aria-label="Ossos do Banquete tocando ao vivo"></video>
+  </div>
+  <div class="menu-fim">
+    <a class="marca" href="#inicio" aria-label="Voltar ao início">
+      <img src="img/logo-7a.png" alt="Logo 7A" width="40" height="47"><span>7A Produtora</span>
+    </a>
+    <nav aria-label="Seções">
+      <a href="#casting">Casting</a>
+      <a href="#formatos">Formatos</a>
+      <a href="#pedir">Pedir data</a>
+      <a href="#faz">O que a 7A faz</a>
+      <a href="#artistas">Para artistas</a>
+    </nav>
+    <div class="blocos">
+      <p><b>Contato</b>(31) 99223-3295, WhatsApp e celular<br>7a.produtora@gmail.com<br><button class="copiar" type="button" data-copiar="7a.produtora@gmail.com">Copiar e-mail</button></p>
+      <p><b>Redes</b><a href="https://instagram.com/7a_produtora" target="_blank" rel="noopener">@7a_produtora no Instagram</a><br>Betim, Minas Gerais</p>
+    </div>
+    <p class="legal">© 2026 7A Produtora. Criar, produzir, transformar. Fotos: Ayra Mendes Fotografia e Mateus Rodrigues.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var numero = "5531992233295";
+  var botao = document.getElementById("enviar-whats");
+  var previa = document.getElementById("previa");
+  var form = document.getElementById("pedido");
+  var campoArtista = document.getElementById("f-artista");
+  function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ""; }
+  function dataBR(x) { var p = x.split("-"); return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : x; }
+  function montar() {
+    var l = ["Olá, 7A! Quero um orçamento de show.", "Artista: " + v("f-artista"), "Evento: " + v("f-evento")];
+    if (v("f-data")) l.push("Data: " + dataBR(v("f-data")));
+    if (v("f-cidade")) l.push("Cidade: " + v("f-cidade"));
+    if (v("f-nome")) l.push("Nome: " + v("f-nome"));
+    var texto = l.join("\n");
+    previa.textContent = texto;
+    botao.href = "https://wa.me/" + numero + "?text=" + encodeURIComponent(texto);
+  }
+  form.addEventListener("input", montar);
+  form.addEventListener("change", montar);
+  form.addEventListener("submit", function (e) { e.preventDefault(); });
+  try {
+    var pedido = new URLSearchParams(location.search).get("artista");
+    if (pedido) { Array.prototype.forEach.call(campoArtista.options, function (o) { if (o.text === pedido) campoArtista.value = o.text; }); }
+  } catch (e) {}
+  montar();
+
+  document.querySelectorAll("[data-artista]").forEach(function (el) {
+    el.addEventListener("click", function () {
+      campoArtista.value = el.getAttribute("data-artista");
+      montar();
+      if (el.tagName === "TR") document.getElementById("pedir").scrollIntoView({ behavior: "smooth" });
+    });
+  });
+
+  document.querySelectorAll(".copiar").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var t = b.getAttribute("data-copiar");
+      var ok = function () { b.textContent = "Copiado"; setTimeout(function () { b.textContent = "Copiar e-mail"; }, 1600); };
+      var falha = function () { b.textContent = t; };
+      try { navigator.clipboard.writeText(t).then(ok, falha); } catch (e) { falha(); }
+    });
+  });
+
+  var alvos = document.querySelectorAll("[data-revela]");
+  if (!("IntersectionObserver" in window)) { alvos.forEach(function (a) { a.classList.add("dentro"); }); return; }
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("dentro"); io.unobserve(e.target); } });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+  alvos.forEach(function (a) { io.observe(a); });
+})();
+</script>
+
+</body>
+</html>
