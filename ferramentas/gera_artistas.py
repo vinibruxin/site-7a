@@ -76,6 +76,9 @@ A = [
 
 e = html.escape
 
+# endereço público do site (trocar quando o domínio próprio estiver ligado)
+BASE = "https://site-7a.oculos.workers.dev"
+
 CSS = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "artista.css")).read()
 
 
@@ -163,6 +166,14 @@ def pagina(i, a):
 <title>{e(a["nome"])} | 7A Produtora</title>
 <meta name="description" content="{e(a["nome"])}: {e(a["genero"].lower())}. {e(a["chamada"])} Contrate pela 7A Produtora, Betim, MG.">
 <link rel="icon" href="img/logo-7a.png">
+<meta property="og:type" content="profile">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="7A Produtora">
+<meta property="og:title" content="{e(a["nome"])} | 7A Produtora">
+<meta property="og:description" content="{e(a["genero"])}. {e(a["chamada"])}">
+<meta property="og:url" content="{BASE}/{a["slug"]}.html">
+<meta property="og:image" content="{BASE}/{a["foto"][0]}">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Space+Mono&display=swap">
