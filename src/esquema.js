@@ -2,7 +2,7 @@
 // O worker cria o que faltar na primeira chamada de cada instância, então não há migração para rodar à mão.
 // Valores em dinheiro ficam em centavos (inteiros).
 
-export const COLUNAS_NOVAS = { contratantes: ["endereco", "bairro", "cep"] };
+export const COLUNAS_NOVAS = { contratantes: ["endereco", "numero", "complemento", "bairro", "uf", "cep", "referencia"] };
 
 export const ESQUEMA = [
   `CREATE TABLE IF NOT EXISTS contratantes (
@@ -14,8 +14,12 @@ export const ESQUEMA = [
     email TEXT NOT NULL DEFAULT '',
     instagram TEXT NOT NULL DEFAULT '',
     endereco TEXT NOT NULL DEFAULT '',
+    numero TEXT NOT NULL DEFAULT '',
+    complemento TEXT NOT NULL DEFAULT '',
     bairro TEXT NOT NULL DEFAULT '',
+    uf TEXT NOT NULL DEFAULT '',
     cep TEXT NOT NULL DEFAULT '',
+    referencia TEXT NOT NULL DEFAULT '',
     cidade TEXT NOT NULL DEFAULT '',
     etapa TEXT NOT NULL DEFAULT 'contatar',
     proxima_acao TEXT NOT NULL DEFAULT '',

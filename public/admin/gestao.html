@@ -131,6 +131,8 @@ a.item:active { transform: scale(.995); }
 .ficha { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px 12px; max-width: 900px; }
 .ficha > * { grid-column: span 3; }
 .ficha .c2 { grid-column: span 2; }
+.ficha .c1 { grid-column: span 1; }
+.ficha .c3 { grid-column: span 3; }
 .ficha .c4 { grid-column: span 4; }
 .ficha .c6 { grid-column: 1 / -1; }
 .ficha .dica { display: block; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--cinza); }
@@ -179,7 +181,7 @@ a.item:active { transform: scale(.995); }
   .entrada { grid-template-columns: minmax(0, 1fr); }
   .entrada .lado { min-height: 36svh; }
   .ficha { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .ficha > *, .ficha .c2, .ficha .c4 { grid-column: 1 / -1; }
+  .ficha > *, .ficha .c1, .ficha .c2, .ficha .c3, .ficha .c4 { grid-column: 1 / -1; }
   .ficha .meia { grid-column: span 1; }
   .numeros > div { min-height: 120px; padding: 16px; }
   .numeros dd { font-size: 34px; }
@@ -396,7 +398,7 @@ a.item:active { transform: scale(.995); }
 
   function fichaContratante(id) {
     const novo = id === "novo";
-    const c = novo ? { nome: "", tipo: "casa", contato: "", telefone: "", email: "", instagram: "", endereco: "", bairro: "", cep: "", cidade: "", etapa: "contatar", proxima_acao: "", proxima_data: "", obs: "" } : contratante(Number(id));
+    const c = novo ? { nome: "", tipo: "casa", contato: "", telefone: "", email: "", instagram: "", cep: "", endereco: "", numero: "", complemento: "", bairro: "", cidade: "", uf: "", referencia: "", etapa: "contatar", proxima_acao: "", proxima_data: "", obs: "" } : contratante(Number(id));
     if (!c) { tela.innerHTML = '<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">Contratante não encontrado.</p>'; return; }
     const w = whats(c.telefone);
     const seus = novo ? [] : D.shows.filter((s) => s.contratante_id === c.id).sort((a, b) => (b.data || "").localeCompare(a.data || ""));
@@ -412,10 +414,14 @@ a.item:active { transform: scale(.995); }
       <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
         <label class="c6">Nome da casa, restaurante, evento ou empresa<input name="nome" value="${esc(c.nome)}" required autocomplete="off"></label>
         <label>Tipo<select name="tipo">${opcoes(TIPOS, c.tipo)}</select></label>
-        <label>CEP<input name="cep" value="${esc(c.cep || "")}" placeholder="32600-000" inputmode="numeric" maxlength="9" autocomplete="off"><span class="dica" id="dica-cep">Preenche a rua, o bairro e a cidade.</span></label>
-        <label class="c6">Endereço (rua, número e complemento)<input name="endereco" value="${esc(c.endereco || "")}" placeholder="Rua do Rosário, 120, loja 2" autocomplete="off"></label>
-        <label>Bairro<input name="bairro" value="${esc(c.bairro || "")}" placeholder="Centro" autocomplete="off"></label>
-        <label>Cidade<input name="cidade" value="${esc(c.cidade)}" placeholder="Betim/MG" autocomplete="off"></label>
+        <label>CEP<input name="cep" value="${esc(c.cep || "")}" placeholder="32600-000" inputmode="numeric" maxlength="9" autocomplete="off"><span class="dica" id="dica-cep">Preenche rua, bairro, cidade e UF.</span></label>
+        <label class="c3">Rua<input name="endereco" value="${esc(c.endereco || "")}" placeholder="Rua do Rosário" autocomplete="off"></label>
+        <label class="c1 meia">Número<input name="numero" value="${esc(c.numero || "")}" placeholder="120" autocomplete="off"></label>
+        <label class="c2 meia">Complemento<input name="complemento" value="${esc(c.complemento || "")}" placeholder="Loja 2" autocomplete="off"></label>
+        <label class="c2">Bairro<input name="bairro" value="${esc(c.bairro || "")}" placeholder="Centro" autocomplete="off"></label>
+        <label class="c3 meia">Cidade<input name="cidade" value="${esc(c.cidade)}" placeholder="Betim" autocomplete="off"></label>
+        <label class="c1 meia">UF<input name="uf" value="${esc(c.uf || "")}" placeholder="MG" maxlength="2" autocomplete="off"></label>
+        <label class="c6">Ponto de referência (opcional)<input name="referencia" value="${esc(c.referencia || "")}" placeholder="Em frente à praça, entrada pelos fundos" autocomplete="off"></label>
         <label class="c2">Pessoa de contato<input name="contato" value="${esc(c.contato)}" autocomplete="off"></label>
         <label class="c2">Telefone ou WhatsApp<input name="telefone" type="tel" value="${esc(c.telefone)}" placeholder="(31) 9..." autocomplete="off"></label>
         <label class="c2">Instagram<input name="instagram" value="${esc(c.instagram)}" placeholder="@casa" autocomplete="off"></label>
@@ -450,12 +456,12 @@ a.item:active { transform: scale(.995); }
       dica.textContent = "Buscando o endereço...";
       fetch(`https://viacep.com.br/ws/${d}/json/`).then((r) => r.json()).then((e) => {
         if (e.erro) { dica.textContent = "CEP não encontrado. Preencha o endereço à mão."; return; }
-        if (e.logradouro) form.endereco.value = e.logradouro + ", ";
+        if (e.logradouro) form.endereco.value = e.logradouro;
         if (e.bairro) form.bairro.value = e.bairro;
-        if (e.localidade) form.cidade.value = e.localidade + (e.uf ? "/" + e.uf : "");
+        if (e.localidade) form.cidade.value = e.localidade;
+        if (e.uf) form.uf.value = e.uf;
         dica.textContent = "Endereço preenchido. Complete com o número.";
-        form.endereco.focus();
-        form.endereco.setSelectionRange(form.endereco.value.length, form.endereco.value.length);
+        form.numero.focus();
       }).catch(() => { dica.textContent = "Não consegui buscar o CEP agora. Preencha à mão."; });
     });
     $("#salvar").addEventListener("click", () => {

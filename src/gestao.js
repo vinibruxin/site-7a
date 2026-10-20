@@ -9,7 +9,7 @@ export const STATUS = ["consulta", "reservado", "confirmado", "realizado", "canc
 const NOMES_ETAPA = { contatar: "A contatar", contatado: "Contatado", negociando: "Negociando", fechado: "Fechado", perdido: "Perdido" };
 const NOMES_STATUS = { consulta: "Consulta", reservado: "Reservado", confirmado: "Confirmado", realizado: "Realizado", cancelado: "Cancelado" };
 
-const CAMPOS_CONTRATANTE = ["nome", "tipo", "contato", "telefone", "email", "instagram", "endereco", "bairro", "cep", "cidade", "etapa", "proxima_acao", "proxima_data", "obs"];
+const CAMPOS_CONTRATANTE = ["nome", "tipo", "contato", "telefone", "email", "instagram", "cep", "endereco", "numero", "complemento", "bairro", "cidade", "uf", "referencia", "etapa", "proxima_acao", "proxima_data", "obs"];
 const CAMPOS_SHOW = ["data", "hora", "artista", "artista_texto", "contratante_id", "evento", "local", "cidade", "status", "cache", "pct", "despesas", "recebido", "repassado", "publicar", "link", "obs"];
 
 let pronto = null;
@@ -55,8 +55,12 @@ function limparContratante(c) {
     email: txt(c?.email, 160),
     instagram: txt(c?.instagram, 80).replace(/^@/, ""),
     endereco: txt(c?.endereco, 200),
+    numero: txt(c?.numero, 20),
+    complemento: txt(c?.complemento, 120),
     bairro: txt(c?.bairro, 80),
+    uf: txt(c?.uf, 2).toUpperCase(),
     cep: txt(c?.cep, 12),
+    referencia: txt(c?.referencia, 300),
     cidade: txt(c?.cidade, 80),
     etapa: ETAPAS.includes(c?.etapa) ? c.etapa : "contatar",
     proxima_acao: txt(c?.proxima_acao, 200),
@@ -256,8 +260,8 @@ async function exportar(env, req, qual) {
   let linhas;
   if (qual === "contratantes.csv") {
     const { results } = await env.DB.prepare("SELECT * FROM contratantes ORDER BY nome").all();
-    linhas = [["Nome", "Tipo", "Contato", "Telefone", "E-mail", "Instagram", "Endereço", "Bairro", "CEP", "Cidade", "Etapa", "Próxima ação", "Data da próxima ação", "Origem", "Observações", "Criado em"]];
-    for (const c of results) linhas.push([c.nome, c.tipo, c.contato, c.telefone, c.email, c.instagram, c.endereco, c.bairro, c.cep, c.cidade, NOMES_ETAPA[c.etapa] || c.etapa, c.proxima_acao, c.proxima_data, c.origem === "site" ? "Site" : "Manual", c.obs, c.criado.slice(0, 10)]);
+    linhas = [["Nome", "Tipo", "Contato", "Telefone", "E-mail", "Instagram", "CEP", "Rua", "Número", "Complemento", "Bairro", "Cidade", "UF", "Referência", "Etapa", "Próxima ação", "Data da próxima ação", "Origem", "Observações", "Criado em"]];
+    for (const c of results) linhas.push([c.nome, c.tipo, c.contato, c.telefone, c.email, c.instagram, c.cep, c.endereco, c.numero, c.complemento, c.bairro, c.cidade, c.uf, c.referencia, NOMES_ETAPA[c.etapa] || c.etapa, c.proxima_acao, c.proxima_data, c.origem === "site" ? "Site" : "Manual", c.obs, c.criado.slice(0, 10)]);
   } else if (qual === "shows.csv") {
     const [{ results }, config, cs, art] = await Promise.all([
       env.DB.prepare("SELECT * FROM shows ORDER BY data, hora").all(),
