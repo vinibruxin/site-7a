@@ -65,7 +65,7 @@ a { color: inherit; }
 .abre { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 56px; align-items: end; padding-top: 48px; padding-bottom: 96px; }
 .abre .texto { padding-bottom: 8px; }
 .retrato .serial { position: absolute; z-index: 1; right: 24px; bottom: 22px; font: 400 13px/1 var(--f-serial); letter-spacing: .08em; color: var(--offwhite); background: var(--preto); padding: 6px 8px; }
-.nome { font-size: var(--t-nome); line-height: .86; }
+.nome { font-size: var(--t-nome); line-height: .95; }
 .genero { display: inline-block; margin: 24px 0 0; padding: 8px 12px 6px; font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; color: var(--offwhite); background: var(--vermelho); }
 .chamada { margin: 18px 0 0; max-width: 26em; font-size: var(--t-lead); line-height: 1.45; }
 .acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 28px; margin-top: 36px; }
@@ -84,7 +84,7 @@ a { color: inherit; }
 .destaques { background: var(--vermelho); }
 
 .lista-destaques { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgba(10, 10, 10, .35); }
-.lista-destaques li { padding: 18px 0; border-bottom: 1px solid rgba(10, 10, 10, .35); font: 400 var(--t-sub)/1.1 var(--f-display); text-transform: uppercase; }
+.lista-destaques li { padding: 22px 0; line-height: 1.12; border-bottom: 1px solid rgba(10, 10, 10, .35); font: 400 var(--t-sub)/1.1 var(--f-display); text-transform: uppercase; }
 .ideal { margin: 28px 0 0; font-size: var(--t-lead); font-weight: 600; }
 
 .formacao { border-bottom: 1px solid var(--grafite); }
@@ -181,15 +181,15 @@ a { color: inherit; }
 
 /* fecho */
 .fecho { display: block; position: relative; padding: 64px var(--m-r) 40px var(--m); background: var(--offwhite); color: var(--preto); text-decoration: none; overflow: hidden; transition: background-color .25s; }
-.fecho .frase { display: block; max-width: 30em; font-size: var(--t-lead); font-weight: 600; }
-.fecho .grande { display: block; margin-top: 28px; font-size: clamp(88px, 17vw, 280px); line-height: .8; color: var(--vermelho); transition: transform .4s var(--ease); }
+.fecho .frase { display: block; margin-bottom: 8px; max-width: 30em; font-size: var(--t-lead); font-weight: 600; }
+.fecho .grande { display: block; margin-top: 28px; font-size: clamp(88px, 17vw, 280px); line-height: .94; color: var(--vermelho); transition: transform .4s var(--ease); }
 .fecho:hover { background: var(--preto); color: var(--offwhite); }
 .fecho:hover .grande { transform: translateX(16px); }
 
 /* rodapé */
 .rodape { display: grid; gap: 40px; padding-top: 64px; padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 32px); }
 .prox { display: grid; gap: 10px; justify-self: start; text-decoration: none; }
-.prox span { font: 400 13px/1 var(--f-serial); letter-spacing: .12em; text-transform: uppercase; color: var(--cinza); }
+.prox span { font: 600 15px/1 var(--f-texto); color: var(--cinza); }
 .prox b { font-size: clamp(48px, 6vw, 96px); transition: color .2s; }
 .prox:hover b { color: var(--vermelho); }
 .rodape p { margin: 0; font-size: var(--t-nota); color: var(--cinza); }
@@ -304,7 +304,7 @@ a { color: inherit; }
 
 <footer class="rodape margem">
   <a class="prox" href="ordem-mor.html"><span>Próximo artista</span><b class="display">Ordem Mor</b></a>
-  <p>7A Produtora · Betim, MG · <a href="https://wa.me/5531992233295">(31) 99223-3295</a> · <a href="mailto:7a.produtora@gmail.com">7a.produtora@gmail.com</a> · <a href="https://instagram.com/7a.produtora">@7a.produtora</a></p>
+  <p>7A Produtora · Betim, MG · <a href="https://wa.me/5531992233295">(31) 99223-3295</a> · <a href="mailto:7a.produtora@gmail.com">7a.produtora@gmail.com</a> · <a href="https://instagram.com/7a_produtora">@7a_produtora</a></p>
 </footer>
 
 <script>
