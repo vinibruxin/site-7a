@@ -51,6 +51,19 @@ export const ESQUEMA = [
   )`,
   `CREATE INDEX IF NOT EXISTS shows_data ON shows(data)`,
   `CREATE TABLE IF NOT EXISTS config (chave TEXT PRIMARY KEY, valor TEXT NOT NULL)`,
+  // proposta enviada ao contratante: uma por show, aberta pelo link /proposta/<token>
+  `CREATE TABLE IF NOT EXISTS propostas (
+    show_id INTEGER PRIMARY KEY REFERENCES shows(id) ON DELETE CASCADE,
+    token TEXT NOT NULL UNIQUE,
+    formato TEXT NOT NULL DEFAULT '',
+    duracao TEXT NOT NULL DEFAULT '',
+    inclui TEXT NOT NULL DEFAULT '',
+    rider TEXT NOT NULL DEFAULT '',
+    condicoes TEXT NOT NULL DEFAULT '',
+    validade TEXT NOT NULL DEFAULT '',
+    criado TEXT NOT NULL,
+    atualizado TEXT NOT NULL
+  )`,
   // controle de pedidos públicos do site (limite por IP)
   `CREATE TABLE IF NOT EXISTS pedidos_ip (ip TEXT NOT NULL, quando TEXT NOT NULL, assinatura TEXT NOT NULL)`,
 ];

@@ -531,7 +531,7 @@ a.item:active { transform: scale(.995); }
     tela.innerHTML = `
       <a class="voltar" href="${voltar}">${doContratante ? "Voltar para " + esc(base ? base.nome : "o contratante") : "Voltar para shows"}</a>
       <div class="cabeca"><h1 class="display">${novo ? "Novo show" : esc(nomeArtista(s))}</h1></div>
-      <form class="ficha" id="ficha" novalidate>
+      <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
         <label>Artista<select name="artista">${opcoes(listaArt, s.artista)}</select></label>
         <label id="outro"${s.artista ? " hidden" : ""}>Nome do artista<input name="artista_texto" value="${esc(s.artista_texto)}" autocomplete="off"></label>
         <label>Status<select name="status">${opcoes(STATUS, s.status)}</select></label>
@@ -555,7 +555,27 @@ a.item:active { transform: scale(.995); }
         <button class="btn" type="button" id="salvar">${novo ? "Cadastrar show" : "Salvar"}</button>
         <p class="estado" id="estado" role="status"></p>
         ${novo ? "" : '<button class="texto-btn perigo apagar" type="button" id="apagar">Apagar show</button>'}
-      </div>`;
+      </div></div>
+      ${novo ? "" : `
+      <h2 class="display">Proposta</h2>
+      <p class="ajuda">Uma página com a marca da 7A, a carta do artista, data, local e cachê deste show. Você manda o link para o contratante, e ele abre no celular ou salva em PDF.</p>
+      <form class="ficha" id="ficha-proposta" novalidate>
+        <label>Formato<input name="formato" autocomplete="off" placeholder="Banda completa"></label>
+        <label>Duração<input name="duracao" autocomplete="off" placeholder="Ex.: 2 sets de 1 hora"></label>
+        <label class="c6">O que está incluso (um item por linha)<textarea name="inclui" rows="3" placeholder="Ex.: Equipamento de palco do artista&#10;Transporte em Betim"></textarea></label>
+        <label class="c6">Condições de pagamento<textarea name="condicoes" rows="2" placeholder="Ex.: 50% na confirmação e 50% no dia do show, por Pix"></textarea></label>
+        <label class="c6">Rider técnico (opcional)<textarea name="rider" rows="3" placeholder="O que o local precisa oferecer: som, luz, palco, camarim"></textarea></label>
+        <label class="c2">Válida até<input name="validade" type="date"></label>
+      </form>
+      <div class="acoes-rapidas" style="margin-top:20px">
+        <button class="btn" type="button" id="gerar">Gerar proposta</button>
+        <p class="estado" id="estado-proposta" role="status" style="align-self:center;margin:0;font-weight:600"></p>
+      </div>
+      <div class="acoes-rapidas" id="links-proposta" hidden>
+        <a class="btn btn-claro" id="abrir-proposta" target="_blank" rel="noopener">Abrir a proposta</a>
+        <a class="btn btn-sec" id="zap-proposta" target="_blank" rel="noopener">Enviar no WhatsApp</a>
+        <button class="btn btn-sec" type="button" id="copiar-proposta">Copiar link</button>
+      </div>`}`;
 
     const form = $("#ficha");
     const ler = () => {
@@ -604,6 +624,7 @@ a.item:active { transform: scale(.995); }
       });
     });
     if (novo) return;
+    montarProposta(s);
     $("#apagar").addEventListener("click", () => {
       if (!confirm("Apagar este show? Se ele não aconteceu, prefira marcar como cancelado.")) return;
       api("gestao/shows/" + s.id, "DELETE").then((r) => {
@@ -611,6 +632,46 @@ a.item:active { transform: scale(.995); }
         D.shows = D.shows.filter((x) => x.id !== s.id);
         sujo = false; location.hash = "#shows";
       });
+    });
+  }
+
+  /* ---------- proposta ---------- */
+  const FORMATOS = { "ordem-mor": "Banda completa", "sub-rosa": "Banda completa", "ossos-do-banquete": "Banda completa", "athos-tibaes": "Voz e violão", aenima: "Duo acústico", "dj-ivan-lennon": "Cabine de DJ" };
+  function montarProposta(s) {
+    const form = $("#ficha-proposta"), msg = $("#estado-proposta");
+    const aviso = (t, tipo) => { msg.textContent = t; msg.className = "estado" + (tipo ? " " + tipo : ""); };
+    const mostrarLinks = (token) => {
+      const url = location.origin + "/proposta/" + token;
+      const c = contratante(s.contratante_id);
+      const texto = `Olá${c && c.contato ? ", " + c.contato.split(" ")[0] : ""}! Segue a proposta da 7A Produtora para o show de ${nomeArtista(s)}: ${url}`;
+      $("#abrir-proposta").href = url;
+      const w = c ? whats(c.telefone) : "";
+      $("#zap-proposta").href = (w || "https://wa.me/") + "?text=" + encodeURIComponent(texto);
+      $("#copiar-proposta").onclick = () => navigator.clipboard.writeText(url).then(() => aviso("Link copiado.", "ok"), () => prompt("Copie o link:", url));
+      $("#links-proposta").hidden = false;
+      $("#gerar").textContent = "Atualizar proposta";
+    };
+    api(`gestao/shows/${s.id}/proposta`).then((p) => {
+      const validade = new Date(Date.now() + 15 * 86400e3);
+      form.formato.value = p.formato ?? FORMATOS[s.artista] ?? "";
+      form.duracao.value = p.duracao || "";
+      form.inclui.value = p.inclui || "";
+      form.condicoes.value = p.condicoes || "";
+      form.rider.value = p.rider || "";
+      form.validade.value = p.validade ?? new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(validade);
+      if (p.token) mostrarLinks(p.token);
+    });
+    form.addEventListener("input", () => aviso(""));
+    $("#gerar").addEventListener("click", () => {
+      if (sujo) return aviso("Salve o show antes, para a proposta sair com os dados novos.", "ruim");
+      if (!s.cache) aviso("Atenção: o cachê está vazio, a proposta vai dizer \"a combinar\".");
+      const b = $("#gerar"); b.disabled = true;
+      api(`gestao/shows/${s.id}/proposta`, "PUT", Object.fromEntries(new FormData(form))).then((r) => {
+        b.disabled = false;
+        if (!r.token) return aviso(r.erro || "Não deu para gerar a proposta.", "ruim");
+        mostrarLinks(r.token);
+        aviso(s.cache ? "Proposta pronta. O link mostra sempre os dados atuais do show." : "Proposta pronta, com o cachê a combinar.", "ok");
+      }).catch(() => { b.disabled = false; aviso("Sem conexão. Tente de novo.", "ruim"); });
     });
   }
 
