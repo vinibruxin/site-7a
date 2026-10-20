@@ -126,7 +126,77 @@ function reescreverArtista(resp, conteudo, slug) {
     .on('[data-bloco="formacao"]', visivel(form.length > 0))
     .on('[data-campo="agenda"]', html(lista.map((d) => itemAgenda(d, conteudo, false)).join("\n")))
     .on('[data-bloco="agenda"]', visivel(lista.length > 0));
+  const midia = a.midia || [];
+  if (midia.length) {
+    rw = rw
+      .on('[data-campo="midia-extra"]', {
+        element: (el) => {
+          const reserva = el.getAttribute("data-reserva") || "";
+          el.setInnerContent(midia.map((m) => itemMidia(m, reserva)).join("\n"), { html: true });
+          el.removeAttribute("hidden");
+        },
+      })
+      .on('[data-bloco="midia-vazia"]', { element: (el) => el.setAttribute("hidden", "") });
+  }
   return rw.transform(resp);
+}
+
+/* ---------------- vídeos e músicas por link ---------------- */
+
+// de onde é o link: YouTube, Spotify, Instagram ou outro
+function origem(u) {
+  const h = new URL(u).hostname.replace(/^www\./, "");
+  if (h === "youtu.be" || h.endsWith("youtube.com")) return "youtube";
+  if (h.endsWith("spotify.com")) return "spotify";
+  if (h.endsWith("instagram.com")) return "instagram";
+  return "outro";
+}
+
+function idYoutube(u) {
+  const x = new URL(u);
+  if (x.hostname === "youtu.be") return x.pathname.slice(1);
+  return x.searchParams.get("v") || (x.pathname.match(/\/(?:shorts|embed|live)\/([\w-]+)/) || [])[1] || "";
+}
+
+// ao salvar, busca título e capa de cada link novo (YouTube e Spotify têm oEmbed público)
+async function completarMidia(c) {
+  const tarefas = [];
+  for (const a of Object.values(c.artistas)) {
+    for (const m of a.midia || []) {
+      if (m.capa && m.titulo) continue;
+      const tipo = origem(m.url);
+      const oembed = tipo === "youtube" ? "https://www.youtube.com/oembed?format=json&url=" : tipo === "spotify" ? "https://open.spotify.com/oembed?url=" : "";
+      if (!oembed) continue;
+      tarefas.push(
+        fetch(oembed + encodeURIComponent(m.url))
+          .then((r) => (r.ok ? r.json() : null))
+          .then((o) => {
+            if (!o) return;
+            if (!m.titulo && o.title) m.titulo = String(o.title).slice(0, 120);
+            if (!m.capa && o.thumbnail_url) m.capa = linkSeguro(o.thumbnail_url);
+          })
+          .catch(() => {})
+      );
+    }
+  }
+  await Promise.all(tarefas);
+}
+
+const NOMES = { youtube: "YouTube", spotify: "Spotify", instagram: "Instagram", outro: "Link" };
+
+function itemMidia(m, reserva) {
+  const tipo = origem(m.url);
+  let capa = m.capa;
+  if (!capa && tipo === "youtube") capa = `https://i.ytimg.com/vi/${idYoutube(m.url)}/hqdefault.jpg`;
+  capa = capa || reserva;
+  const acao = tipo === "spotify" ? "Ouvir no Spotify" : `Ver no ${NOMES[tipo]}`;
+  const titulo = m.titulo || (tipo === "spotify" ? "Música" : "Vídeo");
+  const fig = tipo === "spotify" ? "faixa-spotify" : "faixa-yt";
+  const quadro = tipo === "spotify" ? "capa-link" : "capa-link quadro";
+  return `<figure class="${fig}" data-revela>
+          <a class="${quadro}" href="${esc(m.url)}" target="_blank" rel="noopener" aria-label="${esc(acao)}: ${esc(titulo)}"><img src="${esc(capa)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(reserva)}'"><span class="play" aria-hidden="true"></span></a>
+          <figcaption><span class="titulo">${esc(titulo)}</span><span class="rotulo">${esc(NOMES[tipo])}</span><a class="link" href="${esc(m.url)}" target="_blank" rel="noopener">${esc(acao)}</a></figcaption>
+        </figure>`;
 }
 
 /* ---------------- api ---------------- */
@@ -152,6 +222,7 @@ async function api(req, env, url) {
     const novo = await req.json();
     const limpo = validar(novo);
     if (limpo.erro) return json(limpo, 400);
+    await completarMidia(limpo);
     limpo.atualizado = new Date().toISOString();
     await env.CONTEUDO.put(CHAVE, JSON.stringify(limpo));
     return json({ ok: true, atualizado: limpo.atualizado });
@@ -191,6 +262,7 @@ function validar(c) {
       destaques: (a?.destaques || []).map((p) => txt(p, 160)).filter(Boolean).slice(0, 12),
       ideal: txt(a?.ideal, 200),
       formacao: (a?.formacao || []).map((f) => ({ nome: txt(f?.nome, 80), funcao: txt(f?.funcao, 80) })).filter((f) => f.nome).slice(0, 20),
+      midia: (a?.midia || []).map((m) => ({ url: linkSeguro(txt(m?.url, 500)), titulo: txt(m?.titulo, 120), capa: linkSeguro(txt(m?.capa, 500)) })).filter((m) => m.url).slice(0, 20),
     };
   }
   return { agenda, artistas };

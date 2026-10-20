@@ -119,6 +119,8 @@ a { color: inherit; }
 .faixa-audio figcaption { margin-top: 0; }
 .grade-midia .rotulo { font-size: var(--t-nota); color: var(--cinza); }
 .grade-midia .titulo { font: 400 var(--t-sub)/1 var(--f-display); text-transform: uppercase; }
+.grade-midia.extra { margin-top: 28px; }
+.grade-midia:empty { display: none; }
 .vazio { margin: 0; max-width: 34em; font-size: var(--t-lead); line-height: 1.5; color: var(--cinza); }
 
 .galeria { padding-bottom: 72px; }
@@ -326,6 +328,7 @@ a { color: inherit; }
           <figcaption><span class="titulo">Topo do Mundo</span><span class="rotulo">Trecho ao vivo</span></figcaption>
         </figure>
       </div>
+      <div class="grade-midia extra" data-campo="midia-extra" data-reserva="img/galeria/ordem-1.jpg" hidden></div>
     </div>
   </section>
 

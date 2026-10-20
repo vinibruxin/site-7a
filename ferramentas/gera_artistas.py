@@ -92,7 +92,7 @@ CAPAS = {
 
 def midia_html(a):
     if not a["midia"]:
-        return f'''<p class="vazio">Os vídeos e as músicas {"da" if a["nome"] in ("Sub Rosa", "Ænima") else "do"} {e(a["nome"])} entram aqui em breve. Enquanto isso, peça uma data e a 7A envia o material completo.</p>'''
+        return f'''<p class="vazio" data-bloco="midia-vazia">Os vídeos e as músicas {"da" if a["nome"] in ("Sub Rosa", "Ænima") else "do"} {e(a["nome"])} entram aqui em breve. Enquanto isso, peça uma data e a 7A envia o material completo.</p>'''
     itens = []
     reserva = (a.get("galeria") or [a["foto"][0]])[0]
     for tipo, src, poster, w, h, titulo, rotulo in a["midia"]:
@@ -242,6 +242,7 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
     <h2 class="display rot" id="t-ouvir" data-revela>Ouça e veja</h2>
     <div>
       {midia_html(a)}
+      <div class="grade-midia extra" data-campo="midia-extra" data-reserva="{e((a.get("galeria") or [a["foto"][0]])[0])}" hidden></div>
     </div>
   </section>
 

@@ -119,6 +119,8 @@ a { color: inherit; }
 .faixa-audio figcaption { margin-top: 0; }
 .grade-midia .rotulo { font-size: var(--t-nota); color: var(--cinza); }
 .grade-midia .titulo { font: 400 var(--t-sub)/1 var(--f-display); text-transform: uppercase; }
+.grade-midia.extra { margin-top: 28px; }
+.grade-midia:empty { display: none; }
 .vazio { margin: 0; max-width: 34em; font-size: var(--t-lead); line-height: 1.5; color: var(--cinza); }
 
 .galeria { padding-bottom: 72px; }
@@ -289,7 +291,8 @@ a { color: inherit; }
   <section class="ouvir margem" id="ouvir" aria-labelledby="t-ouvir">
     <h2 class="display rot" id="t-ouvir" data-revela>Ouça e veja</h2>
     <div>
-      <p class="vazio">Os vídeos e as músicas do DJ Ivan Lennon entram aqui em breve. Enquanto isso, peça uma data e a 7A envia o material completo.</p>
+      <p class="vazio" data-bloco="midia-vazia">Os vídeos e as músicas do DJ Ivan Lennon entram aqui em breve. Enquanto isso, peça uma data e a 7A envia o material completo.</p>
+      <div class="grade-midia extra" data-campo="midia-extra" data-reserva="img/dj-ivan.jpg" hidden></div>
     </div>
   </section>
 

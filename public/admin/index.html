@@ -261,6 +261,7 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
     var s = $("#qual-artista").value, a = dados.artistas[s];
     if (!a) return;
     a.formacao = a.formacao || [];
+    a.midia = a.midia || [];
     $("#campos-artista").innerHTML =
       '<label>Frase de abertura<textarea data-k="chamada" rows="2">' + esc(a.chamada) + "</textarea></label>" +
       '<label>Resumo (deixe uma linha em branco entre os parágrafos)<textarea data-k="resumo" rows="8">' + esc((a.resumo || []).join("\n\n")) + "</textarea></label>" +
@@ -272,7 +273,16 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
           '<label>Função<input type="text" data-fk="funcao" value="' + esc(f.funcao) + '" placeholder="Vocal, guitarra, baixo..."></label>' +
           '<button class="tirar" type="button" data-tirar-f>Tirar</button></div>';
       }).join("") +
-      '</div><p style="margin:12px 0 0"><button class="btn btn-sec" type="button" id="novo-integrante">Adicionar integrante</button></p></div>';
+      '</div><p style="margin:12px 0 0"><button class="btn btn-sec" type="button" id="novo-integrante">Adicionar integrante</button></p></div>' +
+      '<div class="grupo"><h2 class="display">Vídeos e músicas</h2>' +
+      '<p class="ajuda" style="margin:0 0 12px">Cole o link de um vídeo do YouTube ou Instagram, ou de uma música do Spotify. O título e a imagem vêm sozinhos ao salvar. Eles aparecem em "Ouça e veja", depois do que já está na página.</p><div>' +
+      a.midia.map(function (m, i) {
+        return '<div class="dupla" data-m="' + i + '"><label>Link<input type="url" data-mk="url" value="' + esc(m.url) + '" placeholder="https://youtu.be/..."></label>' +
+          '<label>Título (opcional)<input type="text" data-mk="titulo" value="' + esc(m.titulo) + '"></label>' +
+          '<button class="tirar" type="button" data-tirar-m>Tirar</button></div>';
+      }).join("") +
+      '</div><p style="margin:12px 0 0"><button class="btn btn-sec" type="button" id="novo-link">Adicionar link</button></p></div>';
+    $("#novo-link").onclick = function () { a.midia.push({ url: "", titulo: "" }); desenharArtista(); marcar(); var ins = document.querySelectorAll("[data-mk=url]"); ins[ins.length - 1].focus(); };
     $("#novo-integrante").onclick = function () { a.formacao.push({ nome: "", funcao: "" }); desenharArtista(); marcar(); var ins = document.querySelectorAll("[data-fk=nome]"); ins[ins.length - 1].focus(); };
   }
   $("#campos-artista").addEventListener("input", function (ev) {
@@ -280,12 +290,14 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
     if (k === "resumo") a.resumo = ev.target.value.split(/\n\s*\n/).map(function (p) { return p.trim(); }).filter(Boolean);
     else if (k === "destaques") a.destaques = ev.target.value.split("\n").map(function (p) { return p.trim(); }).filter(Boolean);
     else if (k) a[k] = ev.target.value;
+    else if (ev.target.getAttribute("data-mk")) { var mi = a.midia[+ev.target.closest("[data-m]").getAttribute("data-m")]; mi[ev.target.getAttribute("data-mk")] = ev.target.value; if (ev.target.getAttribute("data-mk") === "url") mi.capa = ""; }
     else if (fk) a.formacao[+ev.target.closest("[data-f]").getAttribute("data-f")][fk] = ev.target.value;
     marcar();
   });
   $("#campos-artista").addEventListener("click", function (ev) {
-    if (!ev.target.hasAttribute("data-tirar-f")) return;
     var a = dados.artistas[$("#qual-artista").value];
+    if (ev.target.hasAttribute("data-tirar-m")) { a.midia.splice(+ev.target.closest("[data-m]").getAttribute("data-m"), 1); desenharArtista(); marcar(); return; }
+    if (!ev.target.hasAttribute("data-tirar-f")) return;
     a.formacao.splice(+ev.target.closest("[data-f]").getAttribute("data-f"), 1); desenharArtista(); marcar();
   });
 
@@ -296,7 +308,7 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
     var b = this; b.disabled = true; estado("Salvando...");
     api("conteudo", "PUT", dados).then(function (r) {
       b.disabled = false;
-      if (r.ok) { mudou = false; estado("Salvo. O site já mostra as mudanças (pode levar até um minuto).", "ok"); }
+      if (r.ok) { mudou = false; api("conteudo").then(function (c) { dados = c; if (!$("[data-painel=artistas]").hidden) desenharArtista(); }); estado("Salvo. O site já mostra as mudanças (pode levar até um minuto).", "ok"); }
       else if (r._status === 401) { estado("A sessão expirou. Entre de novo; suas mudanças continuam aqui.", "ruim"); $("#tela-entrada").hidden = false; }
       else estado(r.erro || "Não deu para salvar. Tente de novo.", "ruim");
     }).catch(function () { b.disabled = false; estado("Sem conexão. Tente de novo.", "ruim"); });
