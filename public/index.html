@@ -51,7 +51,7 @@
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-html { background: var(--preto); scroll-behavior: smooth; }
+html { background: var(--preto); scroll-behavior: smooth; scroll-padding-top: 84px; }
 body {
   margin: 0; background: var(--preto); color: var(--offwhite);
   font-family: var(--f-texto); font-size: var(--t-texto); line-height: 1.55;
@@ -88,13 +88,70 @@ a { color: inherit; }
 }
 .linha { display: block; overflow: hidden; padding-block: .14em .08em; margin-block: -.14em -.08em; }
 .linha > span { display: block; white-space: nowrap; }
-.topo-cartaz {
-  position: absolute; z-index: 3; top: calc(env(safe-area-inset-top, 0px) + 24px); left: var(--m); right: var(--m-r);
-  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+[hidden] { display: none !important; }
+
+/* ---------- Barra do topo (menu) ---------- */
+.topo-site { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 32px; padding-top: calc(env(safe-area-inset-top, 0px) + 16px); padding-bottom: 16px; background: var(--preto); transition: background-color .3s; }
+.topo-site .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--offwhite); margin-right: auto; }
+.topo-site .marca img { width: 40px; height: auto; }
+.topo-site .marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; }
+.menu { display: flex; gap: 28px; }
+.menu a { position: relative; font: 600 15px/1 var(--f-texto); color: var(--offwhite); text-decoration: none; padding: 8px 0; }
+.menu a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--vermelho); transform: scaleX(0); transform-origin: left; transition: transform .25s var(--ease); }
+.menu a:hover::after, .menu a:focus-visible::after { transform: scaleX(1); }
+.btn-barra { padding: 13px 20px; font-size: 14px; }
+.abre-menu { display: none; font: 600 15px/1 var(--f-texto); color: var(--offwhite); background: none; border: 0; padding: 12px 0 12px 8px; cursor: pointer; }
+.sem-rolagem { overflow: hidden; }
+@media (max-width: 860px) {
+  .topo-site { gap: 16px; }
+  .topo-site .marca span { display: none; }
+  .abre-menu { display: block; }
+  .btn-barra { padding: 11px 14px; }
+  .menu { position: fixed; inset: 0; z-index: -1; flex-direction: column; justify-content: center; gap: 4px; padding: 96px var(--m-r) 48px var(--m); background: var(--preto); opacity: 0; visibility: hidden; transform: translateY(-12px); transition: opacity .3s var(--ease), transform .3s var(--ease), visibility 0s .3s; }
+  .menu a { font: 400 clamp(56px, 17vw, 96px)/1 var(--f-display); text-transform: uppercase; padding: 6px 0; }
+  .menu a::after { height: 4px; }
+  .topo-site.aberta .menu { opacity: 1; visibility: visible; transform: none; transition: opacity .3s var(--ease), transform .3s var(--ease); }
 }
-.marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--offwhite); }
-.marca img { width: 48px; height: auto; }
-.marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; }
+
+/* ---------- Datas da agenda ---------- */
+.lista-agenda { list-style: none; margin: 0; padding: 0; }
+.data-show { display: grid; grid-template-columns: 150px minmax(0, 1fr) auto; gap: 8px 32px; align-items: center; padding: 22px 0; }
+.data-show .quando { margin: 0; color: var(--preto); display: flex; align-items: baseline; gap: 10px; font-family: var(--f-display); text-transform: uppercase; line-height: .9; }
+.data-show .dia { font-size: 76px; }
+.data-show .mes { font-size: 28px; }
+.data-show .o-que { display: grid; gap: 4px; }
+.data-show .quem { font: 400 var(--t-sub)/1.05 var(--f-display); text-transform: uppercase; text-decoration: none; }
+.data-show a.quem:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; }
+.data-show .onde { font-size: var(--t-lead); font-weight: 600; }
+.data-show .hora { font-size: var(--t-texto); }
+.data-show .ingresso { font: 700 15px/1 var(--f-texto); padding: 15px 20px; background: var(--preto); color: var(--offwhite); text-decoration: none; transition: transform .15s var(--ease); }
+.data-show .ingresso:hover { transform: translateY(-2px); }
+@media (max-width: 700px) {
+  .data-show { grid-template-columns: 96px minmax(0, 1fr); }
+  .data-show .dia { font-size: 56px; }
+  .data-show .mes { font-size: 22px; }
+  .data-show .quando { flex-direction: column; gap: 4px; }
+  .data-show .ingresso { grid-column: 2; justify-self: start; }
+}
+
+.topo-site.sobre { position: fixed; left: 0; right: 0; background: transparent; }
+.topo-site.sobre.solida { background: var(--preto); }
+
+/* ---------- Agenda ---------- */
+.agenda { background: var(--vermelho); color: var(--offwhite); padding-block: 120px 140px; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 48px; align-items: start; }
+.agenda h2 { font-size: clamp(88px, 12vw, 200px); line-height: .82; color: var(--preto); }
+.agenda .agenda-vazia { display: grid; gap: 32px; justify-items: start; padding-top: 12px; }
+.agenda .agenda-vazia p { margin: 0; max-width: 22em; font-size: clamp(22px, 2.2vw, 32px); line-height: 1.3; font-weight: 600; }
+.agenda .btn-preto { display: inline-flex; font: 700 15px/1 var(--f-texto); padding: 18px 24px; background: var(--preto); color: var(--offwhite); text-decoration: none; transition: transform .15s var(--ease), background-color .2s; }
+.agenda .btn-preto:hover { background: var(--grafite); }
+.agenda .btn-preto:active { transform: scale(.97); }
+@media (max-width: 860px) {
+  .agenda { grid-template-columns: minmax(0, 1fr); gap: 28px; padding-block: 88px 104px; }
+  .agenda h2 { font-size: 26vw; }
+  .agenda .agenda-vazia p { font-size: 22px; }
+}
+.fim .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--offwhite); }
+.fim .marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; }
 .cartaz .apoio {
   position: absolute; z-index: 2; left: var(--m); right: var(--m-r); bottom: 40px;
   margin: 0; max-width: 30em; text-align: left; font-size: var(--t-lead); line-height: 1.45; color: var(--offwhite);
@@ -249,7 +306,7 @@ a { color: inherit; }
 /* ---------- Movimento ---------- */
 @media (prefers-reduced-motion: no-preference) {
   .js .cartaz [data-line] { transform: translateY(105%); animation: sobe 900ms var(--ease) forwards; animation-delay: calc(var(--i) * 110ms + 150ms); }
-  .js .cartaz .apoio, .js .cartaz .adesivo, .js .topo-cartaz { opacity: 0; animation: aparece 700ms var(--ease) 700ms forwards; }
+  .js .cartaz .apoio, .js .cartaz .adesivo, .js .topo-site.sobre { opacity: 0; animation: aparece 700ms var(--ease) 700ms forwards; }
   .js .foto-colada { opacity: 0; transform: rotate(4deg) translateY(40px); animation: cola 900ms var(--ease) 500ms forwards; }
   .js [data-revela] { opacity: 0; transform: translateY(24px); transition: opacity 700ms var(--ease), transform 900ms var(--ease); transition-delay: calc(var(--d, 0) * 80ms); }
   .js [data-revela].dentro { opacity: 1; transform: none; }
@@ -275,8 +332,6 @@ a { color: inherit; }
   .cartaz { height: 88svh; min-height: 560px; }
   .cartaz .apoio { font-size: 17px; bottom: 28px; }
   .foto-colada { width: 34vw; right: 6vw; }
-  .marca span { display: none; }
-  .topo-cartaz .btn { padding: 12px 16px; font-size: 14px; }
   .casting, .formatos { padding-block: 96px 110px; }
   .grade { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .artista .peca { max-width: 440px; margin-inline: auto; }
@@ -314,17 +369,22 @@ a { color: inherit; }
 <body>
 
 
-<header class="cartaz" id="inicio">
+<header class="topo-site sobre margem" data-barra>
+  <a class="marca" href="#inicio" aria-label="7A Produtora, início"><img src="img/logo-7a.png" srcset="img/logo-7a.png 1x, img/logo-7a-g.png 3x" alt="Logo 7A" width="40" height="47"><span>7A Produtora</span></a>
+  <nav class="menu" id="menu" aria-label="Principal">
+    <a href="#casting">Casting</a>
+    <a href="#agenda">Agenda</a>
+    <a href="#formatos">Shows</a>
+    <a href="#pedir">Contratar</a>
+  </nav>
+  <a class="btn btn-barra" href="#pedir">Pedir data</a>
+  <button class="abre-menu" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
+</header>
+
+<div class="cartaz" id="inicio">
   <div class="campo-cima"></div>
   <div class="campo-baixo"></div>
 
-  <div class="topo-cartaz">
-    <a class="marca" href="#inicio" aria-label="7A Produtora, início">
-      <img src="img/logo-7a.png" srcset="img/logo-7a.png 1x, img/logo-7a-g.png 3x" alt="Logo 7A" width="48" height="56">
-      <span>7A Produtora</span>
-    </a>
-    <a class="btn" href="#pedir">Pedir data</a>
-  </div>
 
   <div class="camada baixo" aria-hidden="true">
     <div class="h1-copia display"><span class="linha"><span data-line style="--i:0">Levado</span></span><span class="linha"><span data-line style="--i:1">a sério</span></span></div>
@@ -336,7 +396,7 @@ a { color: inherit; }
   <img class="foto-colada" src="img/v2.jpg" alt="Vocalista de uma banda da 7A cantando, foto em preto e branco" width="800" height="769">
   <img class="adesivo" src="img/logo-7a-g.png" alt="" width="640" height="751">
   <p class="apoio">Aqui o artista é levado a sério. Somos uma produtora e incubadora de rock em Betim, MG, com seis artistas prontos para o seu palco.</p>
-</header>
+</div>
 
 <main>
   <!-- CASTING -->
@@ -400,6 +460,18 @@ a { color: inherit; }
           <span class="indice inf">7A<i></i></span>
         </div>
       </a>
+    </div>
+  </section>
+
+  <!-- AGENDA -->
+  <section class="agenda margem" id="agenda" aria-labelledby="t-agenda">
+    <h2 class="display" id="t-agenda" data-revela>Agenda</h2>
+    <div>
+      <ol class="lista-agenda" data-campo="agenda" hidden></ol>
+      <div class="agenda-vazia" data-bloco="agenda-vazia" data-revela style="--d:1">
+        <p>Nenhum show aberto ao público marcado agora. As próximas datas do casting aparecem aqui assim que fecharem.</p>
+        <a class="btn-preto" href="#pedir">Pedir uma data para o seu evento</a>
+      </div>
     </div>
   </section>
 
@@ -502,6 +574,19 @@ a { color: inherit; }
 </footer>
 
 <script>
+(function () {
+  // menu: fica preto ao sair da abertura; no celular abre em tela cheia
+  var barra = document.querySelector("[data-barra]"), botaoMenu = barra.querySelector(".abre-menu");
+  function solida() { barra.classList.toggle("solida", window.scrollY > 40); }
+  solida(); window.addEventListener("scroll", solida, { passive: true });
+  botaoMenu.addEventListener("click", function () {
+    var aberto = barra.classList.toggle("aberta");
+    botaoMenu.setAttribute("aria-expanded", aberto ? "true" : "false");
+    botaoMenu.textContent = aberto ? "Fechar" : "Menu";
+    document.documentElement.classList.toggle("sem-rolagem", aberto);
+  });
+  barra.querySelectorAll(".menu a").forEach(function (l) { l.addEventListener("click", function () { if (barra.classList.contains("aberta")) botaoMenu.click(); }); });
+})();
 (function () {
   var numero = "5531992233295";
   var botao = document.getElementById("enviar-whats");

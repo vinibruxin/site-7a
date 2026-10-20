@@ -1,7 +1,18 @@
 {
   "name": "site-7a",
+  "main": "src/worker.js",
   "compatibility_date": "2026-10-01",
   "assets": {
-    "directory": "./public"
-  }
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": true
+  },
+  // conteúdo editado no /admin (criado sozinho pelo Cloudflare no primeiro deploy)
+  "kv_namespaces": [{ "binding": "CONTEUDO" }],
+  // senha inicial do /admin: só o hash fica aqui; a senha pode ser trocada no próprio /admin
+  "vars": {
+    "ADMIN_SAL": "e4cc55b3768e141344f94eeeec263467",
+    "ADMIN_HASH": "cc2027244b89fc5526baccc117ab4fe97bf4be47c5e50d3d4089fe953a779233"
+  },
+  "observability": { "enabled": true }
 }

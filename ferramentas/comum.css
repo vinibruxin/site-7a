@@ -1,0 +1,45 @@
+[hidden] { display: none !important; }
+
+/* ---------- Barra do topo (menu) ---------- */
+.topo-site { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 32px; padding-top: calc(env(safe-area-inset-top, 0px) + 16px); padding-bottom: 16px; background: var(--preto); transition: background-color .3s; }
+.topo-site .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--offwhite); margin-right: auto; }
+.topo-site .marca img { width: 40px; height: auto; }
+.topo-site .marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; }
+.menu { display: flex; gap: 28px; }
+.menu a { position: relative; font: 600 15px/1 var(--f-texto); color: var(--offwhite); text-decoration: none; padding: 8px 0; }
+.menu a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--vermelho); transform: scaleX(0); transform-origin: left; transition: transform .25s var(--ease); }
+.menu a:hover::after, .menu a:focus-visible::after { transform: scaleX(1); }
+.btn-barra { padding: 13px 20px; font-size: 14px; }
+.abre-menu { display: none; font: 600 15px/1 var(--f-texto); color: var(--offwhite); background: none; border: 0; padding: 12px 0 12px 8px; cursor: pointer; }
+.sem-rolagem { overflow: hidden; }
+@media (max-width: 860px) {
+  .topo-site { gap: 16px; }
+  .topo-site .marca span { display: none; }
+  .abre-menu { display: block; }
+  .btn-barra { padding: 11px 14px; }
+  .menu { position: fixed; inset: 0; z-index: -1; flex-direction: column; justify-content: center; gap: 4px; padding: 96px var(--m-r) 48px var(--m); background: var(--preto); opacity: 0; visibility: hidden; transform: translateY(-12px); transition: opacity .3s var(--ease), transform .3s var(--ease), visibility 0s .3s; }
+  .menu a { font: 400 clamp(56px, 17vw, 96px)/1 var(--f-display); text-transform: uppercase; padding: 6px 0; }
+  .menu a::after { height: 4px; }
+  .topo-site.aberta .menu { opacity: 1; visibility: visible; transform: none; transition: opacity .3s var(--ease), transform .3s var(--ease); }
+}
+
+/* ---------- Datas da agenda ---------- */
+.lista-agenda { list-style: none; margin: 0; padding: 0; }
+.data-show { display: grid; grid-template-columns: 150px minmax(0, 1fr) auto; gap: 8px 32px; align-items: center; padding: 22px 0; }
+.data-show .quando { margin: 0; color: var(--preto); display: flex; align-items: baseline; gap: 10px; font-family: var(--f-display); text-transform: uppercase; line-height: .9; }
+.data-show .dia { font-size: 76px; }
+.data-show .mes { font-size: 28px; }
+.data-show .o-que { display: grid; gap: 4px; }
+.data-show .quem { font: 400 var(--t-sub)/1.05 var(--f-display); text-transform: uppercase; text-decoration: none; }
+.data-show a.quem:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; }
+.data-show .onde { font-size: var(--t-lead); font-weight: 600; }
+.data-show .hora { font-size: var(--t-texto); }
+.data-show .ingresso { font: 700 15px/1 var(--f-texto); padding: 15px 20px; background: var(--preto); color: var(--offwhite); text-decoration: none; transition: transform .15s var(--ease); }
+.data-show .ingresso:hover { transform: translateY(-2px); }
+@media (max-width: 700px) {
+  .data-show { grid-template-columns: 96px minmax(0, 1fr); }
+  .data-show .dia { font-size: 56px; }
+  .data-show .mes { font-size: 22px; }
+  .data-show .quando { flex-direction: column; gap: 4px; }
+  .data-show .ingresso { grid-column: 2; justify-self: start; }
+}

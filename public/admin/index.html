@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Editar o site | 7A Produtora</title>
+<link rel="icon" href="/img/logo-7a.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --preto: #0A0A0A; --vermelho: #B5121B; --offwhite: #F2EFEA; --grafite: #2B2B2B; --grafite-2: #3A3A3A; --cinza: #B8B2AA;
+  --f-display: "Anton", Impact, "Arial Narrow Bold", sans-serif;
+  --f-texto: "Montserrat", "Segoe UI", Arial, sans-serif;
+  --m: max(20px, env(safe-area-inset-left, 0px));
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--preto); }
+body { margin: 0; min-height: 100svh; background: var(--preto); color: var(--offwhite); font: 400 16px/1.5 var(--f-texto); -webkit-font-smoothing: antialiased; }
+[hidden] { display: none !important; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid #F2D27C; outline-offset: 2px; }
+.display { font-family: var(--f-display); font-weight: 400; text-transform: uppercase; line-height: .95; margin: 0; letter-spacing: -0.01em; }
+
+.topo { display: flex; align-items: center; gap: 16px; padding: 16px var(--m); background: var(--preto); position: sticky; top: 0; z-index: 10; }
+.topo .marca { display: flex; align-items: center; gap: 12px; color: var(--offwhite); text-decoration: none; margin-right: auto; }
+.topo .marca img { width: 36px; height: auto; }
+.topo .marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; }
+.topo a.ver, .topo button { font-weight: 600; font-size: 15px; background: none; border: 0; color: var(--offwhite); text-decoration: none; cursor: pointer; padding: 10px 0; }
+.topo a.ver:hover, .topo button:hover { color: var(--cinza); }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; font: 700 15px/1 var(--f-texto); padding: 16px 22px; background: var(--vermelho); color: var(--offwhite); border: 0; cursor: pointer; text-decoration: none; transition: transform .15s, background-color .2s; }
+.btn:hover { background: #9A0F17; }
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.btn-sec { background: var(--grafite); }
+.btn-sec:hover { background: var(--grafite-2); }
+.tirar { background: none; border: 0; color: var(--cinza); font-weight: 600; font-size: 14px; cursor: pointer; padding: 10px 0; text-decoration: underline; text-underline-offset: 3px; }
+.tirar:hover { color: var(--offwhite); }
+
+/* entrada */
+.entrada { min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.entrada .lado { background: var(--vermelho); padding: 40px var(--m); display: flex; flex-direction: column; justify-content: space-between; gap: 40px; }
+.entrada .lado img { width: 72px; }
+.entrada .lado h1 { font-size: clamp(64px, 9vw, 150px); color: var(--preto); }
+.entrada form { align-self: center; justify-self: center; width: min(420px, 100% - 40px); display: grid; gap: 16px; padding: 48px 0; }
+.entrada form p { margin: 0 0 8px; font-size: 18px; }
+
+label { display: grid; gap: 6px; font-weight: 600; font-size: 14px; color: var(--cinza); }
+input, select, textarea { width: 100%; padding: 14px 14px; background: var(--grafite); border: 0; border-radius: 0; color: var(--offwhite); font-size: 16px; }
+input:focus, select:focus, textarea:focus { background: var(--grafite-2); }
+textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+.erro { margin: 0; color: #FF8A8F; font-weight: 600; }
+
+/* editor */
+.editor { padding: 0 var(--m) 140px; max-width: 1180px; }
+.abas { display: flex; gap: 8px; flex-wrap: wrap; padding: 32px 0 8px; }
+.abas button { font: 400 clamp(32px, 4vw, 56px)/1 var(--f-display); text-transform: uppercase; background: none; border: 0; color: var(--grafite-2); cursor: pointer; padding: 4px 12px 4px 0; transition: color .2s; }
+.abas button:hover { color: var(--cinza); }
+.abas button[aria-selected="true"] { color: var(--offwhite); }
+.ajuda { margin: 8px 0 32px; max-width: 46em; font-size: 17px; }
+
+.linha-show { display: grid; grid-template-columns: 160px 110px minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, .8fr) minmax(0, 1fr) auto; gap: 8px; align-items: end; padding: 16px; background: var(--grafite); margin-bottom: 8px; }
+.linha-show input, .linha-show select { background: var(--preto); }
+.linha-show .outro { grid-column: 3 / 4; }
+.passou { opacity: .55; }
+.vazio { margin: 0 0 16px; padding: 28px; background: var(--grafite); font-size: 17px; }
+
+.escolha { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 24px; }
+.escolha label { min-width: 280px; }
+.campos { display: grid; gap: 20px; max-width: 860px; }
+.dupla { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: 8px; align-items: end; padding: 12px; background: var(--grafite); }
+.dupla input { background: var(--preto); }
+.grupo h2 { font-size: 32px; margin: 16px 0 12px; }
+
+.rodape { position: fixed; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 20px; padding: 16px var(--m) calc(16px + env(safe-area-inset-bottom, 0px)); background: var(--grafite); z-index: 10; }
+.rodape .estado { margin: 0; font-weight: 600; }
+.rodape .estado.ok { color: #9BE3A3; }
+.rodape .estado.ruim { color: #FF8A8F; }
+.rodape .btn { margin-left: auto; }
+
+@media (max-width: 960px) {
+  .linha-show { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .linha-show .outro { grid-column: auto; }
+  .linha-show .tirar { justify-self: start; }
+}
+@media (max-width: 760px) {
+  .entrada { grid-template-columns: minmax(0, 1fr); }
+  .entrada .lado { min-height: 38svh; }
+  .dupla { grid-template-columns: minmax(0, 1fr); }
+  .escolha label { min-width: 0; width: 100%; }
+  .rodape { flex-wrap: wrap; gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<section class="entrada" id="tela-entrada" hidden>
+  <div class="lado">
+    <img src="/img/logo-7a.png" alt="7A Produtora" width="72" height="85">
+    <h1 class="display">Editar o site</h1>
+  </div>
+  <form id="form-entrar">
+    <p>Entre com a senha da 7A para mudar a agenda, os textos e a formação dos artistas.</p>
+    <label>Senha<input type="password" id="senha" autocomplete="current-password" required></label>
+    <p class="erro" id="erro-entrar" role="alert" hidden></p>
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+</section>
+
+<div id="tela-editor" hidden>
+  <header class="topo">
+    <a class="marca" href="/" target="_blank" rel="noopener"><img src="/img/logo-7a.png" alt="" width="36" height="42"><span>7A Produtora</span></a>
+    <a class="ver" href="/" target="_blank" rel="noopener">Ver o site</a>
+    <button type="button" id="sair">Sair</button>
+  </header>
+
+  <main class="editor">
+    <div class="abas" role="tablist">
+      <button type="button" role="tab" aria-selected="true" data-aba="agenda">Agenda</button>
+      <button type="button" role="tab" aria-selected="false" data-aba="artistas">Artistas</button>
+      <button type="button" role="tab" aria-selected="false" data-aba="senha">Senha</button>
+    </div>
+
+    <section data-painel="agenda">
+      <p class="ajuda">Cada linha é um show. Shows com data passada somem do site sozinhos. O link de ingressos é opcional.</p>
+      <div id="lista-shows"></div>
+      <button class="btn btn-sec" type="button" id="novo-show">Adicionar show</button>
+    </section>
+
+    <section data-painel="artistas" hidden>
+      <div class="escolha">
+        <label>Artista<select id="qual-artista"></select></label>
+      </div>
+      <div class="campos" id="campos-artista"></div>
+    </section>
+
+    <section data-painel="senha" hidden>
+      <form class="campos" id="form-senha" style="max-width:420px">
+        <p class="ajuda" style="margin:0">Troque a senha de entrada. Use pelo menos 10 caracteres.</p>
+        <label>Senha atual<input type="password" id="senha-atual" autocomplete="current-password" required></label>
+        <label>Senha nova<input type="password" id="senha-nova" autocomplete="new-password" minlength="10" required></label>
+        <p class="erro" id="msg-senha" role="status" hidden></p>
+        <button class="btn" type="submit">Trocar a senha</button>
+      </form>
+    </section>
+  </main>
+
+  <div class="rodape" id="rodape">
+    <p class="estado" id="estado" aria-live="polite">Tudo salvo.</p>
+    <button class="btn" type="button" id="salvar">Salvar e publicar</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var dados = null, mudou = false;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+
+  function api(rota, metodo, corpo) {
+    return fetch("/api/" + rota, {
+      method: metodo || "GET", credentials: "same-origin",
+      headers: corpo ? { "content-type": "application/json" } : {},
+      body: corpo ? JSON.stringify(corpo) : undefined
+    }).then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { j._status = r.status; return j; }); });
+  }
+
+  function estado(txt, tipo) { var e = $("#estado"); e.textContent = txt; e.className = "estado" + (tipo ? " " + tipo : ""); }
+  function marcar() { mudou = true; estado("Há mudanças não salvas."); }
+  window.addEventListener("beforeunload", function (ev) { if (mudou) { ev.preventDefault(); ev.returnValue = ""; } });
+
+  // ---------- entrada ----------
+  function mostrarEntrada() { $("#tela-entrada").hidden = false; $("#tela-editor").hidden = true; $("#senha").focus(); }
+  $("#form-entrar").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var erro = $("#erro-entrar"); erro.hidden = true;
+    api("entrar", "POST", { senha: $("#senha").value }).then(function (r) {
+      if (r.ok) { $("#senha").value = ""; abrirEditor(); }
+      else { erro.textContent = r.erro || "Não deu para entrar."; erro.hidden = false; }
+    });
+  });
+  $("#sair").addEventListener("click", function () { api("sair", "POST").then(function () { mudou = false; location.reload(); }); });
+
+  function abrirEditor() {
+    api("conteudo").then(function (c) {
+      dados = c; dados.agenda = dados.agenda || []; dados.artistas = dados.artistas || {};
+      $("#tela-entrada").hidden = true; $("#tela-editor").hidden = false;
+      desenharAgenda(); montarArtistas();
+    });
+  }
+
+  // ---------- abas ----------
+  document.querySelectorAll("[data-aba]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      document.querySelectorAll("[data-aba]").forEach(function (o) { o.setAttribute("aria-selected", o === b ? "true" : "false"); });
+      document.querySelectorAll("[data-painel]").forEach(function (p) { p.hidden = p.getAttribute("data-painel") !== b.getAttribute("data-aba"); });
+      $("#rodape").hidden = b.getAttribute("data-aba") === "senha";
+    });
+  });
+
+  // ---------- agenda ----------
+  function hoje() { return new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date()); }
+  function opcoesArtistas(sel) {
+    var h = Object.keys(dados.artistas).map(function (s) {
+      return '<option value="' + s + '"' + (s === sel ? " selected" : "") + ">" + esc(dados.artistas[s].nome) + "</option>";
+    }).join("");
+    return h + '<option value=""' + (!sel ? " selected" : "") + ">Outro artista</option>";
+  }
+  function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  function desenharAgenda() {
+    var lista = $("#lista-shows");
+    dados.agenda.sort(function (a, b) { return (a.data + (a.hora || "")).localeCompare(b.data + (b.hora || "")); });
+    if (!dados.agenda.length) { lista.innerHTML = '<p class="vazio">Nenhum show cadastrado. Enquanto a lista estiver vazia, o site diz que as próximas datas aparecem em breve.</p>'; return; }
+    var h = hoje();
+    lista.innerHTML = dados.agenda.map(function (d, i) {
+      return '<div class="linha-show' + (d.data && d.data < h ? " passou" : "") + '" data-i="' + i + '">' +
+        '<label>Data<input type="date" data-k="data" value="' + esc(d.data) + '" required></label>' +
+        '<label>Hora<input type="time" data-k="hora" value="' + esc(d.hora) + '"></label>' +
+        '<label>Artista<select data-k="artista">' + opcoesArtistas(d.artista) + "</select></label>" +
+        '<label>Local<input type="text" data-k="local" value="' + esc(d.local) + '" placeholder="Nome da casa ou evento"></label>' +
+        '<label>Cidade<input type="text" data-k="cidade" value="' + esc(d.cidade) + '" placeholder="Betim, MG"></label>' +
+        '<label>Link de ingressos<input type="url" data-k="link" value="' + esc(d.link) + '" placeholder="https://"></label>' +
+        '<button class="tirar" type="button" data-tirar>Tirar</button>' +
+        '<label class="outro"' + (d.artista ? " hidden" : "") + '>Nome do artista<input type="text" data-k="artista_texto" value="' + esc(d.artista_texto) + '"></label>' +
+        "</div>";
+    }).join("");
+  }
+  $("#lista-shows").addEventListener("input", function (ev) {
+    var linha = ev.target.closest("[data-i]"), k = ev.target.getAttribute("data-k");
+    if (!linha || !k) return;
+    dados.agenda[+linha.getAttribute("data-i")][k] = ev.target.value;
+    if (k === "artista") $(".outro", linha).hidden = !!ev.target.value;
+    marcar();
+  });
+  $("#lista-shows").addEventListener("click", function (ev) {
+    if (!ev.target.hasAttribute("data-tirar")) return;
+    var i = +ev.target.closest("[data-i]").getAttribute("data-i");
+    dados.agenda.splice(i, 1); desenharAgenda(); marcar();
+  });
+  $("#novo-show").addEventListener("click", function () {
+    dados.agenda.push({ data: "", hora: "", artista: Object.keys(dados.artistas)[0] || "", local: "", cidade: "", link: "" });
+    desenharAgenda(); marcar();
+    var linhas = document.querySelectorAll(".linha-show"); var ult = linhas[linhas.length - 1];
+    if (ult) { ult.scrollIntoView({ block: "center" }); $("input", ult).focus(); }
+  });
+
+  // ---------- artistas ----------
+  function montarArtistas() {
+    var sel = $("#qual-artista");
+    sel.innerHTML = Object.keys(dados.artistas).map(function (s) { return '<option value="' + s + '">' + esc(dados.artistas[s].nome) + "</option>"; }).join("");
+    sel.onchange = desenharArtista; desenharArtista();
+  }
+  function desenharArtista() {
+    var s = $("#qual-artista").value, a = dados.artistas[s];
+    if (!a) return;
+    a.formacao = a.formacao || [];
+    $("#campos-artista").innerHTML =
+      '<label>Frase de abertura<textarea data-k="chamada" rows="2">' + esc(a.chamada) + "</textarea></label>" +
+      '<label>Resumo (deixe uma linha em branco entre os parágrafos)<textarea data-k="resumo" rows="8">' + esc((a.resumo || []).join("\n\n")) + "</textarea></label>" +
+      '<label>Destaques (um por linha)<textarea data-k="destaques" rows="5">' + esc((a.destaques || []).join("\n")) + "</textarea></label>" +
+      '<label>Ideal para<input type="text" data-k="ideal" value="' + esc(a.ideal) + '" placeholder="Casas, festivais e eventos"></label>' +
+      '<div class="grupo"><h2 class="display">Formação</h2><div id="lista-formacao">' +
+      a.formacao.map(function (f, i) {
+        return '<div class="dupla" data-f="' + i + '"><label>Nome<input type="text" data-fk="nome" value="' + esc(f.nome) + '"></label>' +
+          '<label>Função<input type="text" data-fk="funcao" value="' + esc(f.funcao) + '" placeholder="Vocal, guitarra, baixo..."></label>' +
+          '<button class="tirar" type="button" data-tirar-f>Tirar</button></div>';
+      }).join("") +
+      '</div><p style="margin:12px 0 0"><button class="btn btn-sec" type="button" id="novo-integrante">Adicionar integrante</button></p></div>';
+    $("#novo-integrante").onclick = function () { a.formacao.push({ nome: "", funcao: "" }); desenharArtista(); marcar(); var ins = document.querySelectorAll("[data-fk=nome]"); ins[ins.length - 1].focus(); };
+  }
+  $("#campos-artista").addEventListener("input", function (ev) {
+    var a = dados.artistas[$("#qual-artista").value], k = ev.target.getAttribute("data-k"), fk = ev.target.getAttribute("data-fk");
+    if (k === "resumo") a.resumo = ev.target.value.split(/\n\s*\n/).map(function (p) { return p.trim(); }).filter(Boolean);
+    else if (k === "destaques") a.destaques = ev.target.value.split("\n").map(function (p) { return p.trim(); }).filter(Boolean);
+    else if (k) a[k] = ev.target.value;
+    else if (fk) a.formacao[+ev.target.closest("[data-f]").getAttribute("data-f")][fk] = ev.target.value;
+    marcar();
+  });
+  $("#campos-artista").addEventListener("click", function (ev) {
+    if (!ev.target.hasAttribute("data-tirar-f")) return;
+    var a = dados.artistas[$("#qual-artista").value];
+    a.formacao.splice(+ev.target.closest("[data-f]").getAttribute("data-f"), 1); desenharArtista(); marcar();
+  });
+
+  // ---------- salvar ----------
+  $("#salvar").addEventListener("click", function () {
+    var semData = dados.agenda.some(function (d) { return !d.data; });
+    if (semData) { estado("Preencha a data de todos os shows antes de salvar.", "ruim"); return; }
+    var b = this; b.disabled = true; estado("Salvando...");
+    api("conteudo", "PUT", dados).then(function (r) {
+      b.disabled = false;
+      if (r.ok) { mudou = false; estado("Salvo. O site já mostra as mudanças (pode levar até um minuto).", "ok"); }
+      else if (r._status === 401) { estado("A sessão expirou. Entre de novo; suas mudanças continuam aqui.", "ruim"); $("#tela-entrada").hidden = false; }
+      else estado(r.erro || "Não deu para salvar. Tente de novo.", "ruim");
+    }).catch(function () { b.disabled = false; estado("Sem conexão. Tente de novo.", "ruim"); });
+  });
+
+  // depois de entrar de novo com a sessão expirada, volta ao editor sem perder nada
+  var entrarOriginal = abrirEditor;
+  abrirEditor = function () { if (dados) { $("#tela-entrada").hidden = true; $("#tela-editor").hidden = false; } else entrarOriginal(); };
+
+  // ---------- senha ----------
+  $("#form-senha").addEventListener("submit", function (ev) {
+    ev.preventDefault();
+    var m = $("#msg-senha");
+    api("senha", "POST", { atual: $("#senha-atual").value, nova: $("#senha-nova").value }).then(function (r) {
+      m.hidden = false; m.style.color = r.ok ? "#9BE3A3" : "";
+      m.textContent = r.ok ? "Senha trocada. Use a nova na próxima entrada." : (r.erro || "Não deu para trocar.");
+      if (r.ok) { $("#senha-atual").value = ""; $("#senha-nova").value = ""; }
+    });
+  });
+
+  // ---------- início ----------
+  api("sessao").then(function (r) { if (r.ok) abrirEditor(); else mostrarEntrada(); }).catch(mostrarEntrada);
+})();
+</script>
+</body>
+</html>

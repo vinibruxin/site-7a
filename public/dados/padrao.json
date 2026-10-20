@@ -1,0 +1,147 @@
+{
+ "agenda": [],
+ "artistas": {
+  "ordem-mor": {
+   "nome": "Ordem Mor",
+   "chamada": "O retorno de uma identidade consolidada.",
+   "resumo": [
+    "Maturidade artística, força sonora e novo capítulo. Depois de um hiato, a Ordem Mor volta com repertório autoral sólido e identidade ainda mais definida.",
+    "Conhecida pelo som potente e por letras que misturam introspecção e crítica social, a banda equilibra intensidade e profundidade emocional. O repertório também traz releituras de clássicos nacionais e internacionais.",
+    "Ao vivo, o show é entrega total: presença firme, execução consistente e uma construção sonora que prende a atenção do início ao fim."
+   ],
+   "destaques": [
+    "Trabalho autoral consistente",
+    "Nova fase artística",
+    "Show intenso e emocional",
+    "Releituras de clássicos nacionais e internacionais"
+   ],
+   "ideal": "Casas de show, festivais e eventos de médio e grande porte",
+   "formacao": [
+    {
+     "nome": "Bruno Bizonni",
+     "funcao": "Vocal"
+    },
+    {
+     "nome": "Athos Tibães",
+     "funcao": "Guitarra solo"
+    },
+    {
+     "nome": "Filipe Mamede",
+     "funcao": "Guitarra base"
+    },
+    {
+     "nome": "Marcus Filipe",
+     "funcao": "Baixo"
+    },
+    {
+     "nome": "Jackson Lopes",
+     "funcao": "Bateria"
+    }
+   ]
+  },
+  "sub-rosa": {
+   "nome": "Sub Rosa",
+   "chamada": "Técnica, atmosfera e narrativa sonora.",
+   "resumo": [
+    "A Sub Rosa explora o rock progressivo em composições autorais que transitam entre ambientações atmosféricas, passagens técnicas e explosões de intensidade.",
+    "A banda constrói cada apresentação como uma jornada musical, equilibrando virtuosismo e emoção. Cada música é parte de uma experiência maior: envolvente, sofisticada e impactante."
+   ],
+   "destaques": [
+    "Repertório autoral progressivo",
+    "Arranjos elaborados",
+    "Dinâmica instrumental marcante"
+   ],
+   "ideal": "Festivais, eventos culturais e público exigente",
+   "formacao": []
+  },
+  "ossos-do-banquete": {
+   "nome": "Ossos do Banquete",
+   "chamada": "Mais de duas décadas levando energia, atitude e identidade aos palcos do Brasil e do exterior.",
+   "resumo": [
+    "A Ossos do Banquete faz punk rock autoral com personalidade forte e presença de palco marcante. As músicas próprias carregam riffs diretos, letras afiadas e a essência crua do rock'n'roll, em shows intensos e cheios de conexão com o público.",
+    "A banda já dividiu o palco com Velhas Virgens, Raimundos e Cólera, e tocou em festivais como Roça 'n' Roll e Camping Rock.",
+    "Em 2011 fez a primeira turnê internacional, a USA Tour, passando por Nova York, Miami e Boston. No ano seguinte, integrou o casting oficial do Brazilian Day New York, um dos maiores eventos de cultura brasileira fora do país."
+   ],
+   "destaques": [
+    "Repertório autoral",
+    "Mais de 20 anos de estrada",
+    "Turnê internacional nos EUA",
+    "Participação em grandes festivais",
+    "Presença de palco intensa e identidade consolidada"
+   ],
+   "ideal": "Casas de show, festivais e eventos",
+   "formacao": [
+    {
+     "nome": "Reinaldo Ratto",
+     "funcao": "Vocal e guitarra"
+    },
+    {
+     "nome": "Leandro Santana",
+     "funcao": "Guitarra"
+    },
+    {
+     "nome": "Dan Ribeiro",
+     "funcao": "Baixo"
+    },
+    {
+     "nome": "Wallison Bisu",
+     "funcao": "Bateria"
+    }
+   ]
+  },
+  "athos-tibaes": {
+   "nome": "Athos Tibães",
+   "chamada": "Voz, violão e atmosfera acolhedora.",
+   "resumo": [
+    "Athos Tibães apresenta um show de MPB em formato voz e violão que valoriza a interpretação, a sensibilidade e a proximidade com o público.",
+    "Com presença serena e execução refinada, suas apresentações criam ambientes sofisticados e agradáveis, onde a música conduz a experiência com naturalidade e elegância."
+   ],
+   "destaques": [
+    "MPB clássica e contemporânea",
+    "Formato intimista",
+    "Clima aconchegante e refinado"
+   ],
+   "ideal": "Eventos privados, restaurantes e ambientes sofisticados",
+   "formacao": []
+  },
+  "aenima": {
+   "nome": "Ænima",
+   "chamada": "Rock dos anos 80, 90 e 2000 com energia, identidade e conexão real com o público.",
+   "resumo": [
+    "A Ænima apresenta um repertório de clássicos do rock em versões acústicas modernas e envolventes. A proposta vai além da releitura: a dupla recria sucessos com arranjos próprios, mantendo a essência original com frescor e personalidade.",
+    "Com voz marcante, execução precisa e dinâmica bem construída, o show alterna momentos intimistas com picos de energia que levantam o público. A experiência é nostálgica, vibrante e pensada para criar atmosfera."
+   ],
+   "destaques": [
+    "Repertório dos anos 80, 90 e 2000",
+    "Formato acústico versátil",
+    "Alto nível de interação com o público"
+   ],
+   "ideal": "Eventos de empresa, bares e celebrações",
+   "formacao": [
+    {
+     "nome": "Bruno Bizonni",
+     "funcao": "Voz"
+    },
+    {
+     "nome": "Athos Tibães",
+     "funcao": "Violão e guitarra"
+    }
+   ]
+  },
+  "dj-ivan-lennon": {
+   "nome": "DJ Ivan Lennon",
+   "chamada": "Hits que conectam gerações e mantêm a pista ativa.",
+   "resumo": [
+    "Com repertório recheado de sucessos do pop e do pop rock, DJ Ivan Lennon constrói sets modernos, animados e pensados para manter a energia constante.",
+    "A leitura de pista permite adaptar o set em tempo real, equilibrando nostalgia e atualidade para criar experiências envolventes e dançantes."
+   ],
+   "destaques": [
+    "Hits nacionais e internacionais",
+    "Versatilidade para diferentes públicos",
+    "Energia crescente e dinâmica"
+   ],
+   "ideal": "Eventos de empresa, festas e celebrações",
+   "formacao": []
+  }
+ }
+}

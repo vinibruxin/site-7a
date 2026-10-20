@@ -126,15 +126,18 @@ def pagina(i, a):
     src, w, h, alt, pos = a["foto"]
     destaques = "\n".join(f'          <li data-revela>{e(d)}</li>' for k, d in enumerate(a["destaques"]))
     resumo = "\n".join(f"        <p>{e(p)}</p>" for p in a["resumo"])
-    formacao = ""
-    if a["formacao"]:
-        linhas = "\n".join(f'          <li data-revela><span class="quem">{e(n)}</span><span class="faz">{e(f)}</span></li>' for n, f in a["formacao"])
-        formacao = f'''
-  <section class="formacao margem" aria-labelledby="t-formacao">
+    # formação e agenda sempre existem na página; o /admin (via Worker) preenche e mostra quando houver conteúdo
+    linhas = "\n".join(f'          <li data-revela><span class="quem">{e(n)}</span><span class="faz">{e(f)}</span></li>' for n, f in a["formacao"])
+    formacao = f'''
+  <section class="formacao margem" aria-labelledby="t-formacao" data-bloco="formacao"{"" if a["formacao"] else " hidden"}>
     <h2 class="display rot" id="t-formacao" data-revela>Formação</h2>
-    <ul class="lista-formacao">
+    <ul class="lista-formacao" data-campo="formacao">
 {linhas}
     </ul>
+  </section>
+  <section class="agenda-artista margem" id="agenda" aria-labelledby="t-agenda" data-bloco="agenda" hidden>
+    <h2 class="display rot" id="t-agenda" data-revela>Agenda</h2>
+    <ol class="lista-agenda" data-campo="agenda"></ol>
   </section>
 '''
     galeria = ""
@@ -188,9 +191,16 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
 </style>
 </head>
 <body>
-<header class="topo margem">
+<header class="topo-site margem" data-barra>
   <a class="marca" href="index.html" aria-label="7A Produtora, página inicial"><img src="img/logo-7a.png" alt="" width="40" height="47"><span>7A Produtora</span></a>
-  <a class="voltar" href="index.html#casting">Todo o casting</a>
+  <nav class="menu" id="menu" aria-label="Principal">
+    <a href="index.html#casting">Casting</a>
+    <a href="index.html#agenda">Agenda</a>
+    <a href="index.html#formatos">Shows</a>
+    <a href="index.html#pedir">Contratar</a>
+  </nav>
+  <a class="btn btn-barra" href="{pedir}">Pedir data</a>
+  <button class="abre-menu" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
 </header>
 
 <main>
@@ -198,7 +208,7 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
     <div class="texto">
       <h1 class="display nome" id="t-nome">{e(a["nome"])}</h1>
       <p class="genero">{e(a["genero"])}</p>
-      <p class="chamada">{e(a["chamada"])}</p>
+      <p class="chamada" data-campo="chamada">{e(a["chamada"])}</p>
       <div class="acoes">
         <a class="btn" href="{pedir}">Pedir data</a>
         {'<a class="link" href="#ouvir">Ouvir e ver</a>' if tem_midia else ''}
@@ -212,7 +222,7 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
 
   <section class="resumo margem" aria-labelledby="t-resumo">
     <h2 class="display rot" id="t-resumo" data-revela>Resumo</h2>
-    <div class="corpo" data-revela>
+    <div class="corpo" data-revela data-campo="resumo">
 {resumo}
     </div>
   </section>
@@ -221,10 +231,10 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
   <section class="destaques margem" aria-labelledby="t-destaques">
     <h2 class="display rot" id="t-destaques" data-revela>Destaques</h2>
     <div>
-      <ol class="lista-destaques">
+      <ol class="lista-destaques" data-campo="destaques">
 {destaques}
       </ol>
-      <p class="ideal" data-revela>Ideal para {e(a["ideal"][0].lower() + a["ideal"][1:])}.</p>
+      <p class="ideal" data-revela data-campo="ideal">Ideal para {e(a["ideal"][0].lower() + a["ideal"][1:])}.</p>
     </div>
   </section>
 {formacao}
@@ -286,6 +296,15 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
     var visto = new IntersectionObserver(function (es) {{ es.forEach(function (x) {{ if (x.isIntersecting) ligar(); else desligar(); }}); }});
     visto.observe(gal);
   }});
+  // menu do celular
+  var barra = document.querySelector("[data-barra]"), botao = barra.querySelector(".abre-menu");
+  botao.addEventListener("click", function () {{
+    var aberto = barra.classList.toggle("aberta");
+    botao.setAttribute("aria-expanded", aberto ? "true" : "false");
+    botao.textContent = aberto ? "Fechar" : "Menu";
+    document.documentElement.classList.toggle("sem-rolagem", aberto);
+  }});
+  barra.querySelectorAll(".menu a").forEach(function (l) {{ l.addEventListener("click", function () {{ if (barra.classList.contains("aberta")) botao.click(); }}); }});
   // uma mídia por vez
   var midias = document.querySelectorAll("audio, video");
   midias.forEach(function (m) {{ m.addEventListener("play", function () {{ midias.forEach(function (o) {{ if (o !== m) o.pause(); }}); }}); }});
@@ -295,6 +314,17 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
 </html>
 '''
 
+
+# conteúdo padrão que o /admin carrega antes da primeira edição
+os.makedirs(os.path.join(SITE, "dados"), exist_ok=True)
+with open(os.path.join(SITE, "dados", "padrao.json"), "w") as f:
+    json.dump({
+        "agenda": [],
+        "artistas": {a["slug"]: {
+            "nome": a["nome"], "chamada": a["chamada"], "resumo": a["resumo"], "destaques": a["destaques"],
+            "ideal": a["ideal"], "formacao": [{"nome": n, "funcao": fn} for n, fn in a["formacao"]],
+        } for a in A},
+    }, f, ensure_ascii=False, indent=1)
 
 for i, a in enumerate(A):
     with open(os.path.join(SITE, a["slug"] + ".html"), "w") as f:
