@@ -1,6 +1,9 @@
 // Site da 7A Produtora: serve os arquivos de public/ e encaixa nas páginas o conteúdo editado no /admin.
 // O conteúdo editável (agenda, textos e formação dos artistas) fica no KV CONTEUDO, chave "conteudo".
 // Sem nada salvo no KV, o site mostra o que está em public/ (gerado por ferramentas/gera_artistas.py).
+// O sistema de gestão (/admin/gestao.html) fica em src/gestao.js, com os dados no D1 DB.
+
+import { gestao, pedidoDoSite, showsPublicos } from "./gestao.js";
 
 const CHAVE = "conteudo";
 const SESSAO_DIAS = 7;
@@ -26,7 +29,13 @@ export default {
     const tipo = resp.headers.get("content-type") || "";
     if (!tipo.includes("text/html") || p.startsWith("/admin")) return resp;
 
-    const conteudo = await lerConteudo(env);
+    let conteudo = await lerConteudo(env);
+    // shows confirmados no sistema de gestão entram na agenda do site junto com os da aba Agenda
+    const doSistema = await showsPublicos(env, hojeSP()).catch(() => []);
+    if (doSistema.length) {
+      conteudo = conteudo ? { ...conteudo } : await conteudoPadrao(env, req);
+      conteudo.agenda = [...(conteudo.agenda || []), ...doSistema];
+    }
     if (!conteudo) return resp;
     const slug = p === "/" || p === "/index.html" || p === "/index" ? "" : p.replace(/^\//, "").replace(/\.html$/, "");
     const r = slug ? reescreverArtista(resp, conteudo, slug) : reescreverInicio(resp, conteudo);
@@ -209,6 +218,7 @@ async function api(req, env, url) {
     return json((await lerConteudo(env)) || (await conteudoPadrao(env, req)));
   }
   if (rota === "entrar" && metodo === "POST") return entrar(req, env);
+  if (rota === "pedido" && metodo === "POST") return pedidoDoSite(req, env);
   if (rota === "sair" && metodo === "POST") {
     const t = token(req);
     if (t) await env.CONTEUDO.delete("sessao:" + t);
@@ -218,6 +228,7 @@ async function api(req, env, url) {
   if (!(await logado(req, env))) return json({ erro: "Entre com a senha para continuar." }, 401);
 
   if (rota === "sessao" && metodo === "GET") return json({ ok: true });
+  if (rota.startsWith("gestao/")) return gestao(req, env, rota.slice("gestao/".length));
   if (rota === "conteudo" && metodo === "PUT") {
     const novo = await req.json();
     const limpo = validar(novo);
