@@ -77,7 +77,7 @@ A = [
 e = html.escape
 
 # endereço público do site (trocar quando o domínio próprio estiver ligado)
-BASE = "https://site-7a.oculos.workers.dev"
+BASE = "https://site-7a.7a-produtora.workers.dev"
 
 CSS = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "artista.css")).read()
 
@@ -254,7 +254,7 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
 
 <footer class="rodape margem">
   <a class="prox" href="{prox["slug"]}.html"><span>Próximo artista</span><b class="display">{e(prox["nome"])}</b></a>
-  <p>7A Produtora · Betim, MG · <a href="https://wa.me/5531992233295">(31) 99223-3295</a> · <a href="mailto:7a.produtora@gmail.com">7a.produtora@gmail.com</a> · <a href="https://instagram.com/7a.produtora">@7a.produtora</a></p>
+  <p>7A Produtora · Betim, MG · <a href="https://wa.me/5531992233295">(31) 99223-3295</a> · <a href="mailto:7a.produtora@gmail.com">7a.produtora@gmail.com</a> · <a href="https://instagram.com/7a_produtora">@7a_produtora</a></p>
 </footer>
 
 <script>
@@ -318,9 +318,14 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
 
 # conteúdo padrão que o /admin carrega antes da primeira edição
 os.makedirs(os.path.join(SITE, "dados"), exist_ok=True)
+# a agenda já salva (cópia do /admin) é mantida ao regerar
+try:
+    AGENDA = json.load(open(os.path.join(SITE, "dados", "padrao.json"))).get("agenda", [])
+except Exception:
+    AGENDA = []
 with open(os.path.join(SITE, "dados", "padrao.json"), "w") as f:
     json.dump({
-        "agenda": [],
+        "agenda": AGENDA,
         "artistas": {a["slug"]: {
             "nome": a["nome"], "chamada": a["chamada"], "resumo": a["resumo"], "destaques": a["destaques"],
             "ideal": a["ideal"], "formacao": [{"nome": n, "funcao": fn} for n, fn in a["formacao"]],

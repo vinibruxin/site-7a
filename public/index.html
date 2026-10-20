@@ -11,8 +11,8 @@
 <meta property="og:site_name" content="7A Produtora">
 <meta property="og:title" content="7A Produtora | Aqui o artista é levado a sério">
 <meta property="og:description" content="Produtora e incubadora de rock em Betim, MG. Seis artistas prontos para o seu palco. Peça uma data.">
-<meta property="og:url" content="https://site-7a.oculos.workers.dev/">
-<meta property="og:image" content="https://site-7a.oculos.workers.dev/img/og.jpg">
+<meta property="og:url" content="https://site-7a.7a-produtora.workers.dev/">
+<meta property="og:image" content="https://site-7a.7a-produtora.workers.dev/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
@@ -529,7 +529,7 @@ a { color: inherit; }
         </div>
         <div class="mensagem" aria-live="polite"><span>Sua mensagem</span><pre id="previa">Olá, 7A! Quero um orçamento de show.</pre></div>
       </form>
-      <p class="letra-miuda">A 7A guarda os dados do pedido só para responder sobre o show. Prefere ligar ou mandar e-mail? <b>(31) 99223-3295</b> · <b>7a.produtora@gmail.com</b></p>
+      <p class="letra-miuda">Prefere ligar ou mandar e-mail? <b>(31) 99223-3295</b> · <b>7a.produtora@gmail.com</b></p>
     </div>
   </section>
 
@@ -637,13 +637,6 @@ a { color: inherit; }
   form.addEventListener("input", montar);
   form.addEventListener("change", montar);
   form.addEventListener("submit", function (e) { e.preventDefault(); });
-  // guarda o pedido no sistema de gestão da 7A (o WhatsApp abre do mesmo jeito)
-  botao.addEventListener("click", function () {
-    try {
-      fetch("/api/pedido", { method: "POST", keepalive: true, headers: { "content-type": "application/json" },
-        body: JSON.stringify({ artista: v("f-artista"), evento: v("f-evento"), data: v("f-data"), cidade: v("f-cidade"), nome: v("f-nome") }) }).catch(function () {});
-    } catch (e) {}
-  });
   try {
     var pedido = new URLSearchParams(location.search).get("artista");
     if (pedido) { Array.prototype.forEach.call(campoArtista.options, function (o) { if (o.text === pedido) campoArtista.value = o.text; }); }
