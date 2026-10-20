@@ -38,14 +38,11 @@ export default {
     const tipo = resp.headers.get("content-type") || "";
     if (!tipo.includes("text/html") || p.startsWith("/admin")) return resp;
 
-    let conteudo = await lerConteudo(env);
+    // antes do primeiro salvar no /admin vale o conteúdo padrão (dados/padrao.json)
+    let conteudo = { ...((await lerConteudo(env)) || (await conteudoPadrao(env, req))) };
     // shows confirmados no sistema de gestão entram na agenda do site junto com os da aba Agenda
     const doSistema = await showsPublicos(env, hojeSP()).catch(() => []);
-    if (doSistema.length) {
-      conteudo = conteudo ? { ...conteudo } : await conteudoPadrao(env, req);
-      conteudo.agenda = [...(conteudo.agenda || []), ...doSistema];
-    }
-    if (!conteudo) return resp;
+    if (doSistema.length) conteudo.agenda = [...(conteudo.agenda || []), ...doSistema];
     const slug = p === "/" || p === "/index.html" || p === "/index" ? "" : p.replace(/^\//, "").replace(/\.html$/, "");
     const r = slug ? reescreverArtista(resp, conteudo, slug) : reescreverInicio(resp, conteudo);
     const h = new Headers(r.headers);
