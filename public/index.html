@@ -218,13 +218,13 @@ a { color: inherit; }
 
 /* ---------- Uma palavra é o botão ---------- */
 .mande {
-  position: relative; display: block; height: 60svh; min-height: 380px; background: var(--vermelho); color: var(--preto);
-  text-decoration: none; overflow: hidden;
+  position: relative; display: flex; flex-direction: column; gap: 40px; min-height: 60svh; padding: 28px var(--m-r) 24px var(--m);
+  background: var(--vermelho); color: var(--preto); text-decoration: none; overflow: hidden;
 }
-.mande .frase { position: absolute; top: 20px; left: var(--m); max-width: 26em; margin: 0; font-size: var(--t-lead); color: var(--offwhite); font-weight: 600; }
-.mande svg { position: absolute; top: 20px; right: var(--m-r); width: 48px; height: 48px; }
+.mande .frase { max-width: 26em; margin: 0; padding-right: 72px; font-size: var(--t-lead); color: var(--offwhite); font-weight: 600; }
+.mande svg { position: absolute; top: 28px; right: var(--m-r); width: 48px; height: 48px; }
 .mande .palavra {
-  position: absolute; left: var(--m); right: var(--m-r); bottom: 24px;
+  display: block; margin-top: auto;
   font: 400 clamp(120px, 27vw, 420px)/.78 var(--f-display); text-transform: uppercase; letter-spacing: -0.02em;
 }
 .mande:hover, .mande:focus-visible { background: var(--preto); color: var(--vermelho); }
@@ -297,9 +297,10 @@ a { color: inherit; }
   .lista-faz li { grid-template-columns: minmax(0, 1fr); gap: 6px; }
   .lista-faz .item { font-size: 11vw; }
   .lista-faz p { padding-left: 16px; }
-  .mande { height: 46svh; min-height: 300px; }
+  .mande { min-height: 46svh; gap: 32px; padding-top: 20px; }
   .mande .frase { font-size: 17px; max-width: 15em; }
-  .mande svg { width: 32px; height: 32px; }
+  .mande svg { top: 20px; width: 32px; height: 32px; }
+  .mande .frase { padding-right: 48px; }
   .mande .palavra { font-size: 30vw; }
   .fim { grid-template-columns: minmax(0, 1fr); }
   .fim .filme { height: 50svh; }
