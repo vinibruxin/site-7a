@@ -42,7 +42,6 @@ A = [
        formacao=[("Reinaldo Ratto", "Vocal e guitarra"), ("Leandro Santana", "Guitarra"), ("Dan Ribeiro", "Baixo"), ("Wallison Bisu", "Bateria")],
        midia=[("spotify", "63o2iaMLCmkQDTg797RnIk", None, 0, 0, "Mineiridade", "Spotify"),
               ("youtube", "oAqmHzCPh78", None, 0, 0, "Ao vivo no Espaço DellArt", "YouTube"),
-              ("audio", "midia/ossos-safra-recorde.mp3", None, 0, 0, "Safra Recorde", "Música"),
               ("video", "midia/ossos-jesus-numa-moto.mp4", "midia/ossos-jesus-numa-moto.jpg", 540, 960, "Jesus Numa Moto", "Ao vivo")]),
   dict(slug="athos-tibaes", nome="Athos Tibães", serie="7A-004", genero="MPB, voz e violão",
        chamada="Voz, violão e atmosfera acolhedora.",
