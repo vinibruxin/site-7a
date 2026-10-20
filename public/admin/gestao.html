@@ -133,6 +133,7 @@ a.item:active { transform: scale(.995); }
 .ficha .c2 { grid-column: span 2; }
 .ficha .c4 { grid-column: span 4; }
 .ficha .c6 { grid-column: 1 / -1; }
+.ficha .dica { display: block; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--cinza); }
 .acoes-rapidas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
 .salvar-barra { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 0 calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--preto); margin-top: 24px; z-index: 5; }
 .salvar-barra .estado { margin: 0; font-weight: 600; }
@@ -410,11 +411,11 @@ a.item:active { transform: scale(.995); }
         <a class="btn btn-sec" href="#show/novo?c=${c.id}">Novo show</a></div>`}
       <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
         <label class="c6">Nome da casa, restaurante, evento ou empresa<input name="nome" value="${esc(c.nome)}" required autocomplete="off"></label>
-        <label class="c2">Tipo<select name="tipo">${opcoes(TIPOS, c.tipo)}</select></label>
-        <label class="c4">Endereço (rua, número e complemento)<input name="endereco" value="${esc(c.endereco || "")}" placeholder="Rua do Rosário, 120, loja 2" autocomplete="off"></label>
-        <label class="c2">Bairro<input name="bairro" value="${esc(c.bairro || "")}" placeholder="Centro" autocomplete="off"></label>
-        <label class="c2">Cidade<input name="cidade" value="${esc(c.cidade)}" placeholder="Betim" autocomplete="off"></label>
-        <label class="c2">CEP<input name="cep" value="${esc(c.cep || "")}" placeholder="32600-000" inputmode="numeric" autocomplete="off"></label>
+        <label>Tipo<select name="tipo">${opcoes(TIPOS, c.tipo)}</select></label>
+        <label>CEP<input name="cep" value="${esc(c.cep || "")}" placeholder="32600-000" inputmode="numeric" maxlength="9" autocomplete="off"><span class="dica" id="dica-cep">Preenche a rua, o bairro e a cidade.</span></label>
+        <label class="c6">Endereço (rua, número e complemento)<input name="endereco" value="${esc(c.endereco || "")}" placeholder="Rua do Rosário, 120, loja 2" autocomplete="off"></label>
+        <label>Bairro<input name="bairro" value="${esc(c.bairro || "")}" placeholder="Centro" autocomplete="off"></label>
+        <label>Cidade<input name="cidade" value="${esc(c.cidade)}" placeholder="Betim/MG" autocomplete="off"></label>
         <label class="c2">Pessoa de contato<input name="contato" value="${esc(c.contato)}" autocomplete="off"></label>
         <label class="c2">Telefone ou WhatsApp<input name="telefone" type="tel" value="${esc(c.telefone)}" placeholder="(31) 9..." autocomplete="off"></label>
         <label class="c2">Instagram<input name="instagram" value="${esc(c.instagram)}" placeholder="@casa" autocomplete="off"></label>
@@ -438,6 +439,25 @@ a.item:active { transform: scale(.995); }
 
     const form = $("#ficha");
     form.addEventListener("input", () => { sujo = true; estado(""); });
+    // CEP: com 8 dígitos busca o endereço nos Correios (ViaCEP) e preenche rua, bairro e cidade
+    let ultimoCep = "";
+    form.cep.addEventListener("input", () => {
+      const d = soDigitos(form.cep.value).slice(0, 8);
+      form.cep.value = d.length > 5 ? d.slice(0, 5) + "-" + d.slice(5) : d;
+      if (d.length !== 8 || d === ultimoCep) return;
+      ultimoCep = d;
+      const dica = $("#dica-cep");
+      dica.textContent = "Buscando o endereço...";
+      fetch(`https://viacep.com.br/ws/${d}/json/`).then((r) => r.json()).then((e) => {
+        if (e.erro) { dica.textContent = "CEP não encontrado. Preencha o endereço à mão."; return; }
+        if (e.logradouro) form.endereco.value = e.logradouro + ", ";
+        if (e.bairro) form.bairro.value = e.bairro;
+        if (e.localidade) form.cidade.value = e.localidade + (e.uf ? "/" + e.uf : "");
+        dica.textContent = "Endereço preenchido. Complete com o número.";
+        form.endereco.focus();
+        form.endereco.setSelectionRange(form.endereco.value.length, form.endereco.value.length);
+      }).catch(() => { dica.textContent = "Não consegui buscar o CEP agora. Preencha à mão."; });
+    });
     $("#salvar").addEventListener("click", () => {
       const dados = Object.fromEntries(new FormData(form));
       if (!dados.nome.trim()) { estado("Dê um nome ao contratante.", "ruim"); form.nome.focus(); return; }
