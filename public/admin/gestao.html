@@ -131,6 +131,7 @@ a.item:active { transform: scale(.995); }
 .ficha { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px 12px; max-width: 900px; }
 .ficha > * { grid-column: span 3; }
 .ficha .c2 { grid-column: span 2; }
+.ficha .c4 { grid-column: span 4; }
 .ficha .c6 { grid-column: 1 / -1; }
 .acoes-rapidas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
 .salvar-barra { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 0 calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--preto); margin-top: 24px; z-index: 5; }
@@ -177,7 +178,7 @@ a.item:active { transform: scale(.995); }
   .entrada { grid-template-columns: minmax(0, 1fr); }
   .entrada .lado { min-height: 36svh; }
   .ficha { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .ficha > *, .ficha .c2 { grid-column: 1 / -1; }
+  .ficha > *, .ficha .c2, .ficha .c4 { grid-column: 1 / -1; }
   .ficha .meia { grid-column: span 1; }
   .numeros > div { min-height: 120px; padding: 16px; }
   .numeros dd { font-size: 34px; }
@@ -232,7 +233,7 @@ a.item:active { transform: scale(.995); }
   const filtro = { etapa: "", busca: "", status: "", passados: false };
 
   const ETAPAS = [["contatar", "A contatar"], ["contatado", "Contatado"], ["negociando", "Negociando"], ["fechado", "Fechado"], ["perdido", "Perdido"]];
-  const TIPOS = [["casa", "Bar ou casa de show"], ["festival", "Festival"], ["evento", "Evento"], ["empresa", "Empresa"], ["particular", "Festa particular"], ["outro", "Outro"]];
+  const TIPOS = [["casa", "Bar ou casa de show"], ["restaurante", "Restaurante"], ["festival", "Festival"], ["evento", "Evento"], ["empresa", "Empresa"], ["particular", "Festa particular"], ["outro", "Outro"]];
   const STATUS = [["consulta", "Consulta"], ["reservado", "Reservado"], ["confirmado", "Confirmado"], ["realizado", "Realizado"], ["cancelado", "Cancelado"]];
   const nomeDe = (lista, k) => (lista.find((x) => x[0] === k) || [k, k])[1];
   const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
@@ -394,7 +395,7 @@ a.item:active { transform: scale(.995); }
 
   function fichaContratante(id) {
     const novo = id === "novo";
-    const c = novo ? { nome: "", tipo: "casa", contato: "", telefone: "", email: "", instagram: "", cidade: "", etapa: "contatar", proxima_acao: "", proxima_data: "", obs: "" } : contratante(Number(id));
+    const c = novo ? { nome: "", tipo: "casa", contato: "", telefone: "", email: "", instagram: "", endereco: "", bairro: "", cep: "", cidade: "", etapa: "contatar", proxima_acao: "", proxima_data: "", obs: "" } : contratante(Number(id));
     if (!c) { tela.innerHTML = '<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">Contratante não encontrado.</p>'; return; }
     const w = whats(c.telefone);
     const seus = novo ? [] : D.shows.filter((s) => s.contratante_id === c.id).sort((a, b) => (b.data || "").localeCompare(a.data || ""));
@@ -408,9 +409,12 @@ a.item:active { transform: scale(.995); }
         ${c.instagram ? `<a class="btn btn-sec" href="https://instagram.com/${encodeURIComponent(c.instagram)}" target="_blank" rel="noopener">Instagram</a>` : ""}
         <a class="btn btn-sec" href="#show/novo?c=${c.id}">Novo show</a></div>`}
       <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
-        <label class="c6">Nome da casa, evento ou empresa<input name="nome" value="${esc(c.nome)}" required autocomplete="off"></label>
-        <label>Tipo<select name="tipo">${opcoes(TIPOS, c.tipo)}</select></label>
-        <label>Cidade<input name="cidade" value="${esc(c.cidade)}" placeholder="Betim" autocomplete="off"></label>
+        <label class="c6">Nome da casa, restaurante, evento ou empresa<input name="nome" value="${esc(c.nome)}" required autocomplete="off"></label>
+        <label class="c2">Tipo<select name="tipo">${opcoes(TIPOS, c.tipo)}</select></label>
+        <label class="c4">Endereço (rua, número e complemento)<input name="endereco" value="${esc(c.endereco || "")}" placeholder="Rua do Rosário, 120, loja 2" autocomplete="off"></label>
+        <label class="c2">Bairro<input name="bairro" value="${esc(c.bairro || "")}" placeholder="Centro" autocomplete="off"></label>
+        <label class="c2">Cidade<input name="cidade" value="${esc(c.cidade)}" placeholder="Betim" autocomplete="off"></label>
+        <label class="c2">CEP<input name="cep" value="${esc(c.cep || "")}" placeholder="32600-000" inputmode="numeric" autocomplete="off"></label>
         <label class="c2">Pessoa de contato<input name="contato" value="${esc(c.contato)}" autocomplete="off"></label>
         <label class="c2">Telefone ou WhatsApp<input name="telefone" type="tel" value="${esc(c.telefone)}" placeholder="(31) 9..." autocomplete="off"></label>
         <label class="c2">Instagram<input name="instagram" value="${esc(c.instagram)}" placeholder="@casa" autocomplete="off"></label>

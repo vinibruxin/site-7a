@@ -1,21 +1,32 @@
 // Sistema de gestão da 7A: contratantes (funil), notas, shows com cachê e repasse, e ajustes.
 // Tudo fica no D1 (binding DB). As rotas abaixo exigem login, exceto pedidoDoSite (formulário público).
 
-import { ESQUEMA } from "./esquema.js";
+import { ESQUEMA, COLUNAS_NOVAS } from "./esquema.js";
 
 export const ETAPAS = ["contatar", "contatado", "negociando", "fechado", "perdido"];
-export const TIPOS = ["casa", "festival", "evento", "empresa", "particular", "outro"];
+export const TIPOS = ["casa", "restaurante", "festival", "evento", "empresa", "particular", "outro"];
 export const STATUS = ["consulta", "reservado", "confirmado", "realizado", "cancelado"];
 const NOMES_ETAPA = { contatar: "A contatar", contatado: "Contatado", negociando: "Negociando", fechado: "Fechado", perdido: "Perdido" };
 const NOMES_STATUS = { consulta: "Consulta", reservado: "Reservado", confirmado: "Confirmado", realizado: "Realizado", cancelado: "Cancelado" };
 
-const CAMPOS_CONTRATANTE = ["nome", "tipo", "contato", "telefone", "email", "instagram", "cidade", "etapa", "proxima_acao", "proxima_data", "obs"];
+const CAMPOS_CONTRATANTE = ["nome", "tipo", "contato", "telefone", "email", "instagram", "endereco", "bairro", "cep", "cidade", "etapa", "proxima_acao", "proxima_data", "obs"];
 const CAMPOS_SHOW = ["data", "hora", "artista", "artista_texto", "contratante_id", "evento", "local", "cidade", "status", "cache", "pct", "despesas", "recebido", "repassado", "publicar", "link", "obs"];
 
 let pronto = null;
 export function prepararBanco(env) {
-  if (!pronto) pronto = env.DB.batch(ESQUEMA.map((s) => env.DB.prepare(s))).catch((e) => { pronto = null; throw e; });
+  if (!pronto) pronto = env.DB.batch(ESQUEMA.map((s) => env.DB.prepare(s)))
+    .then(() => completarColunas(env))
+    .catch((e) => { pronto = null; throw e; });
   return pronto;
+}
+
+// colunas que entraram depois da primeira versão: acrescenta nas tabelas que já existem
+async function completarColunas(env) {
+  for (const [tabela, colunas] of Object.entries(COLUNAS_NOVAS)) {
+    const { results } = await env.DB.prepare(`PRAGMA table_info(${tabela})`).all();
+    const tem = new Set(results.map((r) => r.name));
+    for (const c of colunas) if (!tem.has(c)) await env.DB.prepare(`ALTER TABLE ${tabela} ADD COLUMN ${c} TEXT NOT NULL DEFAULT ''`).run();
+  }
 }
 
 const agora = () => new Date().toISOString();
@@ -43,6 +54,9 @@ function limparContratante(c) {
     telefone: txt(c?.telefone, 40),
     email: txt(c?.email, 160),
     instagram: txt(c?.instagram, 80).replace(/^@/, ""),
+    endereco: txt(c?.endereco, 200),
+    bairro: txt(c?.bairro, 80),
+    cep: txt(c?.cep, 12),
     cidade: txt(c?.cidade, 80),
     etapa: ETAPAS.includes(c?.etapa) ? c.etapa : "contatar",
     proxima_acao: txt(c?.proxima_acao, 200),
@@ -242,8 +256,8 @@ async function exportar(env, req, qual) {
   let linhas;
   if (qual === "contratantes.csv") {
     const { results } = await env.DB.prepare("SELECT * FROM contratantes ORDER BY nome").all();
-    linhas = [["Nome", "Tipo", "Contato", "Telefone", "E-mail", "Instagram", "Cidade", "Etapa", "Próxima ação", "Data da próxima ação", "Origem", "Observações", "Criado em"]];
-    for (const c of results) linhas.push([c.nome, c.tipo, c.contato, c.telefone, c.email, c.instagram, c.cidade, NOMES_ETAPA[c.etapa] || c.etapa, c.proxima_acao, c.proxima_data, c.origem === "site" ? "Site" : "Manual", c.obs, c.criado.slice(0, 10)]);
+    linhas = [["Nome", "Tipo", "Contato", "Telefone", "E-mail", "Instagram", "Endereço", "Bairro", "CEP", "Cidade", "Etapa", "Próxima ação", "Data da próxima ação", "Origem", "Observações", "Criado em"]];
+    for (const c of results) linhas.push([c.nome, c.tipo, c.contato, c.telefone, c.email, c.instagram, c.endereco, c.bairro, c.cep, c.cidade, NOMES_ETAPA[c.etapa] || c.etapa, c.proxima_acao, c.proxima_data, c.origem === "site" ? "Site" : "Manual", c.obs, c.criado.slice(0, 10)]);
   } else if (qual === "shows.csv") {
     const [{ results }, config, cs, art] = await Promise.all([
       env.DB.prepare("SELECT * FROM shows ORDER BY data, hora").all(),
