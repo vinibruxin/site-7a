@@ -3,7 +3,7 @@
 // Sem nada salvo no KV, o site mostra o que está em public/ (gerado por ferramentas/gera_artistas.py).
 // O sistema de gestão (/admin/gestao.html) fica em src/gestao.js, com os dados no D1 DB.
 
-import { gestao, pedidoDoSite, showsPublicos } from "./gestao.js";
+import { gestao, pedidoDoSite, propostaPublica, showsPublicos } from "./gestao.js";
 
 const CHAVE = "conteudo";
 const SESSAO_DIAS = 7;
@@ -23,6 +23,15 @@ export default {
       } catch (e) {
         return json({ erro: "Algo deu errado no servidor. Tente de novo." }, 500);
       }
+    }
+
+    // proposta enviada ao contratante: a página é fixa e busca os dados pelo token do endereço
+    if (/^\/proposta\/[a-f0-9]{24}$/.test(p)) {
+      const r = await env.ASSETS.fetch(new Request(new URL("/proposta", req.url)));
+      const h = new Headers(r.headers);
+      h.set("x-robots-tag", "noindex");
+      h.set("cache-control", "no-cache");
+      return new Response(r.body, { status: r.status, headers: h });
     }
 
     const resp = await env.ASSETS.fetch(req);
@@ -219,6 +228,7 @@ async function api(req, env, url) {
   }
   if (rota === "entrar" && metodo === "POST") return entrar(req, env);
   if (rota === "pedido" && metodo === "POST") return pedidoDoSite(req, env);
+  if (rota.startsWith("proposta/") && metodo === "GET") return propostaPublica(req, env, rota.slice("proposta/".length));
   if (rota === "sair" && metodo === "POST") {
     const t = token(req);
     if (t) await env.CONTEUDO.delete("sessao:" + t);

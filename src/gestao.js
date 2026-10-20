@@ -162,6 +162,30 @@ export async function gestao(req, env, rota) {
     return json({ ok: true });
   }
 
+  if (partes[0] === "shows" && partes[2] === "proposta" && id) {
+    if (metodo === "GET") return json((await env.DB.prepare("SELECT * FROM propostas WHERE show_id = ?").bind(id).first()) || {});
+    if (metodo === "PUT") {
+      const show = await env.DB.prepare("SELECT id FROM shows WHERE id = ?").bind(id).first();
+      if (!show) return json({ erro: "Salve o show antes de gerar a proposta." }, 404);
+      const pr = {
+        formato: txt(corpo?.formato, 160),
+        duracao: txt(corpo?.duracao, 160),
+        inclui: txt(corpo?.inclui, 2000),
+        rider: txt(corpo?.rider, 4000),
+        condicoes: txt(corpo?.condicoes, 2000),
+        validade: dataOk(corpo?.validade),
+      };
+      const t = agora();
+      const token = hex(crypto.getRandomValues(new Uint8Array(12)));
+      const linha = await env.DB.prepare(
+        `INSERT INTO propostas (show_id, token, formato, duracao, inclui, rider, condicoes, validade, criado, atualizado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(show_id) DO UPDATE SET formato = excluded.formato, duracao = excluded.duracao, inclui = excluded.inclui, rider = excluded.rider,
+         condicoes = excluded.condicoes, validade = excluded.validade, atualizado = excluded.atualizado RETURNING *`
+      ).bind(id, token, pr.formato, pr.duracao, pr.inclui, pr.rider, pr.condicoes, pr.validade, t, t).first();
+      return json(linha);
+    }
+  }
+
   if (partes[0] === "shows") {
     if (metodo === "POST" && partes.length === 1) {
       const s = limparShow(corpo);
@@ -293,6 +317,58 @@ export async function pedidoDoSite(req, env) {
   ]);
   return json({ ok: true });
 }
+
+/* ---------------- proposta (pública, pelo link com token) ---------------- */
+
+// dados de cada artista que o site já mostra nas cartas do casting
+const CASTING = {
+  "ordem-mor": { genero: "Rock autoral", serie: "7A-001", formato: "Banda completa", foto: "/img/ordem-mor.jpg", foco: "50% 100%", claro: true },
+  "sub-rosa": { genero: "Rock progressivo autoral", serie: "7A-002", formato: "Banda completa", foto: "/img/sub-rosa.jpg", foco: "50% 50%" },
+  "ossos-do-banquete": { genero: "Punk rock autoral", serie: "7A-003", formato: "Banda completa", foto: "/img/ossos.jpg", foco: "47% 50%" },
+  "athos-tibaes": { genero: "MPB e pop rock, voz e violão", serie: "7A-004", formato: "Voz e violão", foto: "/img/athos.jpg", foco: "50% 25%" },
+  aenima: { genero: "Clássicos do rock em versões acústicas", serie: "7A-005", formato: "Duo acústico", foto: "/img/aenima.jpg", foco: "50% 30%", claro: true },
+  "dj-ivan-lennon": { genero: "Pop e pop rock na pista", serie: "7A-006", formato: "Cabine de DJ", foto: "/img/dj-ivan.jpg", foco: "55% 40%" },
+};
+
+export async function propostaPublica(req, env, token) {
+  if (!/^[a-f0-9]{24}$/.test(token)) return json({ erro: "Proposta não encontrada." }, 404);
+  await prepararBanco(env);
+  const p = await env.DB.prepare(
+    `SELECT p.*, s.data, s.hora, s.artista, s.artista_texto, s.evento, s.local, s.cidade, s.cache, s.status, c.nome AS contratante, c.contato
+     FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.token = ?`
+  ).bind(token).first();
+  if (!p || p.status === "cancelado") return json({ erro: "Proposta não encontrada." }, 404);
+  let conteudo = await env.CONTEUDO.get("conteudo", "json");
+  if (!conteudo) {
+    const r = await env.ASSETS.fetch(new Request(new URL("/dados/padrao.json", req.url)));
+    conteudo = r.ok ? await r.json() : {};
+  }
+  const a = conteudo.artistas?.[p.artista] || {};
+  const k = CASTING[p.artista] || {};
+  return json({
+    numero: "7A-P-" + String(p.show_id).padStart(4, "0"),
+    emitida: p.atualizado.slice(0, 10),
+    contratante: p.contratante || "",
+    contato: p.contato || "",
+    artista: {
+      slug: CASTING[p.artista] ? p.artista : "",
+      nome: a.nome || p.artista_texto || p.artista,
+      genero: k.genero || "",
+      serie: k.serie || "",
+      foto: k.foto || "",
+      foco: k.foco || "50% 50%",
+      claro: !!k.claro,
+      chamada: a.chamada || "",
+      resumo: (a.resumo || [])[0] || "",
+      destaques: (a.destaques || []).slice(0, 4),
+      formacao: (a.formacao || []).filter((f) => f.nome),
+    },
+    data: p.data, hora: p.hora, evento: p.evento, local: p.local, cidade: p.cidade, cache: p.cache,
+    formato: p.formato, duracao: p.duracao, inclui: p.inclui, rider: p.rider, condicoes: p.condicoes, validade: p.validade,
+  });
+}
+
+const hex = (b) => [...b].map((x) => x.toString(16).padStart(2, "0")).join("");
 
 /* ---------------- agenda pública ---------------- */
 
