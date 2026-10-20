@@ -7,10 +7,10 @@
     "binding": "ASSETS",
     "run_worker_first": true
   },
-  // conteúdo editado no /admin (criado sozinho pelo Cloudflare no primeiro deploy)
-  "kv_namespaces": [{ "binding": "CONTEUDO" }],
+  // conteúdo editado no /admin (KV site-7a-conteudo, conta 7A Produtora)
+  "kv_namespaces": [{ "binding": "CONTEUDO", "id": "f7350dd461f947ef98ee44e22af69280" }],
   // sistema de gestão (contratantes, shows, cachês): banco D1 gratuito, criado sozinho pelo Cloudflare no deploy como o KV; as tabelas são criadas pelo próprio worker
-  "d1_databases": [{ "binding": "DB", "database_name": "site-7a-gestao" }],
+  "d1_databases": [{ "binding": "DB", "database_name": "site-7a-gestao", "database_id": "791e06dc-761e-4ff8-8d72-5a9bcd7f2b9c" }],
   // senha inicial do /admin: só o hash fica aqui; a senha pode ser trocada no próprio /admin
   "vars": {
     "ADMIN_SAL": "e4cc55b3768e141344f94eeeec263467",
