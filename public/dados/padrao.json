@@ -1,5 +1,16 @@
 {
- "agenda": [],
+ "agenda": [
+  {
+   "data": "2026-10-31",
+   "hora": "17:00",
+   "artista": "ossos-do-banquete",
+   "artista_texto": "",
+   "evento": "Falando de Rock",
+   "local": "Teatro Dell'Art",
+   "cidade": "Betim/MG",
+   "link": ""
+  }
+ ],
  "artistas": {
   "ordem-mor": {
    "nome": "Ordem Mor",
