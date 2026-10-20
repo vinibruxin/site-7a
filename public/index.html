@@ -529,7 +529,7 @@ a { color: inherit; }
         </div>
         <div class="mensagem" aria-live="polite"><span>Sua mensagem</span><pre id="previa">Olá, 7A! Quero um orçamento de show.</pre></div>
       </form>
-      <p class="letra-miuda">Prefere ligar ou mandar e-mail? <b>(31) 99223-3295</b> · <b>7a.produtora@gmail.com</b></p>
+      <p class="letra-miuda">A 7A guarda os dados do pedido só para responder sobre o show. Prefere ligar ou mandar e-mail? <b>(31) 99223-3295</b> · <b>7a.produtora@gmail.com</b></p>
     </div>
   </section>
 
@@ -637,6 +637,13 @@ a { color: inherit; }
   form.addEventListener("input", montar);
   form.addEventListener("change", montar);
   form.addEventListener("submit", function (e) { e.preventDefault(); });
+  // guarda o pedido no sistema de gestão da 7A (o WhatsApp abre do mesmo jeito)
+  botao.addEventListener("click", function () {
+    try {
+      fetch("/api/pedido", { method: "POST", keepalive: true, headers: { "content-type": "application/json" },
+        body: JSON.stringify({ artista: v("f-artista"), evento: v("f-evento"), data: v("f-data"), cidade: v("f-cidade"), nome: v("f-nome") }) }).catch(function () {});
+    } catch (e) {}
+  });
   try {
     var pedido = new URLSearchParams(location.search).get("artista");
     if (pedido) { Array.prototype.forEach.call(campoArtista.options, function (o) { if (o.text === pedido) campoArtista.value = o.text; }); }

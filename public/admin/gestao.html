@@ -1,0 +1,665 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#0A0A0A">
+<title>Gestão | 7A Produtora</title>
+<link rel="icon" href="/img/logo-7a.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --preto: #0A0A0A; --vermelho: #B5121B; --vermelho-2: #9A0F17; --offwhite: #F2EFEA; --grafite: #2B2B2B; --grafite-2: #3A3A3A; --cinza: #B8B2AA; --ouro: #F2D27C;
+  --f-display: "Anton", Impact, "Arial Narrow Bold", sans-serif;
+  --f-texto: "Montserrat", "Segoe UI", Arial, sans-serif;
+  --m: max(20px, env(safe-area-inset-left, 0px));
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--preto); }
+body { margin: 0; min-height: 100svh; background: var(--preto); color: var(--offwhite); font: 400 16px/1.5 var(--f-texto); -webkit-font-smoothing: antialiased; }
+[hidden] { display: none !important; }
+button, input, select, textarea { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--ouro); outline-offset: 2px; }
+a { color: inherit; }
+.display { font-family: var(--f-display); font-weight: 400; text-transform: uppercase; line-height: .95; margin: 0; letter-spacing: -0.01em; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* barra de cima */
+.topo { display: flex; align-items: center; gap: 24px; padding: 14px var(--m); background: var(--preto); position: sticky; top: 0; z-index: 20; }
+.topo .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; margin-right: auto; }
+.topo .marca img { width: 34px; height: auto; }
+.topo .marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; }
+.topo .sec { font-weight: 600; font-size: 15px; background: none; border: 0; text-decoration: none; cursor: pointer; padding: 10px 0; }
+.topo .sec:hover { color: var(--cinza); }
+.abas { display: flex; gap: 4px; }
+.abas a { font: 400 30px/1 var(--f-display); text-transform: uppercase; text-decoration: none; color: var(--grafite-2); padding: 6px 10px; transition: color .2s; }
+.abas a:hover { color: var(--cinza); }
+.abas a[aria-current="page"] { color: var(--offwhite); }
+
+/* botões */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 700 15px/1 var(--f-texto); padding: 15px 20px; min-height: 48px; background: var(--vermelho); color: var(--offwhite); border: 0; cursor: pointer; text-decoration: none; transition: transform .15s, background-color .2s; }
+.btn:hover { background: var(--vermelho-2); }
+.btn:active { transform: scale(.97); }
+.btn:disabled { opacity: .55; cursor: wait; }
+.btn-sec { background: var(--grafite); }
+.btn-sec:hover { background: var(--grafite-2); }
+.btn-claro { background: var(--offwhite); color: var(--preto); }
+.btn-claro:hover { background: var(--cinza); }
+.texto-btn { background: none; border: 0; color: var(--cinza); font-weight: 600; font-size: 15px; cursor: pointer; padding: 12px 0; text-decoration: underline; text-underline-offset: 3px; }
+.texto-btn:hover { color: var(--offwhite); }
+.perigo { color: #FF8A8F; }
+
+/* campos */
+label { display: grid; gap: 6px; font-weight: 600; font-size: 14px; color: var(--cinza); align-content: start; }
+input, select, textarea { width: 100%; padding: 13px 14px; min-height: 48px; background: var(--grafite); border: 0; border-radius: 0; color: var(--offwhite); font-size: 16px; }
+input:focus, select:focus, textarea:focus { background: var(--grafite-2); }
+textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
+input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; min-height: 0; accent-color: var(--vermelho); margin: 0; flex: none; }
+.marcar { display: flex; gap: 12px; align-items: center; color: var(--offwhite); font-weight: 500; font-size: 16px; cursor: pointer; }
+.erro { margin: 0; color: #FF8A8F; font-weight: 600; }
+
+/* entrada */
+.entrada { min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.entrada .lado { background: var(--vermelho); padding: 40px var(--m); display: flex; flex-direction: column; justify-content: space-between; gap: 40px; }
+.entrada .lado img { width: 72px; }
+.entrada .lado h1 { font-size: clamp(72px, 10vw, 160px); color: var(--preto); }
+.entrada form { align-self: center; justify-self: center; width: min(420px, 100% - 40px); display: grid; gap: 16px; padding: 48px 0; }
+.entrada form p { margin: 0 0 8px; font-size: 18px; }
+
+/* conteúdo */
+main { padding: 8px var(--m) 160px; max-width: 1180px; }
+.cabeca { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 24px; margin: 24px 0 28px; }
+.cabeca h1 { font-size: clamp(56px, 8vw, 112px); }
+.cabeca p { margin: 10px 0 0; color: var(--cinza); font-size: 17px; }
+h2.display { font-size: clamp(30px, 3.4vw, 44px); margin: 56px 0 16px; }
+.ajuda { margin: 0 0 20px; max-width: 46em; font-size: 16px; }
+.vazio { margin: 0; padding: 24px; background: var(--grafite); font-size: 16px; max-width: 46em; }
+.vazio .btn { margin-top: 16px; }
+
+/* números de hoje */
+.numeros { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 8px; }
+.numeros > div { background: var(--grafite); padding: 20px 20px 22px; display: grid; gap: 10px; align-content: space-between; min-height: 150px; }
+.numeros > div:first-child { background: var(--vermelho); }
+.numeros dt { font-weight: 600; font-size: 15px; }
+.numeros dd { margin: 0; font: 400 clamp(36px, 4.6vw, 64px)/1 var(--f-display); letter-spacing: -0.01em; }
+.numeros small { display: block; font: 500 14px/1.4 var(--f-texto); color: var(--offwhite); opacity: .8; }
+
+/* listas */
+.lista { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 16px; align-items: center; padding: 16px 18px; background: var(--grafite); text-decoration: none; transition: background-color .15s; }
+a.item:hover { background: var(--grafite-2); }
+a.item:active { transform: scale(.995); }
+.item .nome { font-weight: 700; font-size: 18px; line-height: 1.25; overflow-wrap: anywhere; }
+.item .meta { grid-column: 1; color: var(--cinza); font-size: 15px; overflow-wrap: anywhere; }
+.item .lado { grid-row: 1 / span 2; grid-column: 2; display: grid; justify-items: end; gap: 6px; text-align: right; }
+.item .valor { font-weight: 700; font-size: 17px; }
+.atrasado { color: #FF8A8F; font-weight: 700; }
+
+.show-item { grid-template-columns: 64px minmax(0, 1fr) auto; }
+.show-item .quando { grid-row: 1 / span 2; display: grid; justify-items: start; line-height: 1; }
+.show-item .quando .dia { font: 400 40px/1 var(--f-display); }
+.show-item .quando .mes { font-weight: 700; font-size: 14px; color: var(--cinza); margin-top: 4px; }
+.show-item .nome, .show-item .meta { grid-column: 2; }
+.show-item .lado { grid-column: 3; }
+.cancelado .nome { text-decoration: line-through; }
+
+.etiqueta { display: inline-block; font: 700 13px/1 var(--f-texto); padding: 6px 8px; background: var(--grafite-2); color: var(--offwhite); white-space: nowrap; }
+.e-reservado, .e-contatado { background: var(--cinza); color: var(--preto); }
+.e-confirmado, .e-negociando { background: var(--vermelho); }
+.e-realizado, .e-fechado { background: var(--offwhite); color: var(--preto); }
+.e-cancelado, .e-perdido { background: var(--preto); color: var(--cinza); }
+.e-site { background: var(--ouro); color: var(--preto); }
+
+/* filtros */
+.filtros { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin: 0 calc(var(--m) * -1) 16px; padding-left: var(--m); padding-right: var(--m); scrollbar-width: none; }
+.filtros::-webkit-scrollbar { display: none; }
+.filtros button { flex: none; font-weight: 600; font-size: 15px; padding: 11px 14px; min-height: 44px; background: var(--grafite); border: 0; cursor: pointer; white-space: nowrap; transition: background-color .15s; }
+.filtros button:hover { background: var(--grafite-2); }
+.filtros button[aria-pressed="true"] { background: var(--offwhite); color: var(--preto); }
+.filtros .conta { margin-left: 6px; opacity: .7; }
+.busca { display: flex; gap: 8px; margin-bottom: 12px; max-width: 640px; }
+.mes-titulo { font: 400 28px/1 var(--f-display); text-transform: uppercase; margin: 32px 0 10px; }
+.mes-titulo:first-child { margin-top: 0; }
+
+/* ficha (formulário de contratante e de show) */
+.voltar { display: inline-block; font-weight: 600; font-size: 15px; text-decoration: none; color: var(--cinza); padding: 12px 0; margin-top: 8px; }
+.voltar:hover { color: var(--offwhite); }
+.ficha { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px 12px; max-width: 900px; }
+.ficha > * { grid-column: span 3; }
+.ficha .c2 { grid-column: span 2; }
+.ficha .c6 { grid-column: 1 / -1; }
+.acoes-rapidas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
+.salvar-barra { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 14px 0 calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--preto); margin-top: 24px; z-index: 5; }
+.salvar-barra .estado { margin: 0; font-weight: 600; }
+.estado.ok { color: #9BE3A3; }
+.estado.ruim { color: #FF8A8F; }
+.salvar-barra .apagar { margin-left: auto; }
+
+/* conta do show */
+.conta-show { grid-column: 1 / -1; background: var(--grafite); padding: 20px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px 32px; }
+.conta-show dl { margin: 0; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-content: start; }
+.conta-show dt { color: var(--cinza); font-weight: 500; }
+.conta-show dd { margin: 0; font-weight: 700; text-align: right; }
+.conta-show .total dt, .conta-show .total dd { color: var(--offwhite); font: 400 26px/1.1 var(--f-display); text-transform: uppercase; padding-top: 6px; }
+.conta-show .total dd { color: var(--offwhite); }
+.conta-show p { grid-column: 1 / -1; margin: 12px 0 0; color: var(--cinza); font-size: 14px; }
+
+.notas { display: grid; gap: 8px; margin: 16px 0 0; padding: 0; list-style: none; max-width: 900px; }
+.notas li { background: var(--grafite); padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; }
+.notas .quando { color: var(--cinza); font-size: 14px; font-weight: 600; }
+.notas .texto { grid-column: 1 / -1; white-space: pre-wrap; overflow-wrap: anywhere; }
+.notas .texto-btn { padding: 0; font-size: 14px; }
+.nova-nota { display: grid; gap: 8px; max-width: 900px; }
+.nova-nota .btn { justify-self: start; }
+
+.ajustes { display: grid; gap: 20px; max-width: 560px; }
+.radios { display: grid; gap: 12px; }
+
+@media (max-width: 860px) {
+  .numeros { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .numeros > div:first-child { grid-column: 1 / -1; }
+  .conta-show { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+}
+@media (max-width: 760px) {
+  .topo { gap: 16px; }
+  .topo .marca span { font-size: 18px; }
+  /* no celular, as abas viram uma barra fixa embaixo, ao alcance do polegar */
+  .abas { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: var(--grafite); padding: 0 0 env(safe-area-inset-bottom, 0px); gap: 0; }
+  .abas a { flex: 1; text-align: center; font: 600 13px/1 var(--f-texto); text-transform: none; color: var(--cinza); padding: 20px 2px 18px; position: relative; }
+  .abas a[aria-current="page"] { color: var(--offwhite); }
+  .abas a[aria-current="page"]::before { content: ""; position: absolute; left: 22%; right: 22%; top: 0; height: 4px; background: var(--vermelho); }
+  main { padding-bottom: 120px; }
+  .salvar-barra { bottom: calc(57px + env(safe-area-inset-bottom, 0px)); }
+  .entrada { grid-template-columns: minmax(0, 1fr); }
+  .entrada .lado { min-height: 36svh; }
+  .ficha { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .ficha > *, .ficha .c2 { grid-column: 1 / -1; }
+  .ficha .meia { grid-column: span 1; }
+  .numeros > div { min-height: 120px; padding: 16px; }
+  .numeros dd { font-size: 34px; }
+  .numeros > div:first-child dd { font-size: 48px; }
+  .item { padding: 14px 16px; }
+  .show-item { grid-template-columns: 52px minmax(0, 1fr); }
+  .show-item .lado { grid-column: 2; grid-row: auto; justify-items: start; text-align: left; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .show-item .quando .dia { font-size: 34px; }
+  .lista-contratantes .item { grid-template-columns: minmax(0, 1fr); }
+  .lista-contratantes .item .lado { grid-row: auto; grid-column: 1; justify-items: start; text-align: left; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<section class="entrada" id="tela-entrada" hidden>
+  <div class="lado">
+    <img src="/img/logo-7a.png" alt="7A Produtora" width="72" height="85">
+    <h1 class="display">Gestão</h1>
+  </div>
+  <form id="form-entrar">
+    <p>Entre com a senha da 7A para ver contratantes, shows e cachês.</p>
+    <label>Senha<input type="password" id="senha" autocomplete="current-password" required></label>
+    <p class="erro" id="erro-entrar" role="alert" hidden></p>
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+</section>
+
+<div id="tela-app" hidden>
+  <header class="topo">
+    <a class="marca" href="#hoje"><img src="/img/logo-7a.png" alt="" width="34" height="40"><span>7A Gestão</span></a>
+    <nav class="abas" aria-label="Seções">
+      <a href="#hoje" data-aba="hoje">Hoje</a>
+      <a href="#contratantes" data-aba="contratantes">Contratantes</a>
+      <a href="#shows" data-aba="shows">Shows</a>
+      <a href="#ajustes" data-aba="ajustes">Ajustes</a>
+    </nav>
+    <a class="sec" href="/admin/">Editar o site</a>
+    <button class="sec" type="button" id="sair">Sair</button>
+  </header>
+  <main id="tela" aria-live="polite"></main>
+</div>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s);
+  const tela = $("#tela");
+  let D = null;          // { contratantes, shows, config }
+  let artistas = {};     // slug -> nome, vindo do conteúdo do site
+  let sujo = false;      // ficha com mudança não salva
+  const filtro = { etapa: "", busca: "", status: "", passados: false };
+
+  const ETAPAS = [["contatar", "A contatar"], ["contatado", "Contatado"], ["negociando", "Negociando"], ["fechado", "Fechado"], ["perdido", "Perdido"]];
+  const TIPOS = [["casa", "Bar ou casa de show"], ["festival", "Festival"], ["evento", "Evento"], ["empresa", "Empresa"], ["particular", "Festa particular"], ["outro", "Outro"]];
+  const STATUS = [["consulta", "Consulta"], ["reservado", "Reservado"], ["confirmado", "Confirmado"], ["realizado", "Realizado"], ["cancelado", "Cancelado"]];
+  const nomeDe = (lista, k) => (lista.find((x) => x[0] === k) || [k, k])[1];
+  const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+  const DIAS = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const hoje = () => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date());
+  const dia = (d) => { const [a, m, x] = d.split("-").map(Number); return new Date(Date.UTC(a, m - 1, x)); };
+  const dataCurta = (d) => (d ? d.split("-").reverse().slice(0, 2).join("/") : "");
+  const diasEntre = (a, b) => Math.round((dia(b) - dia(a)) / 86400e3);
+  const moeda = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+  const reais = (c) => (c == null ? "—" : moeda.format(c / 100));
+  // aceita "1.500", "1500,50", "1500.5", "R$ 1.500,00"
+  function centavos(t) {
+    let s = String(t || "").replace(/[^\d,.-]/g, "");
+    if (!s) return 0;
+    if (s.includes(",")) s = s.replace(/\./g, "").replace(",", ".");
+    else if (/\.\d{3}$/.test(s)) s = s.replace(/\./g, "");
+    const n = Math.round(parseFloat(s) * 100);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  }
+  const campoReais = (c) => (c ? (c / 100).toFixed(2).replace(".", ",") : "");
+
+  function api(rota, metodo = "GET", corpo) {
+    return fetch("/api/" + rota, {
+      method: metodo, credentials: "same-origin",
+      headers: corpo ? { "content-type": "application/json" } : {},
+      body: corpo ? JSON.stringify(corpo) : undefined,
+    }).then((r) => r.json().catch(() => ({})).then((j) => { if (j && typeof j === "object") j._status = r.status; return j; }));
+  }
+
+  // mesma conta do servidor (src/gestao.js, função contas)
+  function contas(s) {
+    const c = D.config;
+    const pct = s.pct != null && s.pct !== "" ? Number(s.pct) : c.pct_padrao === "" ? null : Number(c.pct_padrao);
+    const base = c.base === "liquido" ? Math.max(0, s.cache - s.despesas) : s.cache;
+    const comissao = pct == null ? null : Math.round((base * pct) / 100);
+    const repasse = comissao == null ? null : s.cache - s.despesas - comissao;
+    return { pct, comissao, repasse, falta_receber: s.cache - s.recebido, falta_repassar: repasse == null ? null : repasse - s.repassado };
+  }
+  const contratante = (id) => D.contratantes.find((c) => c.id === id);
+  const nomeArtista = (s) => artistas[s.artista] || s.artista_texto || s.artista || "Artista";
+  const soDigitos = (t) => String(t || "").replace(/\D/g, "");
+  function whats(tel) {
+    let d = soDigitos(tel);
+    if (!d) return "";
+    if (d.length <= 11) d = "55" + d.replace(/^0/, "");
+    return "https://wa.me/" + d;
+  }
+
+  /* ---------- entrada ---------- */
+  function mostrarEntrada() { $("#tela-entrada").hidden = false; $("#tela-app").hidden = true; $("#senha").focus(); }
+  $("#form-entrar").addEventListener("submit", (ev) => {
+    ev.preventDefault();
+    const erro = $("#erro-entrar"); erro.hidden = true;
+    api("entrar", "POST", { senha: $("#senha").value }).then((r) => {
+      if (r.ok) { $("#senha").value = ""; abrir(); }
+      else { erro.textContent = r.erro || "Não deu para entrar."; erro.hidden = false; }
+    });
+  });
+  $("#sair").addEventListener("click", () => api("sair", "POST").then(() => { sujo = false; location.hash = ""; location.reload(); }));
+
+  function abrir() {
+    Promise.all([api("gestao/dados"), api("conteudo")]).then(([dados, conteudo]) => {
+      if (dados._status === 401) return mostrarEntrada();
+      if (!dados.contratantes) { tela.innerHTML = '<p class="vazio">Não deu para carregar os dados. Recarregue a página.</p>'; return; }
+      D = dados;
+      artistas = {};
+      for (const [s, a] of Object.entries(conteudo.artistas || {})) artistas[s] = a.nome;
+      $("#tela-entrada").hidden = true; $("#tela-app").hidden = false;
+      rota();
+    });
+  }
+
+  /* ---------- rotas pelo endereço (o botão voltar do celular funciona) ---------- */
+  window.addEventListener("hashchange", () => {
+    if (sujo && !confirm("Sair sem salvar as mudanças?")) { history.pushState(null, "", ultimo); return; }
+    sujo = false; rota();
+  });
+  window.addEventListener("beforeunload", (ev) => { if (sujo) { ev.preventDefault(); ev.returnValue = ""; } });
+  let ultimo = "#hoje";
+
+  function rota() {
+    if (!D) return;
+    const h = location.hash || "#hoje";
+    ultimo = h;
+    const [nome, id] = h.slice(1).split("/");
+    const aba = { contratante: "contratantes", show: "shows" }[nome] || nome;
+    document.querySelectorAll("[data-aba]").forEach((a) => (a.dataset.aba === aba ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
+    const telas = { hoje: telaHoje, contratantes: telaContratantes, contratante: () => fichaContratante(id), shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes };
+    (telas[nome] || telaHoje)();
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- hoje ---------- */
+  function telaHoje() {
+    const h = hoje(), d = dia(h);
+    const ativos = D.shows.filter((s) => s.status === "confirmado" || s.status === "realizado");
+    const aReceber = ativos.reduce((t, s) => t + Math.max(0, s.cache - s.recebido), 0);
+    const aRepassar = ativos.reduce((t, s) => { const k = contas(s); return t + Math.max(0, k.falta_repassar || 0); }, 0);
+    const mes = h.slice(0, 7);
+    const doMes = ativos.filter((s) => s.data.startsWith(mes));
+    const comissaoMes = doMes.reduce((t, s) => t + (contas(s).comissao || 0), 0);
+    const semPct = D.config.pct_padrao === "" && doMes.some((s) => s.pct == null);
+
+    const fazer = D.contratantes
+      .filter((c) => c.proxima_data && c.proxima_data <= h && c.etapa !== "fechado" && c.etapa !== "perdido")
+      .sort((a, b) => a.proxima_data.localeCompare(b.proxima_data));
+    const proximos = D.shows.filter((s) => s.data && s.data >= h && s.status !== "cancelado" && diasEntre(h, s.data) <= 60);
+
+    tela.innerHTML = `
+      <div class="cabeca"><div><h1 class="display">Hoje</h1><p>${DIAS[d.getUTCDay()]}, ${d.getUTCDate()} de ${MESES[d.getUTCMonth()]}</p></div>
+        <a class="btn" href="#contratante/novo">Novo contratante</a></div>
+      <dl class="numeros">
+        <div><dt>A receber dos contratantes</dt><dd class="num">${reais(aReceber)}</dd><small>Shows confirmados e realizados</small></div>
+        <div><dt>A repassar aos artistas</dt><dd class="num">${D.config.pct_padrao === "" && aRepassar === 0 && ativos.length ? "—" : reais(aRepassar)}</dd></div>
+        <div><dt>Comissão 7A em ${MESES[d.getUTCMonth()]}</dt><dd class="num">${semPct ? "—" : reais(comissaoMes)}</dd>${semPct ? '<small>Defina o % da 7A em <a href="#ajustes">Ajustes</a></small>' : ""}</div>
+      </dl>
+      <h2 class="display">Para fazer hoje</h2>
+      ${fazer.length ? `<ul class="lista lista-contratantes">${fazer.map((c) => itemContratante(c, true)).join("")}</ul>`
+        : `<p class="vazio">${D.contratantes.length ? "Nenhuma ação marcada para hoje. Abra um contratante e marque a próxima ação com data." : "Ainda não há contratantes. Comece pelas casas, festivais e eventos que a 7A quer abordar, um por um, com a próxima ação e a data."}${D.contratantes.length ? "" : '<br><a class="btn" href="#contratante/novo">Cadastrar o primeiro</a>'}</p>`}
+      <h2 class="display">Próximos shows</h2>
+      ${proximos.length ? `<ul class="lista">${proximos.map(itemShow).join("")}</ul>` : '<p class="vazio">Nenhum show nos próximos 60 dias. Quando uma data for pedida, cadastre como consulta em <a href="#show/novo">Novo show</a>.</p>'}`;
+  }
+
+  /* ---------- contratantes ---------- */
+  function itemContratante(c, comAcao) {
+    const h = hoje();
+    const atraso = c.proxima_data && c.proxima_data < h ? diasEntre(c.proxima_data, h) : 0;
+    const quando = !c.proxima_data ? "" : atraso ? `<span class="atrasado">${atraso === 1 ? "Desde ontem" : `Há ${atraso} dias`}</span>` : c.proxima_data === h ? "<span>Hoje</span>" : `<span>${dataCurta(c.proxima_data)}</span>`;
+    const meta = comAcao && c.proxima_acao ? esc(c.proxima_acao) : [nomeDe(TIPOS, c.tipo), c.cidade].filter(Boolean).map(esc).join(" · ");
+    return `<li><a class="item" href="#contratante/${c.id}">
+      <span class="nome">${esc(c.nome)}</span>
+      <span class="lado">${c.origem === "site" && c.etapa === "contatar" ? '<span class="etiqueta e-site">Pedido do site</span>' : `<span class="etiqueta e-${c.etapa}">${nomeDe(ETAPAS, c.etapa)}</span>`}${quando}</span>
+      <span class="meta">${meta || "&nbsp;"}</span></a></li>`;
+  }
+
+  function telaContratantes() {
+    const conta = (e) => D.contratantes.filter((c) => !e || c.etapa === e).length;
+    const b = filtro.busca.toLowerCase();
+    const lista = D.contratantes
+      .filter((c) => (!filtro.etapa || c.etapa === filtro.etapa) && (!b || [c.nome, c.cidade, c.contato].join(" ").toLowerCase().includes(b)))
+      .sort((x, y) => (x.proxima_data || "9999").localeCompare(y.proxima_data || "9999") || x.nome.localeCompare(y.nome, "pt-BR"));
+    tela.innerHTML = `
+      <div class="cabeca"><h1 class="display">Contratantes</h1><a class="btn" href="#contratante/novo">Novo contratante</a></div>
+      <div class="filtros" role="group" aria-label="Etapa do funil">
+        <button type="button" data-etapa="" aria-pressed="${!filtro.etapa}">Todos<span class="conta">${conta("")}</span></button>
+        ${ETAPAS.map(([k, n]) => `<button type="button" data-etapa="${k}" aria-pressed="${filtro.etapa === k}">${n}<span class="conta">${conta(k)}</span></button>`).join("")}
+      </div>
+      <div class="busca"><input type="search" id="busca" placeholder="Buscar por nome, cidade ou contato" value="${esc(filtro.busca)}" aria-label="Buscar contratante"></div>
+      <div id="resultado">${lista.length ? `<ul class="lista lista-contratantes">${lista.map((c) => itemContratante(c)).join("")}</ul>`
+        : `<p class="vazio">${D.contratantes.length ? "Nenhum contratante nesta etapa." : "Nenhum contratante ainda. Cadastre cada casa, festival, evento ou empresa que a 7A vai abordar."}</p>`}</div>`;
+    tela.querySelectorAll("[data-etapa]").forEach((x) => x.addEventListener("click", () => { filtro.etapa = x.dataset.etapa; telaContratantes(); }));
+    const busca = $("#busca");
+    busca.addEventListener("input", () => { filtro.busca = busca.value; const pos = busca.selectionStart; telaContratantes(); const n = $("#busca"); n.focus(); n.setSelectionRange(pos, pos); });
+  }
+
+  const opcoes = (lista, sel) => lista.map(([k, n]) => `<option value="${k}"${k === sel ? " selected" : ""}>${esc(n)}</option>`).join("");
+
+  function fichaContratante(id) {
+    const novo = id === "novo";
+    const c = novo ? { nome: "", tipo: "casa", contato: "", telefone: "", email: "", instagram: "", cidade: "", etapa: "contatar", proxima_acao: "", proxima_data: "", obs: "" } : contratante(Number(id));
+    if (!c) { tela.innerHTML = '<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">Contratante não encontrado.</p>'; return; }
+    const w = whats(c.telefone);
+    const seus = novo ? [] : D.shows.filter((s) => s.contratante_id === c.id).sort((a, b) => (b.data || "").localeCompare(a.data || ""));
+    tela.innerHTML = `
+      <a class="voltar" href="#contratantes">Voltar para contratantes</a>
+      <div class="cabeca"><h1 class="display">${novo ? "Novo contratante" : esc(c.nome)}</h1></div>
+      ${novo ? "" : `<div class="acoes-rapidas">
+        ${w ? `<a class="btn" href="${w}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+        ${c.telefone ? `<a class="btn btn-sec" href="tel:${soDigitos(c.telefone)}">Ligar</a>` : ""}
+        ${c.email ? `<a class="btn btn-sec" href="mailto:${esc(c.email)}">E-mail</a>` : ""}
+        ${c.instagram ? `<a class="btn btn-sec" href="https://instagram.com/${encodeURIComponent(c.instagram)}" target="_blank" rel="noopener">Instagram</a>` : ""}
+        <a class="btn btn-sec" href="#show/novo?c=${c.id}">Novo show</a></div>`}
+      <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
+        <label class="c6">Nome da casa, evento ou empresa<input name="nome" value="${esc(c.nome)}" required autocomplete="off"></label>
+        <label>Tipo<select name="tipo">${opcoes(TIPOS, c.tipo)}</select></label>
+        <label>Cidade<input name="cidade" value="${esc(c.cidade)}" placeholder="Betim" autocomplete="off"></label>
+        <label class="c2">Pessoa de contato<input name="contato" value="${esc(c.contato)}" autocomplete="off"></label>
+        <label class="c2">Telefone ou WhatsApp<input name="telefone" type="tel" value="${esc(c.telefone)}" placeholder="(31) 9..." autocomplete="off"></label>
+        <label class="c2">Instagram<input name="instagram" value="${esc(c.instagram)}" placeholder="@casa" autocomplete="off"></label>
+        <label class="c6">E-mail<input name="email" type="email" value="${esc(c.email)}" autocomplete="off"></label>
+        <label class="c2">Etapa do funil<select name="etapa">${opcoes(ETAPAS, c.etapa)}</select></label>
+        <label class="c2">Próxima ação<input name="proxima_acao" value="${esc(c.proxima_acao)}" placeholder="Mandar o release da Ordem Mor" autocomplete="off"></label>
+        <label class="c2">Quando<input name="proxima_data" type="date" value="${esc(c.proxima_data)}"></label>
+        <label class="c6">Observações<textarea name="obs" rows="3" placeholder="Capacidade, estilo da casa, quem decide, quanto costuma pagar">${esc(c.obs)}</textarea></label>
+      </form>
+      <div class="salvar-barra">
+        <button class="btn" type="button" id="salvar">${novo ? "Cadastrar" : "Salvar"}</button>
+        <p class="estado" id="estado" role="status"></p>
+        ${novo ? "" : '<button class="texto-btn perigo apagar" type="button" id="apagar">Apagar contratante</button>'}
+      </div></div>
+      ${novo ? "" : `
+      <h2 class="display">Histórico</h2>
+      <div class="nova-nota"><label>O que aconteceu<textarea id="texto-nota" rows="2" placeholder="Liguei, pediu proposta para março"></textarea></label><button class="btn btn-sec" type="button" id="anotar">Anotar</button></div>
+      <ul class="notas" id="notas"><li><span class="quando">Carregando...</span></li></ul>
+      <h2 class="display">Shows</h2>
+      ${seus.length ? `<ul class="lista">${seus.map(itemShow).join("")}</ul>` : '<p class="vazio">Nenhum show com este contratante ainda.</p>'}`}`;
+
+    const form = $("#ficha");
+    form.addEventListener("input", () => { sujo = true; estado(""); });
+    $("#salvar").addEventListener("click", () => {
+      const dados = Object.fromEntries(new FormData(form));
+      if (!dados.nome.trim()) { estado("Dê um nome ao contratante.", "ruim"); form.nome.focus(); return; }
+      salvar(novo ? "gestao/contratantes" : "gestao/contratantes/" + c.id, novo ? "POST" : "PUT", dados, (r) => {
+        if (novo) D.contratantes.unshift(r); else Object.assign(c, r);
+        sujo = false;
+        if (novo) location.hash = "#contratante/" + r.id; else estado("Salvo.", "ok");
+      });
+    });
+    if (novo) { form.nome.focus(); return; }
+    $("#apagar").addEventListener("click", () => {
+      if (!confirm(`Apagar ${c.nome} e todo o histórico? Os shows ficam, sem contratante.`)) return;
+      api("gestao/contratantes/" + c.id, "DELETE").then((r) => {
+        if (!r.ok) return estado(r.erro || "Não deu para apagar.", "ruim");
+        D.contratantes = D.contratantes.filter((x) => x.id !== c.id);
+        D.shows.forEach((s) => { if (s.contratante_id === c.id) s.contratante_id = null; });
+        sujo = false; location.hash = "#contratantes";
+      });
+    });
+    const desenharNotas = (lista) => {
+      $("#notas").innerHTML = lista.length ? lista.map((n) => `<li data-n="${n.id}"><span class="quando">${new Date(n.criado).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span><button class="texto-btn" type="button" data-tirar>Apagar</button><span class="texto">${esc(n.texto)}</span></li>`).join("")
+        : '<li><span class="texto">Nada anotado ainda. Registre cada contato para saber onde a conversa parou.</span></li>';
+    };
+    let notas = [];
+    api(`gestao/contratantes/${c.id}/notas`).then((r) => { notas = Array.isArray(r) ? r : []; desenharNotas(notas); });
+    $("#anotar").addEventListener("click", () => {
+      const t = $("#texto-nota");
+      if (!t.value.trim()) { t.focus(); return; }
+      api(`gestao/contratantes/${c.id}/notas`, "POST", { texto: t.value }).then((r) => {
+        if (!r.id) return estado(r.erro || "Não deu para anotar.", "ruim");
+        notas.unshift(r); t.value = ""; desenharNotas(notas);
+      });
+    });
+    $("#notas").addEventListener("click", (ev) => {
+      if (!ev.target.hasAttribute("data-tirar")) return;
+      const li = ev.target.closest("[data-n]"), nid = Number(li.dataset.n);
+      if (!confirm("Apagar esta anotação?")) return;
+      api("gestao/notas/" + nid, "DELETE").then((r) => { if (r.ok) { notas = notas.filter((n) => n.id !== nid); desenharNotas(notas); } });
+    });
+  }
+
+  /* ---------- shows ---------- */
+  function itemShow(s) {
+    const c = contratante(s.contratante_id);
+    const onde = [s.evento, s.local || (c && c.nome), s.cidade].filter(Boolean).map(esc).join(" · ");
+    const quando = s.data ? `<span class="dia num">${s.data.slice(8)}</span><span class="mes">${MESES[Number(s.data.slice(5, 7)) - 1].slice(0, 3)}</span>` : '<span class="mes">Sem data</span>';
+    return `<li><a class="item show-item${s.status === "cancelado" ? " cancelado" : ""}" href="#show/${s.id}">
+      <span class="quando">${quando}</span>
+      <span class="nome">${esc(nomeArtista(s))}</span>
+      <span class="lado"><span class="etiqueta e-${s.status}">${nomeDe(STATUS, s.status)}</span>${s.cache ? `<span class="valor num">${reais(s.cache)}</span>` : ""}</span>
+      <span class="meta">${onde || "&nbsp;"}</span></a></li>`;
+  }
+
+  function telaShows() {
+    const h = hoje();
+    const conta = (st) => D.shows.filter((s) => (!st || s.status === st) && (filtro.passados || !s.data || s.data >= h)).length;
+    const lista = D.shows
+      .filter((s) => (!filtro.status || s.status === filtro.status) && (filtro.passados || !s.data || s.data >= h))
+      .sort((a, b) => filtro.passados ? (b.data || "9").localeCompare(a.data || "9") : (a.data || "9").localeCompare(b.data || "9"));
+    let html = "", mesAtual = null;
+    for (const s of lista) {
+      const m = s.data ? s.data.slice(0, 7) : "sem";
+      if (m !== mesAtual) {
+        if (mesAtual !== null) html += "</ul>";
+        html += `<h2 class="mes-titulo">${m === "sem" ? "Sem data" : MESES[Number(m.slice(5)) - 1] + (m.slice(0, 4) !== h.slice(0, 4) ? " " + m.slice(0, 4) : "")}</h2><ul class="lista">`;
+        mesAtual = m;
+      }
+      html += itemShow(s);
+    }
+    if (mesAtual !== null) html += "</ul>";
+    tela.innerHTML = `
+      <div class="cabeca"><h1 class="display">Shows</h1><a class="btn" href="#show/novo">Novo show</a></div>
+      <div class="filtros" role="group" aria-label="Status do show">
+        <button type="button" data-status="" aria-pressed="${!filtro.status}">Todos<span class="conta">${conta("")}</span></button>
+        ${STATUS.map(([k, n]) => `<button type="button" data-status="${k}" aria-pressed="${filtro.status === k}">${n}<span class="conta">${conta(k)}</span></button>`).join("")}
+      </div>
+      <p><label class="marcar"><input type="checkbox" id="passados"${filtro.passados ? " checked" : ""}> Mostrar shows que já passaram</label></p>
+      ${html || `<p class="vazio">${D.shows.length ? "Nenhum show com esse filtro." : "Nenhum show ainda. Cadastre cada pedido de data como consulta e vá mudando o status até realizado."}</p>`}`;
+    tela.querySelectorAll("[data-status]").forEach((x) => x.addEventListener("click", () => { filtro.status = x.dataset.status; telaShows(); }));
+    $("#passados").addEventListener("change", (ev) => { filtro.passados = ev.target.checked; telaShows(); });
+  }
+
+  function fichaShow(id) {
+    const [chave, query] = String(id || "").split("?");
+    const novo = chave === "novo";
+    const doContratante = novo ? Number(new URLSearchParams(query || "").get("c")) || null : null;
+    const base = contratante(doContratante);
+    const s = novo
+      ? { data: "", hora: "", artista: Object.keys(artistas)[0] || "", artista_texto: "", contratante_id: doContratante, evento: "", local: base ? base.nome : "", cidade: base ? base.cidade : "", status: "consulta", cache: 0, pct: D.config.pct_padrao === "" ? null : Number(D.config.pct_padrao), despesas: 0, recebido: 0, repassado: 0, publicar: 1, link: "", obs: "" }
+      : D.shows.find((x) => x.id === Number(chave));
+    if (!s) { tela.innerHTML = '<a class="voltar" href="#shows">Voltar para shows</a><p class="vazio">Show não encontrado.</p>'; return; }
+    const listaArt = [...Object.entries(artistas), ["", "Outro artista"]];
+    const listaCont = [["", "Sem contratante"], ...D.contratantes.slice().sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")).map((c) => [String(c.id), c.nome])];
+    const voltar = doContratante ? `#contratante/${doContratante}` : "#shows";
+    tela.innerHTML = `
+      <a class="voltar" href="${voltar}">${doContratante ? "Voltar para " + esc(base ? base.nome : "o contratante") : "Voltar para shows"}</a>
+      <div class="cabeca"><h1 class="display">${novo ? "Novo show" : esc(nomeArtista(s))}</h1></div>
+      <form class="ficha" id="ficha" novalidate>
+        <label>Artista<select name="artista">${opcoes(listaArt, s.artista)}</select></label>
+        <label id="outro"${s.artista ? " hidden" : ""}>Nome do artista<input name="artista_texto" value="${esc(s.artista_texto)}" autocomplete="off"></label>
+        <label>Status<select name="status">${opcoes(STATUS, s.status)}</select></label>
+        <label class="meia">Data<input name="data" type="date" value="${esc(s.data)}"></label>
+        <label class="meia">Hora<input name="hora" type="time" value="${esc(s.hora)}"></label>
+        <label class="c6">Contratante<select name="contratante_id">${opcoes(listaCont, s.contratante_id ? String(s.contratante_id) : "")}</select></label>
+        <label class="c2">Nome do evento<input name="evento" value="${esc(s.evento)}" placeholder="Opcional" autocomplete="off"></label>
+        <label class="c2">Local<input name="local" value="${esc(s.local)}" autocomplete="off"></label>
+        <label class="c2">Cidade<input name="cidade" value="${esc(s.cidade)}" placeholder="Betim, MG" autocomplete="off"></label>
+        <label class="meia">Cachê (R$)<input name="cache" inputmode="decimal" value="${campoReais(s.cache)}" placeholder="0,00" autocomplete="off"></label>
+        <label class="meia">% da 7A<input name="pct" inputmode="decimal" value="${s.pct == null ? "" : String(s.pct).replace(".", ",")}" placeholder="${D.config.pct_padrao === "" ? "Defina em Ajustes" : "Padrão: " + String(D.config.pct_padrao).replace(".", ",")}" autocomplete="off"></label>
+        <label class="c2 meia" title="Transporte, som, hospedagem">Despesas (R$)<input name="despesas" inputmode="decimal" value="${campoReais(s.despesas)}" placeholder="Transporte, som, hospedagem" autocomplete="off"></label>
+        <label class="c2 meia">Recebido (R$)<input name="recebido" inputmode="decimal" value="${campoReais(s.recebido)}" placeholder="0,00" autocomplete="off"></label>
+        <label class="c2 meia">Repassado (R$)<input name="repassado" inputmode="decimal" value="${campoReais(s.repassado)}" placeholder="0,00" autocomplete="off"></label>
+        <div class="conta-show" id="conta" aria-live="polite"></div>
+        <label class="c6 marcar"><input type="checkbox" name="publicar"${s.publicar ? " checked" : ""}> Mostrar na agenda do site quando estiver confirmado</label>
+        <label class="c6">Link de ingressos<input name="link" type="url" value="${esc(s.link)}" placeholder="https://" autocomplete="off"></label>
+        <label class="c6">Observações<textarea name="obs" rows="3" placeholder="Horário de passagem de som, rider, forma de pagamento">${esc(s.obs)}</textarea></label>
+      </form>
+      <div class="salvar-barra">
+        <button class="btn" type="button" id="salvar">${novo ? "Cadastrar show" : "Salvar"}</button>
+        <p class="estado" id="estado" role="status"></p>
+        ${novo ? "" : '<button class="texto-btn perigo apagar" type="button" id="apagar">Apagar show</button>'}
+      </div>`;
+
+    const form = $("#ficha");
+    const ler = () => {
+      const f = Object.fromEntries(new FormData(form));
+      const pct = f.pct.trim() === "" ? null : Number(f.pct.replace(",", "."));
+      return { ...f, contratante_id: f.contratante_id ? Number(f.contratante_id) : null, cache: centavos(f.cache), despesas: centavos(f.despesas), recebido: centavos(f.recebido), repassado: centavos(f.repassado), pct, publicar: form.publicar.checked ? 1 : 0, artista_texto: f.artista ? "" : f.artista_texto || "" };
+    };
+    const desenharConta = () => {
+      const x = ler(), k = contas(x);
+      const pctTxt = k.pct == null ? "" : ` (${String(k.pct).replace(".", ",")}%)`;
+      $("#conta").innerHTML = `
+        <dl>
+          <dt>Cachê</dt><dd class="num">${reais(x.cache)}</dd>
+          <dt>Despesas</dt><dd class="num">− ${reais(x.despesas)}</dd>
+          <dt>Comissão 7A${pctTxt}</dt><dd class="num">${k.comissao == null ? "Falta o %" : "− " + reais(k.comissao)}</dd>
+          <dt class="total">Repasse ao artista</dt><dd class="total num">${reais(k.repasse)}</dd>
+        </dl>
+        <dl>
+          <dt>Falta receber</dt><dd class="num">${reais(k.falta_receber)}</dd>
+          <dt>Falta repassar</dt><dd class="num">${reais(k.falta_repassar)}</dd>
+        </dl>
+        <p>A comissão é calculada sobre ${D.config.base === "liquido" ? "o cachê menos as despesas" : "o cachê bruto"}. Dá para mudar em <a href="#ajustes">Ajustes</a>.</p>`;
+    };
+    desenharConta();
+    form.addEventListener("input", (ev) => {
+      sujo = true; estado("");
+      if (ev.target.name === "artista") $("#outro").hidden = !!ev.target.value;
+      desenharConta();
+    });
+    form.addEventListener("change", (ev) => {
+      if (ev.target.name === "contratante_id" && novo && ev.target.value) {
+        const c = contratante(Number(ev.target.value));
+        if (c && !form.local.value) form.local.value = c.nome;
+        if (c && !form.cidade.value) form.cidade.value = c.cidade;
+      }
+    });
+    $("#salvar").addEventListener("click", () => {
+      const dados = ler();
+      if (dados.pct != null && !(dados.pct >= 0 && dados.pct <= 100)) { estado("O % da 7A precisa ficar entre 0 e 100.", "ruim"); form.pct.focus(); return; }
+      if (!dados.data && dados.status !== "consulta") { estado("Preencha a data. Só uma consulta pode ficar sem data.", "ruim"); form.data.focus(); return; }
+      if (!dados.artista && !dados.artista_texto.trim()) { estado("Escreva o nome do artista.", "ruim"); form.artista_texto.focus(); return; }
+      salvar(novo ? "gestao/shows" : "gestao/shows/" + s.id, novo ? "POST" : "PUT", dados, (r) => {
+        if (novo) D.shows.push(r); else Object.assign(s, r);
+        sujo = false;
+        if (novo) location.hash = "#show/" + r.id; else estado(r.status === "confirmado" && r.publicar && r.data >= hoje() ? "Salvo. Já aparece na agenda do site." : "Salvo.", "ok");
+      });
+    });
+    if (novo) return;
+    $("#apagar").addEventListener("click", () => {
+      if (!confirm("Apagar este show? Se ele não aconteceu, prefira marcar como cancelado.")) return;
+      api("gestao/shows/" + s.id, "DELETE").then((r) => {
+        if (!r.ok) return estado(r.erro || "Não deu para apagar.", "ruim");
+        D.shows = D.shows.filter((x) => x.id !== s.id);
+        sujo = false; location.hash = "#shows";
+      });
+    });
+  }
+
+  /* ---------- ajustes ---------- */
+  function telaAjustes() {
+    const c = D.config;
+    tela.innerHTML = `
+      <div class="cabeca"><h1 class="display">Ajustes</h1></div>
+      <form class="ajustes" id="ficha" novalidate>
+        <label>% padrão da 7A em cada show<input name="pct_padrao" inputmode="decimal" value="${c.pct_padrao === "" ? "" : String(c.pct_padrao).replace(".", ",")}" placeholder="Ex.: 20" autocomplete="off"></label>
+        <p class="ajuda" style="margin:0">Vale para shows novos e para os que estão sem % próprio. Cada show pode ter um % diferente.</p>
+        <fieldset class="radios" style="border:0;padding:0;margin:0">
+          <legend style="font-weight:600;font-size:14px;color:var(--cinza);margin-bottom:12px">A comissão da 7A é calculada sobre</legend>
+          <label class="marcar"><input type="radio" name="base" value="bruto"${c.base !== "liquido" ? " checked" : ""}> O cachê bruto</label>
+          <label class="marcar"><input type="radio" name="base" value="liquido"${c.base === "liquido" ? " checked" : ""}> O cachê menos as despesas do show</label>
+        </fieldset>
+        <div><button class="btn" type="button" id="salvar">Salvar ajustes</button> <span class="estado" id="estado" role="status"></span></div>
+      </form>
+      <h2 class="display">Planilhas</h2>
+      <p class="ajuda">Baixe tudo para abrir no Excel ou no Google Planilhas. Serve de cópia de segurança e para mandar ao contador.</p>
+      <div class="acoes-rapidas">
+        <a class="btn btn-sec" href="/api/gestao/exportar/contratantes.csv">Baixar contratantes</a>
+        <a class="btn btn-sec" href="/api/gestao/exportar/shows.csv">Baixar shows e cachês</a>
+      </div>`;
+    const form = $("#ficha");
+    form.addEventListener("input", () => { sujo = true; estado(""); });
+    $("#salvar").addEventListener("click", () => {
+      const v = form.pct_padrao.value.trim().replace(",", ".");
+      salvar("gestao/config", "PUT", { pct_padrao: v === "" ? "" : Number(v), base: form.base.value }, (r) => { D.config = r; sujo = false; estado("Salvo.", "ok"); });
+    });
+  }
+
+  /* ---------- comum ---------- */
+  function estado(t, tipo) { const e = $("#estado"); if (e) { e.textContent = t; e.className = "estado" + (tipo ? " " + tipo : ""); } }
+  function salvar(rota, metodo, dados, depois) {
+    const b = $("#salvar"); b.disabled = true; estado("Salvando...");
+    api(rota, metodo, dados).then((r) => {
+      b.disabled = false;
+      if (r._status === 200 && !r.erro) depois(r);
+      else if (r._status === 401) { estado("A sessão expirou. Entre de novo; o que você digitou continua aqui.", "ruim"); $("#tela-entrada").hidden = false; }
+      else estado(r.erro || "Não deu para salvar. Tente de novo.", "ruim");
+    }).catch(() => { b.disabled = false; estado("Sem conexão. Tente de novo.", "ruim"); });
+  }
+  // com a sessão expirada, entrar de novo volta para a mesma tela sem perder o que foi digitado
+  const abrirOriginal = abrir;
+  abrir = function () { if (D) { $("#tela-entrada").hidden = true; } else abrirOriginal(); };
+
+  api("sessao").then((r) => (r.ok ? abrir() : mostrarEntrada())).catch(mostrarEntrada);
+})();
+</script>
+</body>
+</html>

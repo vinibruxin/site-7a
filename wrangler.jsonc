@@ -9,6 +9,8 @@
   },
   // conteúdo editado no /admin (criado sozinho pelo Cloudflare no primeiro deploy)
   "kv_namespaces": [{ "binding": "CONTEUDO" }],
+  // sistema de gestão (contratantes, shows, cachês): banco D1 gratuito; as tabelas são criadas pelo próprio worker
+  "d1_databases": [{ "binding": "DB", "database_name": "site-7a-gestao", "database_id": "37f98e7a-31ed-42ef-b2e9-e9f14faf7825" }],
   // senha inicial do /admin: só o hash fica aqui; a senha pode ser trocada no próprio /admin
   "vars": {
     "ADMIN_SAL": "e4cc55b3768e141344f94eeeec263467",
