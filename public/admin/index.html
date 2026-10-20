@@ -63,9 +63,11 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
 .abas button[aria-selected="true"] { color: var(--offwhite); }
 .ajuda { margin: 8px 0 32px; max-width: 46em; font-size: 17px; }
 
-.linha-show { display: grid; grid-template-columns: 160px 110px minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, .8fr) minmax(0, 1fr) auto; gap: 8px; align-items: end; padding: 16px; background: var(--grafite); margin-bottom: 8px; }
+.linha-show { display: grid; grid-template-columns: 170px 130px minmax(0, 1fr) minmax(0, 1.4fr); grid-auto-flow: dense; gap: 8px; align-items: end; padding: 16px; background: var(--grafite); margin-bottom: 8px; }
 .linha-show input, .linha-show select { background: var(--preto); }
 .linha-show .outro { grid-column: 3 / 4; }
+.linha-show .local { grid-column: 1 / 3; }
+.linha-show .tirar { grid-column: 4; justify-self: end; }
 .passou { opacity: .55; }
 .vazio { margin: 0 0 16px; padding: 28px; background: var(--grafite); font-size: 17px; }
 
@@ -84,7 +86,7 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
 
 @media (max-width: 960px) {
   .linha-show { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .linha-show .outro { grid-column: auto; }
+  .linha-show .outro, .linha-show .local, .linha-show .tirar { grid-column: auto; }
   .linha-show .tirar { justify-self: start; }
 }
 @media (max-width: 760px) {
@@ -221,7 +223,8 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
         '<label>Data<input type="date" data-k="data" value="' + esc(d.data) + '" required></label>' +
         '<label>Hora<input type="time" data-k="hora" value="' + esc(d.hora) + '"></label>' +
         '<label>Artista<select data-k="artista">' + opcoesArtistas(d.artista) + "</select></label>" +
-        '<label>Local<input type="text" data-k="local" value="' + esc(d.local) + '" placeholder="Nome da casa ou evento"></label>' +
+        '<label>Nome do evento (opcional)<input type="text" data-k="evento" value="' + esc(d.evento) + '" placeholder="Ex.: Festival de Inverno"></label>' +
+        '<label class="local">Local<input type="text" data-k="local" value="' + esc(d.local) + '" placeholder="Nome da casa ou evento"></label>' +
         '<label>Cidade<input type="text" data-k="cidade" value="' + esc(d.cidade) + '" placeholder="Betim, MG"></label>' +
         '<label>Link de ingressos<input type="url" data-k="link" value="' + esc(d.link) + '" placeholder="https://"></label>' +
         '<button class="tirar" type="button" data-tirar>Tirar</button>' +
@@ -242,7 +245,7 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
     dados.agenda.splice(i, 1); desenharAgenda(); marcar();
   });
   $("#novo-show").addEventListener("click", function () {
-    dados.agenda.push({ data: "", hora: "", artista: Object.keys(dados.artistas)[0] || "", local: "", cidade: "", link: "" });
+    dados.agenda.push({ data: "", hora: "", artista: Object.keys(dados.artistas)[0] || "", evento: "", local: "", cidade: "", link: "" });
     desenharAgenda(); marcar();
     var linhas = document.querySelectorAll(".linha-show"); var ult = linhas[linhas.length - 1];
     if (ult) { ult.scrollIntoView({ block: "center" }); $("input", ult).focus(); }

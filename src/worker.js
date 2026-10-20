@@ -86,7 +86,7 @@ function itemAgenda(d, conteudo, mostrarArtista) {
   const onde = [d.local, d.cidade].filter(Boolean).map(esc).join(", ");
   return `<li class="data-show">
         <p class="quando"><span class="dia">${String(dia).padStart(2, "0")}</span><span class="mes">${MESES[m - 1]}</span></p>
-        <div class="o-que">${quem}<span class="onde">${onde}</span><span class="hora">${esc(semana)}${d.hora ? ", " + esc(d.hora) : ""}</span></div>
+        <div class="o-que">${quem}${d.evento ? `<span class="evento">${esc(d.evento)}</span>` : ""}<span class="onde">${onde}</span><span class="hora">${esc(semana)}${d.hora ? ", " + esc(d.hora) : ""}</span></div>
         ${ingresso ? `<a class="ingresso" href="${esc(ingresso)}" target="_blank" rel="noopener">Ingressos</a>` : ""}
       </li>`;
 }
@@ -175,6 +175,7 @@ function validar(c) {
     hora: /^\d{2}:\d{2}$/.test(d?.hora || "") ? d.hora : "",
     artista: txt(d?.artista, 60),
     artista_texto: txt(d?.artista_texto, 120),
+    evento: txt(d?.evento, 160),
     local: txt(d?.local, 160),
     cidade: txt(d?.cidade, 80),
     link: linkSeguro(txt(d?.link, 500)),
