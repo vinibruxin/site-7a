@@ -84,7 +84,7 @@ a { color: inherit; }
 .cartaz h1, .cartaz .h1-copia {
   position: absolute; left: 0; right: 0; text-align: center;
   font-size: var(--t-cartaz); line-height: 1.08; letter-spacing: -0.015em;
-  top: calc(var(--seam) - 1.62em);
+  top: calc(var(--seam) - 1.62em + var(--ajuste, 0px));
 }
 .linha { display: block; overflow: hidden; padding-block: .14em .08em; margin-block: -.14em -.08em; }
 .linha > span { display: block; white-space: nowrap; }
@@ -330,9 +330,9 @@ a { color: inherit; }
 }
 @media (max-width: 700px) {
   :root { --t-cartaz: 28vw; --seam: 46%; --m: max(16px, env(safe-area-inset-left, 0px)); --m-r: max(16px, env(safe-area-inset-right, 0px)); }
-  .cartaz { height: 88svh; min-height: 560px; }
-  .cartaz .apoio { font-size: 17px; bottom: 28px; }
-  .foto-colada { width: 34vw; right: 6vw; }
+  .cartaz { height: 80svh; min-height: 540px; }
+  .foto-colada { width: 40vw; right: 5vw; top: calc(var(--seam) + 0.62 * var(--t-cartaz) + 16px); }
+  .cartaz .apoio { top: calc(var(--seam) + 0.62 * var(--t-cartaz) + 16px); bottom: auto; right: auto; width: calc(100% - 45vw - var(--m) - 14px); font-size: 15px; line-height: 1.5; text-wrap: pretty; }
   .casting, .formatos { padding-block: 96px 110px; }
   .grade { grid-template-columns: minmax(0, 1fr); gap: 24px; }
   .artista .peca { max-width: 440px; margin-inline: auto; }
@@ -574,6 +574,32 @@ a { color: inherit; }
   </div>
 </footer>
 
+<script>
+/* Costura do cartaz: mede a fonte real e põe a linha vermelha no meio das letras de "A SÉRIO". */
+(function () {
+  var cartaz = document.querySelector(".cartaz");
+  if (!cartaz) return;
+  var alvos = cartaz.querySelectorAll("h1, .h1-copia");
+  var linha = cartaz.querySelector("h1 .linha:nth-child(2)");
+  var campo = cartaz.querySelector(".campo-baixo");
+  var tela = document.createElement("canvas").getContext("2d");
+  function acerta() {
+    var h1 = alvos[0], cs = getComputedStyle(h1), fs = parseFloat(cs.fontSize);
+    tela.font = "400 " + fs + "px " + cs.fontFamily;
+    var m = tela.measureText("ASRIO");
+    if (!m.fontBoundingBoxAscent) return;
+    var sobe = m.fontBoundingBoxAscent, desce = m.fontBoundingBoxDescent, cap = m.actualBoundingBoxAscent;
+    var meia = (parseFloat(cs.lineHeight) - (sobe + desce)) / 2;
+    var atual = parseFloat(cs.getPropertyValue("--ajuste")) || 0;
+    var base = linha.getBoundingClientRect().top + 0.14 * fs + meia + sobe;
+    var costura = campo.getBoundingClientRect().top;
+    var ajuste = atual + costura - (base - cap / 2);
+    alvos.forEach(function (el) { el.style.setProperty("--ajuste", ajuste.toFixed(1) + "px"); });
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(acerta); else acerta();
+  var espera; window.addEventListener("resize", function () { clearTimeout(espera); espera = setTimeout(acerta, 120); });
+})();
+</script>
 <script>
 (function () {
   // menu: fica preto ao sair da abertura; no celular abre em tela cheia
