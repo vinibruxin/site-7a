@@ -201,6 +201,11 @@ a { color: inherit; }
 .peca .indice.inf { top: auto; left: auto; bottom: 22px; right: 22px; transform: rotate(180deg); }
 .peca .indice i { width: 10px; height: 10px; background: var(--vermelho); transform: rotate(45deg); }
 .peca .info { position: relative; z-index: 1; display: grid; gap: 6px; padding: 16px 26px 26px; background: var(--grafite); }
+/* abinha vermelha no topo da faixa, que anda em 3 posições como na grade do Instagram */
+.peca .info::before { content: ""; position: absolute; top: 0; width: 12.2%; height: 5px; background: var(--vermelho); }
+.peca .info.aba-ini::before { left: 26px; }
+.peca .info.aba-meio::before { left: 50%; transform: translateX(-50%); }
+.peca .info.aba-fim::before { right: 26px; }
 .artista .nome { font: 400 var(--t-sub)/1 var(--f-display); text-transform: uppercase; }
 .artista .papel { margin: 0; font-size: var(--t-nota); color: var(--cinza); line-height: 1.45; }
 .artista .rodape { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 6px 12px; margin-top: 8px; padding-right: 30px; white-space: nowrap; }
@@ -415,7 +420,7 @@ a { color: inherit; }
         <div class="peca">
           <span class="indice">7A<i></i></span>
           <div class="arte fundo-claro"><img src="img/ordem-mor.jpg" alt="Ordem Mor, os cinco integrantes em preto e branco" loading="lazy" width="1000" height="1064" style="object-position:50% 100%"></div>
-          <div class="info"><span class="nome">Ordem Mor</span><p class="papel">Rock autoral</p><div class="rodape"><span class="serial">Série 7A-001</span><span class="pedir">Ver artista</span></div></div>
+          <div class="info aba-ini"><span class="nome">Ordem Mor</span><p class="papel">Rock autoral</p><div class="rodape"><span class="serial">Série 7A-001</span><span class="pedir">Ver artista</span></div></div>
           <span class="indice inf">7A<i></i></span>
         </div>
       </a>
@@ -424,7 +429,7 @@ a { color: inherit; }
         <div class="peca">
           <span class="indice">7A<i></i></span>
           <div class="arte"><img src="img/sub-rosa.jpg" alt="Sub Rosa, foto em preto e branco dos quatro integrantes no palco" loading="lazy" width="526" height="526"></div>
-          <div class="info"><span class="nome">Sub Rosa</span><p class="papel">Rock progressivo autoral</p><div class="rodape"><span class="serial">Série 7A-002</span><span class="pedir">Ver artista</span></div></div>
+          <div class="info aba-meio"><span class="nome">Sub Rosa</span><p class="papel">Rock progressivo autoral</p><div class="rodape"><span class="serial">Série 7A-002</span><span class="pedir">Ver artista</span></div></div>
           <span class="indice inf">7A<i></i></span>
         </div>
       </a>
@@ -433,7 +438,7 @@ a { color: inherit; }
         <div class="peca">
           <span class="indice">7A<i></i></span>
           <div class="arte"><img src="img/ossos.jpg" alt="Ossos do Banquete, foto em preto e branco com a guitarra vermelha" loading="lazy" width="1200" height="800" style="object-position:47% 50%"></div>
-          <div class="info"><span class="nome">Ossos do Banquete</span><p class="papel">Punk rock autoral</p><div class="rodape"><span class="serial">Série 7A-003</span><span class="pedir">Ver artista</span></div></div>
+          <div class="info aba-fim"><span class="nome">Ossos do Banquete</span><p class="papel">Punk rock autoral</p><div class="rodape"><span class="serial">Série 7A-003</span><span class="pedir">Ver artista</span></div></div>
           <span class="indice inf">7A<i></i></span>
         </div>
       </a>
@@ -442,7 +447,7 @@ a { color: inherit; }
         <div class="peca">
           <span class="indice">7A<i></i></span>
           <div class="arte"><img src="img/athos.jpg" alt="Athos Tibães com a guitarra na frente do rosto" loading="lazy" width="800" height="1009" style="object-position:50% 25%"></div>
-          <div class="info"><span class="nome">Athos Tibães</span><p class="papel">MPB e pop rock, voz e violão</p><div class="rodape"><span class="serial">Série 7A-004</span><span class="pedir">Ver artista</span></div></div>
+          <div class="info aba-ini"><span class="nome">Athos Tibães</span><p class="papel">MPB e pop rock, voz e violão</p><div class="rodape"><span class="serial">Série 7A-004</span><span class="pedir">Ver artista</span></div></div>
           <span class="indice inf">7A<i></i></span>
         </div>
       </a>
@@ -451,7 +456,7 @@ a { color: inherit; }
         <div class="peca">
           <span class="indice">7A<i></i></span>
           <div class="arte fundo-claro"><img src="img/aenima.jpg" alt="Ænima: Athos Tibães com a guitarra e Bruno Bizonni com o microfone, foto em preto e branco" loading="lazy" width="599" height="610" style="object-position:50% 30%"></div>
-          <div class="info"><span class="nome">Ænima</span><p class="papel">Athos Tibães e Bruno Bizonni, clássicos do rock em versões acústicas</p><div class="rodape"><span class="serial">Série 7A-005</span><span class="pedir">Ver artista</span></div></div>
+          <div class="info aba-meio"><span class="nome">Ænima</span><p class="papel">Athos Tibães e Bruno Bizonni, clássicos do rock em versões acústicas</p><div class="rodape"><span class="serial">Série 7A-005</span><span class="pedir">Ver artista</span></div></div>
           <span class="indice inf">7A<i></i></span>
         </div>
       </a>
@@ -460,7 +465,7 @@ a { color: inherit; }
         <div class="peca">
           <span class="indice">7A<i></i></span>
           <div class="arte"><img src="img/dj-ivan.jpg" alt="DJ Ivan Lennon de fones na cabine, foto em preto e branco" loading="lazy" width="680" height="690" style="object-position:55% 40%"></div>
-          <div class="info"><span class="nome">DJ Ivan Lennon</span><p class="papel">Pop e pop rock na pista</p><div class="rodape"><span class="serial">Série 7A-006</span><span class="pedir">Ver artista</span></div></div>
+          <div class="info aba-fim"><span class="nome">DJ Ivan Lennon</span><p class="papel">Pop e pop rock na pista</p><div class="rodape"><span class="serial">Série 7A-006</span><span class="pedir">Ver artista</span></div></div>
           <span class="indice inf">7A<i></i></span>
         </div>
       </a>
