@@ -16,5 +16,11 @@
     "ADMIN_SAL": "e4cc55b3768e141344f94eeeec263467",
     "ADMIN_HASH": "cc2027244b89fc5526baccc117ab4fe97bf4be47c5e50d3d4089fe953a779233"
   },
+  // domínio próprio (zona 7aprodutora.com.br na conta 7A Produtora); o endereço workers.dev continua funcionando
+  "workers_dev": true,
+  "routes": [
+    { "pattern": "7aprodutora.com.br", "custom_domain": true },
+    { "pattern": "www.7aprodutora.com.br", "custom_domain": true }
+  ],
   "observability": { "enabled": true }
 }

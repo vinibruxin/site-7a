@@ -75,7 +75,7 @@ A = [
 e = html.escape
 
 # endereço público do site (trocar quando o domínio próprio estiver ligado)
-BASE = "https://site-7a.7a-produtora.workers.dev"
+BASE = "https://7aprodutora.com.br"
 
 CSS = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "artista.css")).read()
 
