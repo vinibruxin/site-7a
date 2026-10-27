@@ -124,15 +124,28 @@ p { margin: 0; }
 }
 
 @page { size: A4; margin: 0; }
+/* impressão e PDF: sempre o layout largo, em duas folhas A4 (o show na primeira, valores e artista na segunda),
+   mesmo quando o PDF é gerado no celular */
 @media print {
   :root { --m: 15mm; }
   html, body { background: var(--preto); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .folha { max-width: none; }
   .so-tela { display: none !important; }
-  .abertura { grid-template-columns: 62mm minmax(0, 1fr); padding: 12mm var(--m) 12mm; gap: 10mm; }
+  .cabeca { padding: 12mm var(--m) 0; align-items: center; }
+  .marca span { display: inline; }
+  .abertura { grid-template-columns: 62mm minmax(0, 1fr); padding: 12mm var(--m) 14mm; gap: 10mm; align-items: end; }
+  .abertura .peca { width: auto; }
   .abertura h1 { font-size: 54px; }
-  .show, .valores, .rider { padding: 10mm var(--m); break-inside: avoid; }
-  .fecho { padding: 10mm var(--m); break-inside: avoid; }
+  .chamada { font-size: 18px; }
+  .show, .valores, .rider { padding: 11mm var(--m) 12mm; break-inside: avoid; }
+  .show h2, .valores h2, .rider h2 { font-size: 34px; margin-bottom: 7mm; }
+  .fatos { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7mm 10mm; }
+  .fatos dd { font-size: 26px; }
+  .valores { break-before: page; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8mm 10mm; }
+  .valores h2 { margin-bottom: 0; }
+  .rider { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 10mm; }
+  .rider .inteiro { margin-top: 7mm; }
+  .fecho { padding: 11mm var(--m); gap: 7mm; break-inside: avoid; }
   .fecho .lema { font-size: 44px; }
 }
 </style>
@@ -227,7 +240,7 @@ p { margin: 0; }
           <a href="https://wa.me/5531992233295" target="_blank" rel="noopener">(31) 99223-3295</a>
           <a href="mailto:7a.produtora@gmail.com">7a.produtora@gmail.com</a>
           <a href="https://instagram.com/7a_produtora" target="_blank" rel="noopener">@7a_produtora</a>
-          <a href="https://7aprodutora.com.br/${a.slug ? esc(a.slug) + ".html" : ""}" target="_blank" rel="noopener">Site da 7A</a>
+          <a href="https://7aprodutora.com.br/${a.slug ? esc(a.slug) + ".html" : ""}" target="_blank" rel="noopener">7aprodutora.com.br</a>
         </div>
         <p class="slogan">Criar, produzir, transformar. 7A Produtora, Betim, MG.</p>
       </footer>
