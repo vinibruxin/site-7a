@@ -621,7 +621,8 @@ a.item:active { transform: scale(.995); }
       </div>
       <div class="ficha" id="caixa-email" hidden>
         <label class="c6">E-mail do contratante<input type="email" id="email-para" autocomplete="off" placeholder="contato@casa.com.br"></label>
-        <label class="c6">Mensagem<textarea id="email-msg" rows="3"></textarea></label>
+        <label class="c6">Recado extra (opcional)<textarea id="email-msg" rows="3" placeholder="Ex.: Temos datas livres em novembro. Se quiser, respondo ainda hoje."></textarea></label>
+        <p class="ajuda c6" style="margin:0">O e-mail já sai com "Olá, nome!", os dados do show, a carta do artista, o botão da proposta e a assinatura. O recado entra antes do fechamento. As respostas vão para contato@7aprodutora.com.br.</p>
         <div class="c6 acoes-rapidas" style="margin:0"><button class="btn" type="button" id="email-enviar">Enviar e-mail</button><button class="texto-btn" type="button" id="email-cancelar">Cancelar</button></div>
       </div>`}`;
 
@@ -769,7 +770,7 @@ a.item:active { transform: scale(.995); }
       if (!D.config.email_ativo) return aviso("O envio por e-mail ainda não está ligado: falta a chave do Resend na Cloudflare.", "ruim");
       const c = contratante(s.contratante_id);
       $("#email-para").value = (c && c.email) || "";
-      $("#email-msg").value = `Olá${c && c.contato ? ", " + c.contato.split(" ")[0] : ""}! Segue a proposta da 7A Produtora para o show de ${nomeArtista(s)}. Qualquer dúvida, é só responder este e-mail ou chamar no WhatsApp.`;
+      $("#email-msg").value = "";
       $("#caixa-email").hidden = false;
       $("#email-para").focus();
     });
