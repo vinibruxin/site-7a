@@ -249,7 +249,60 @@ export async function gestao(req, env, rota) {
 
 // remetente no domínio da 7A (verificado no Resend); as respostas vão para o Gmail da 7A
 const REMETENTE = "7A Produtora <propostas@7aprodutora.com.br>";
-const RESPONDER_PARA = "7a.produtora@gmail.com";
+const RESPONDER_PARA = "contato@7aprodutora.com.br";
+
+// e-mail da proposta: saudação, parágrafos, a carta do artista e o botão (tabelas com estilo em linha, para os clientes de e-mail)
+const SITE = "https://7aprodutora.com.br";
+const DIAS_SEMANA = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+const MESES_LONGOS = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+
+export function montarEmailProposta({ token, artista, slug, contato, data, hora, local, cidade, mensagem }) {
+  const e = (t) => String(t ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const link = SITE + "/proposta/" + token;
+  const nome = (contato || "").trim().split(/\s+/)[0];
+  let quando = "";
+  if (data) {
+    const [a, m, d] = data.split("-").map(Number);
+    quando = `${DIAS_SEMANA[new Date(Date.UTC(a, m - 1, d)).getUTCDay()]}, ${d} de ${MESES_LONGOS[m - 1]}`;
+    if (hora) quando += ` às ${hora.replace(":", "h")}`;
+  }
+  const onde = [local ? `no ${local}` : "", cidade ? `(${cidade})` : ""].filter(Boolean).join(" ");
+  const recado = mensagem ? mensagem.split(/\n\s*\n/).map((t) => t.trim()).filter(Boolean) : [];
+  const paragrafos = [
+    nome ? `Olá, ${nome}!` : "Olá!",
+    `Segue a proposta da 7A Produtora para o show de ${artista}${quando ? ` em ${quando}` : ""}${onde ? ` ${onde}` : ""}.`,
+    ...recado,
+    "Na proposta você encontra o formato, o que está incluso, as condições de pagamento e um botão para salvar em PDF.",
+    "Qualquer dúvida, é só responder este e-mail ou chamar no WhatsApp (31) 99223-3295.",
+    "Um abraço,\nEquipe 7A Produtora",
+  ];
+  const k = CASTING[slug] || {};
+  const foto = k.foto ? `<img src="${SITE}${k.foto}" width="240" alt="${e(artista)}" style="display:block;width:240px;max-width:100%;height:auto;border:0">` : "";
+  const carta = `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="260" style="width:260px;background:#2B2B2B">
+    <tr><td style="padding:10px">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border:1px solid #F2D27C">
+        <tr><td style="padding:12px 12px 0;font:400 22px/1 Impact,'Arial Narrow',sans-serif;color:#F2EFEA">7A<br><span style="color:#B5121B;font-size:12px;line-height:1.4">&#9670;</span></td></tr>
+        <tr><td align="center" style="padding:12px 12px 0">${foto}</td></tr>
+        <tr><td style="padding:14px 14px 0;font:400 34px/1 Impact,'Arial Narrow',sans-serif;text-transform:uppercase;color:#F2EFEA">${e(artista)}</td></tr>
+        ${k.genero ? `<tr><td style="padding:6px 14px 0;font:400 13px/1.4 Montserrat,Arial,sans-serif;color:#B8B2AA">${e(k.genero)}</td></tr>` : ""}
+        <tr><td style="padding:12px 14px 16px;font:700 12px/1 'Courier New',monospace;letter-spacing:.06em;color:#F2EFEA">${k.serie ? `SÉRIE ${e(k.serie)}` : ""}</td></tr>
+      </table>
+    </td></tr>
+  </table>`;
+  const html = `<div style="background:#0A0A0A;padding:32px 20px;font-family:Montserrat,Arial,sans-serif;color:#F2EFEA">
+  <div style="max-width:560px;margin:0 auto">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+      <td style="vertical-align:middle"><img src="${SITE}/img/logo-7a-g.png" width="48" alt="7A" style="display:block;border:0"></td>
+      <td style="vertical-align:middle;padding-left:12px;font:400 24px/1 Impact,'Arial Narrow',sans-serif;text-transform:uppercase;color:#F2EFEA">7A Produtora</td>
+    </tr></table>
+    <div style="margin:32px 0 28px">${paragrafos.map((t) => `<p style="font-size:16px;line-height:1.6;margin:0 0 16px;white-space:pre-line">${e(t)}</p>`).join("")}</div>
+    ${carta}
+    <p style="margin:28px 0 0"><a href="${e(link)}" style="display:inline-block;background:#B5121B;color:#F2EFEA;font-weight:700;font-size:16px;line-height:1;padding:18px 26px;text-decoration:none">Ver a proposta</a></p>
+    <p style="font-size:13px;line-height:1.6;color:#B8B2AA;margin:36px 0 0">(31) 99223-3295 · contato@7aprodutora.com.br<br>7aprodutora.com.br · @7a_produtora<br>Aqui o artista é levado a sério.</p>
+  </div></div>`;
+  const text = `${paragrafos.join("\n\n")}\n\nVer a proposta: ${link}\n\n(31) 99223-3295 · contato@7aprodutora.com.br\n7aprodutora.com.br · @7a_produtora`;
+  return { html, text };
+}
 
 async function enviarProposta(env, req, id, corpo) {
   if (!env.RESEND_API_KEY) return json({ erro: "O envio por e-mail ainda não está ligado. Falta a chave do Resend na Cloudflare." }, 503);
@@ -257,20 +310,12 @@ async function enviarProposta(env, req, id, corpo) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(para)) return json({ erro: "Confira o e-mail do contratante." }, 400);
   const mensagem = txt(corpo?.mensagem, 2000);
   const p = await env.DB.prepare(
-    "SELECT p.token, s.artista, s.artista_texto, s.data, s.contratante_id FROM propostas p JOIN shows s ON s.id = p.show_id WHERE p.show_id = ?"
+    `SELECT p.token, s.artista, s.artista_texto, s.data, s.hora, s.local, s.cidade, s.contratante_id, c.contato AS contato
+     FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.show_id = ?`
   ).bind(id).first();
   if (!p) return json({ erro: "Gere a proposta antes de enviar." }, 404);
   const artista = (await nomesArtistas(env, req))[p.artista] || p.artista_texto || p.artista;
-  const link = new URL("/proposta/" + p.token, req.url).href;
-  const e = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-  const html = `<div style="background:#0A0A0A;padding:32px 20px;font-family:Montserrat,Arial,sans-serif;color:#F2EFEA">
-  <div style="max-width:560px;margin:0 auto">
-    <p style="font:700 20px/1 Impact,'Arial Narrow',sans-serif;text-transform:uppercase;margin:0 0 28px">7A Produtora</p>
-    <p style="font-size:16px;line-height:1.6;margin:0 0 24px;white-space:pre-line">${e(mensagem || `Olá! Segue a proposta da 7A Produtora para o show de ${artista}.`)}</p>
-    <a href="${e(link)}" style="display:inline-block;background:#B5121B;color:#F2EFEA;font-weight:700;font-size:16px;padding:16px 24px;text-decoration:none">Ver a proposta de ${e(artista)}</a>
-    <p style="font-size:14px;line-height:1.6;color:#B8B2AA;margin:28px 0 0">A proposta abre no celular e pode ser salva em PDF.<br>WhatsApp (31) 99223-3295 · 7aprodutora.com.br</p>
-    <p style="font-size:14px;color:#B8B2AA;margin:20px 0 0">Aqui o artista é levado a sério.</p>
-  </div></div>`;
+  const { html, text } = montarEmailProposta({ token: p.token, artista, slug: p.artista, contato: p.contato, data: p.data, hora: p.hora, local: p.local, cidade: p.cidade, mensagem });
   let r;
   try {
     r = await fetch("https://api.resend.com/emails", {
@@ -282,7 +327,7 @@ async function enviarProposta(env, req, id, corpo) {
         reply_to: RESPONDER_PARA,
         subject: `Proposta de show: ${artista} | 7A Produtora`,
         html,
-        text: `${mensagem || `Olá! Segue a proposta da 7A Produtora para o show de ${artista}.`}\n\nVer a proposta: ${link}\n\nWhatsApp (31) 99223-3295 · 7aprodutora.com.br`,
+        text,
       }),
     });
   } catch {
