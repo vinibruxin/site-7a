@@ -7,6 +7,11 @@
 <meta name="theme-color" content="#0A0A0A">
 <title>Gestão | 7A Produtora</title>
 <link rel="icon" href="/img/logo-7a.png">
+<link rel="manifest" href="/admin/manifest.json">
+<link rel="apple-touch-icon" href="/admin/icone-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="7A Gestão">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&display=swap">
@@ -137,7 +142,7 @@ a.item:active { transform: scale(.995); }
 .ficha .c6 { grid-column: 1 / -1; }
 .ficha .dica { display: block; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--cinza); }
 .acoes-rapidas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
-.salvar-barra { position: sticky; bottom: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 10px 0 calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--preto); margin-top: 24px; z-index: 5; }
+.salvar-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 10px 0 calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--preto); margin-top: 24px; z-index: 5; }
 .salvar-barra .estado { margin: 0; font-weight: 600; }
 .estado.ok { color: #9BE3A3; }
 .estado.ruim { color: #FF8A8F; }
@@ -160,6 +165,8 @@ a.item:active { transform: scale(.995); }
 .nova-nota { display: grid; gap: 8px; max-width: 900px; }
 .nova-nota .btn { justify-self: start; }
 
+.marcas { border: 0; padding: 0; margin: 0; display: grid; gap: 12px; }
+.marcas legend { font-weight: 600; font-size: 14px; color: var(--cinza); margin-bottom: 12px; padding: 0; }
 .ajustes { display: grid; gap: 20px; max-width: 560px; }
 .radios { display: grid; gap: 12px; }
 
@@ -179,7 +186,6 @@ a.item:active { transform: scale(.995); }
   .abas a[aria-current="page"] { color: var(--offwhite); }
   .abas a[aria-current="page"]::before { content: ""; position: absolute; left: 22%; right: 22%; top: 0; height: 4px; background: var(--vermelho); }
   main { padding-bottom: 120px; }
-  .salvar-barra { bottom: calc(57px + env(safe-area-inset-bottom, 0px)); }
   .entrada { grid-template-columns: minmax(0, 1fr); }
   .entrada .lado { min-height: 36svh; }
   .ficha { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -592,12 +598,16 @@ a.item:active { transform: scale(.995); }
       <h2 class="display">Proposta</h2>
       <p class="ajuda">Uma página com a marca da 7A, a carta do artista, data, local e cachê deste show. Você manda o link para o contratante, e ele abre no celular ou salva em PDF.</p>
       <form class="ficha" id="ficha-proposta" novalidate>
-        <label>Formato<input name="formato" autocomplete="off" placeholder="Banda completa"></label>
-        <label>Duração<input name="duracao" autocomplete="off" placeholder="Ex.: 2 sets de 1 hora"></label>
-        <label class="c6">O que está incluso (um item por linha)<textarea name="inclui" rows="3" placeholder="Ex.: Equipamento de palco do artista&#10;Transporte em Betim"></textarea></label>
-        <label class="c6">Condições de pagamento<textarea name="condicoes" rows="2" placeholder="Ex.: 50% na confirmação e 50% no dia do show, por Pix"></textarea></label>
-        <label class="c6">Rider técnico (opcional)<textarea name="rider" rows="3" placeholder="O que o local precisa oferecer: som, luz, palco, camarim"></textarea></label>
-        <label class="c2">Válida até<input name="validade" type="date"></label>
+        <label>Formato<select name="formato">${opcoesLivres(PADRAO.formato)}</select></label>
+        <label>Duração<select name="duracao">${opcoesLivres(PADRAO.duracao)}</select></label>
+        <label class="c6 outro-texto" data-outro="formato" hidden>Escreva o formato<input name="formato_outro" autocomplete="off"></label>
+        <label class="c6 outro-texto" data-outro="duracao" hidden>Escreva a duração<input name="duracao_outro" autocomplete="off"></label>
+        <fieldset class="c6 marcas"><legend>O que está incluso</legend>${PADRAO.inclui.map((t) => `<label class="marcar"><input type="checkbox" name="inclui" value="${esc(t)}"> ${esc(t)}</label>`).join("")}</fieldset>
+        <label class="c6">Condições de pagamento<select name="condicoes">${opcoesLivres(PADRAO.condicoes)}</select></label>
+        <label class="c6 outro-texto" data-outro="condicoes" hidden>Escreva as condições<input name="condicoes_outro" autocomplete="off"></label>
+        <fieldset class="c6 marcas"><legend>O contratante oferece</legend>${PADRAO.rider.map((t) => `<label class="marcar"><input type="checkbox" name="rider" value="${esc(t)}"> ${esc(t)}</label>`).join("")}</fieldset>
+        <label class="c2">Validade da proposta<select name="prazo"><option value="7">7 dias</option><option value="15" selected>15 dias</option><option value="30">30 dias</option></select></label>
+        <p class="c4 ajuda" id="validade-txt" style="align-self:end;margin:0 0 14px"></p>
       </form>
       <div class="acoes-rapidas" style="margin-top:20px">
         <button class="btn" type="button" id="gerar">Gerar proposta</button>
@@ -606,7 +616,13 @@ a.item:active { transform: scale(.995); }
       <div class="acoes-rapidas" id="links-proposta" hidden>
         <a class="btn btn-claro" id="abrir-proposta" target="_blank" rel="noopener">Abrir a proposta</a>
         <a class="btn btn-sec" id="zap-proposta" target="_blank" rel="noopener">Enviar no WhatsApp</a>
+        <button class="btn btn-sec" type="button" id="email-proposta">Enviar por e-mail</button>
         <button class="btn btn-sec" type="button" id="copiar-proposta">Copiar link</button>
+      </div>
+      <div class="ficha" id="caixa-email" hidden>
+        <label class="c6">E-mail do contratante<input type="email" id="email-para" autocomplete="off" placeholder="contato@casa.com.br"></label>
+        <label class="c6">Mensagem<textarea id="email-msg" rows="3"></textarea></label>
+        <div class="c6 acoes-rapidas" style="margin:0"><button class="btn" type="button" id="email-enviar">Enviar e-mail</button><button class="texto-btn" type="button" id="email-cancelar">Cancelar</button></div>
       </div>`}`;
 
     const form = $("#ficha");
@@ -668,41 +684,105 @@ a.item:active { transform: scale(.995); }
   }
 
   /* ---------- proposta ---------- */
+  // opções padronizadas da proposta; "Outro" abre um campo para escrever
+  const PADRAO = {
+    formato: ["Banda completa", "Acústico", "Voz e violão", "Duo acústico", "Cabine de DJ"],
+    duracao: ["1 hora", "1h30", "2 horas", "2 sets de 1 hora", "3 horas", "3 sets de 1 hora", "4 horas", "5 horas"],
+    inclui: ["Som e equipamento de palco do artista", "Transporte dos músicos", "Passagem de som antes do evento", "Divulgação do show nas redes da 7A"],
+    condicoes: ["À vista, por Pix, até o dia do show", "50% na confirmação e 50% no dia do show, por Pix", "100% na confirmação, por Pix", "Pix no dia do show, antes da apresentação"],
+    rider: ["Ponto de energia perto do palco", "Espaço coberto para a apresentação", "Alimentação e água para os músicos", "Local para descarregar o equipamento"],
+  };
+  const OUTRO = "__outro";
+  const opcoesLivres = (lista) => lista.map((t) => `<option>${esc(t)}</option>`).join("") + `<option value="${OUTRO}">Outro (escrever)</option>`;
   const FORMATOS = { "ordem-mor": "Banda completa", "sub-rosa": "Banda completa", "ossos-do-banquete": "Banda completa", "athos-tibaes": "Voz e violão", aenima: "Duo acústico", "dj-ivan-lennon": "Cabine de DJ" };
+  const dataSP = (ms) => new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(new Date(ms));
+
   function montarProposta(s) {
     const form = $("#ficha-proposta"), msg = $("#estado-proposta");
     const aviso = (t, tipo) => { msg.textContent = t; msg.className = "estado" + (tipo ? " " + tipo : ""); };
+    let validadeAtual = "";
+    const validade = () => validadeAtual || dataSP(Date.now() + Number(form.prazo.value) * 86400e3);
+    const mostrarValidade = () => { $("#validade-txt").textContent = "Válida até " + validade().split("-").reverse().join("/"); };
+    const outros = () => document.querySelectorAll("[data-outro]").forEach((l) => { l.hidden = form[l.dataset.outro].value !== OUTRO; });
+    // coloca um valor salvo no menu; se não for uma das opções, vai para "Outro"
+    const escolher = (campo, valor) => {
+      const sel = form[campo];
+      if (!valor) return;
+      if ([...sel.options].some((o) => o.value === valor)) sel.value = valor;
+      else { sel.value = OUTRO; form[campo + "_outro"].value = valor; }
+    };
+    // itens salvos fora do padrão (propostas antigas) aparecem marcados, para poder desmarcar
+    const marcar = (campo, texto) => {
+      const itens = (texto || "").split("\n").map((t) => t.trim()).filter(Boolean);
+      const caixa = form.querySelector(`[name=${campo}]`).closest("fieldset");
+      itens.filter((t) => !PADRAO[campo].includes(t)).forEach((t) => caixa.insertAdjacentHTML("beforeend", `<label class="marcar"><input type="checkbox" name="${campo}" value="${esc(t)}"> ${esc(t)}</label>`));
+      form.querySelectorAll(`[name=${campo}]`).forEach((c) => { c.checked = itens.includes(c.value); });
+    };
+    const ler = () => {
+      const valor = (campo) => (form[campo].value === OUTRO ? form[campo + "_outro"].value.trim() : form[campo].value);
+      const marcados = (campo) => [...form.querySelectorAll(`[name=${campo}]:checked`)].map((c) => c.value).join("\n");
+      return { formato: valor("formato"), duracao: valor("duracao"), condicoes: valor("condicoes"), inclui: marcados("inclui"), rider: marcados("rider"), validade: validade() };
+    };
+    let link = "";
     const mostrarLinks = (token) => {
-      const url = location.origin + "/proposta/" + token;
+      link = location.origin + "/proposta/" + token;
       const c = contratante(s.contratante_id);
-      const texto = `Olá${c && c.contato ? ", " + c.contato.split(" ")[0] : ""}! Segue a proposta da 7A Produtora para o show de ${nomeArtista(s)}: ${url}`;
-      $("#abrir-proposta").href = url;
+      const texto = `Olá${c && c.contato ? ", " + c.contato.split(" ")[0] : ""}! Segue a proposta da 7A Produtora para o show de ${nomeArtista(s)}: ${link}`;
+      $("#abrir-proposta").href = link;
       const w = c ? whats(c.telefone) : "";
       $("#zap-proposta").href = (w || "https://wa.me/") + "?text=" + encodeURIComponent(texto);
-      $("#copiar-proposta").onclick = () => navigator.clipboard.writeText(url).then(() => aviso("Link copiado.", "ok"), () => prompt("Copie o link:", url));
+      $("#copiar-proposta").onclick = () => navigator.clipboard.writeText(link).then(() => aviso("Link copiado.", "ok"), () => prompt("Copie o link:", link));
       $("#links-proposta").hidden = false;
       $("#gerar").textContent = "Atualizar proposta";
     };
     api(`gestao/shows/${s.id}/proposta`).then((p) => {
-      const validade = new Date(Date.now() + 15 * 86400e3);
-      form.formato.value = p.formato ?? FORMATOS[s.artista] ?? "";
-      form.duracao.value = p.duracao || "";
-      form.inclui.value = p.inclui || "";
-      form.condicoes.value = p.condicoes || "";
-      form.rider.value = p.rider || "";
-      form.validade.value = p.validade ?? new Intl.DateTimeFormat("en-CA", { timeZone: "America/Sao_Paulo" }).format(validade);
+      escolher("formato", p.formato ?? FORMATOS[s.artista]);
+      escolher("duracao", p.duracao || "2 horas");
+      escolher("condicoes", p.condicoes || PADRAO.condicoes[0]);
+      marcar("inclui", p.token ? p.inclui : PADRAO.inclui.slice(0, 2).join("\n"));
+      marcar("rider", p.token ? p.rider : "Alimentação e água para os músicos");
+      validadeAtual = p.validade || "";
+      outros(); mostrarValidade();
       if (p.token) mostrarLinks(p.token);
     });
-    form.addEventListener("input", () => aviso(""));
+    form.addEventListener("change", (ev) => {
+      aviso(""); outros();
+      if (ev.target.name === "prazo") { validadeAtual = ""; mostrarValidade(); }
+    });
     $("#gerar").addEventListener("click", () => {
       if (sujo) return aviso("Salve o show antes, para a proposta sair com os dados novos.", "ruim");
+      const dados = ler();
+      if (!dados.formato || !dados.duracao || !dados.condicoes) return aviso("Escreva o texto do campo marcado como Outro.", "ruim");
       if (!s.cache) aviso("Atenção: o cachê está vazio, a proposta vai dizer \"a combinar\".");
       const b = $("#gerar"); b.disabled = true;
-      api(`gestao/shows/${s.id}/proposta`, "PUT", Object.fromEntries(new FormData(form))).then((r) => {
+      api(`gestao/shows/${s.id}/proposta`, "PUT", dados).then((r) => {
         b.disabled = false;
         if (!r.token) return aviso(r.erro || "Não deu para gerar a proposta.", "ruim");
+        validadeAtual = r.validade; mostrarValidade();
         mostrarLinks(r.token);
         aviso(s.cache ? "Proposta pronta. O link mostra sempre os dados atuais do show." : "Proposta pronta, com o cachê a combinar.", "ok");
+      }).catch(() => { b.disabled = false; aviso("Sem conexão. Tente de novo.", "ruim"); });
+    });
+
+    // e-mail pelo Resend
+    $("#email-proposta").addEventListener("click", () => {
+      if (!D.config.email_ativo) return aviso("O envio por e-mail ainda não está ligado: falta a chave do Resend na Cloudflare.", "ruim");
+      const c = contratante(s.contratante_id);
+      $("#email-para").value = (c && c.email) || "";
+      $("#email-msg").value = `Olá${c && c.contato ? ", " + c.contato.split(" ")[0] : ""}! Segue a proposta da 7A Produtora para o show de ${nomeArtista(s)}. Qualquer dúvida, é só responder este e-mail ou chamar no WhatsApp.`;
+      $("#caixa-email").hidden = false;
+      $("#email-para").focus();
+    });
+    $("#email-cancelar").addEventListener("click", () => { $("#caixa-email").hidden = true; });
+    $("#email-enviar").addEventListener("click", () => {
+      const b = $("#email-enviar"), para = $("#email-para").value.trim();
+      if (!para) return $("#email-para").focus();
+      b.disabled = true; aviso("Enviando...");
+      api(`gestao/shows/${s.id}/proposta/email`, "POST", { para, mensagem: $("#email-msg").value }).then((r) => {
+        b.disabled = false;
+        if (!r.ok) return aviso(r.erro || "Não deu para enviar.", "ruim");
+        $("#caixa-email").hidden = true;
+        aviso("E-mail enviado para " + para + ". Ficou anotado no histórico do contratante.", "ok");
       }).catch(() => { b.disabled = false; aviso("Sem conexão. Tente de novo.", "ruim"); });
     });
   }
@@ -754,5 +834,6 @@ a.item:active { transform: scale(.995); }
   api("sessao").then((r) => (r.ok ? abrir() : mostrarEntrada())).catch(mostrarEntrada);
 })();
 </script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("/admin/sw.js", { scope: "/admin/" }).catch(() => {});</script>
 </body>
 </html>

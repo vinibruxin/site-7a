@@ -1,0 +1,15 @@
+{
+  "name": "7A Gestão",
+  "short_name": "7A Gestão",
+  "description": "Contratantes, shows, cachês e propostas da 7A Produtora.",
+  "lang": "pt-BR",
+  "start_url": "/admin/gestao.html",
+  "scope": "/admin/",
+  "display": "standalone",
+  "background_color": "#0A0A0A",
+  "theme_color": "#0A0A0A",
+  "icons": [
+    { "src": "/admin/icone-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/admin/icone-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

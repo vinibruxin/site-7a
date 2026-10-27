@@ -88,6 +88,7 @@ p { margin: 0; }
 .rider ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .rider li span { color: var(--tinta-2); }
 .rider .inteiro { grid-column: 1 / -1; margin-top: 28px; }
+.rider ul.pontos { list-style: disc; padding-left: 20px; }
 
 /* fecho */
 .fecho { padding: 64px var(--m) 56px; display: grid; gap: 36px; }
@@ -224,10 +225,10 @@ p { margin: 0; }
       </section>
 
       ${temRider ? `<section class="rider" aria-labelledby="t-rider">
-        <h2 class="display" id="t-rider">${p.rider ? "Rider e formação" : "Sobre o artista"}</h2>
+        <h2 class="display" id="t-rider">Sobre o artista</h2>
         ${a.formacao.length ? `<div class="bloco"><h3>Formação</h3><ul>${a.formacao.map((f) => `<li>${esc(f.nome)}${f.funcao ? ` <span>${esc(f.funcao)}</span>` : ""}</li>`).join("")}</ul></div>` : ""}
         ${a.destaques.length ? `<div class="bloco"><h3>Destaques</h3><ul>${a.destaques.map((d) => `<li>${esc(d)}</li>`).join("")}</ul></div>` : ""}
-        ${p.rider ? `<div class="bloco inteiro"><h3>Rider técnico</h3><p>${esc(p.rider)}</p></div>` : ""}
+        ${p.rider ? `<div class="bloco inteiro"><h3>O contratante oferece</h3><ul class="pontos">${lista(p.rider).map((l) => `<li>${esc(l)}</li>`).join("")}</ul></div>` : ""}
       </section>` : ""}
 
       <footer class="fecho">
