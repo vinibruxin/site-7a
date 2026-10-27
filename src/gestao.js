@@ -127,7 +127,7 @@ export async function gestao(req, env, rota) {
       env.DB.prepare("SELECT * FROM shows ORDER BY data, hora").all(),
       lerConfig(env),
     ]);
-    return json({ contratantes: cs.results, shows: ss.results, config });
+    return json({ contratantes: cs.results, shows: ss.results, config: { ...config, email_ativo: !!env.RESEND_API_KEY } });
   }
 
   if (partes[0] === "contratantes") {
@@ -179,6 +179,8 @@ export async function gestao(req, env, rota) {
     await env.DB.prepare("DELETE FROM notas WHERE id = ?").bind(id).run();
     return json({ ok: true });
   }
+
+  if (partes[0] === "shows" && partes[2] === "proposta" && partes[3] === "email" && id && metodo === "POST") return enviarProposta(env, req, id, corpo);
 
   if (partes[0] === "shows" && partes[2] === "proposta" && id) {
     if (metodo === "GET") return json((await env.DB.prepare("SELECT * FROM propostas WHERE show_id = ?").bind(id).first()) || {});
@@ -241,6 +243,64 @@ export async function gestao(req, env, rota) {
   if (partes[0] === "exportar" && metodo === "GET") return exportar(env, req, partes[1]);
 
   return json({ erro: "Rota não encontrada." }, 404);
+}
+
+/* ---------------- envio da proposta por e-mail (Resend) ---------------- */
+
+// remetente no domínio da 7A (verificado no Resend); as respostas vão para o Gmail da 7A
+const REMETENTE = "7A Produtora <propostas@7aprodutora.com.br>";
+const RESPONDER_PARA = "7a.produtora@gmail.com";
+
+async function enviarProposta(env, req, id, corpo) {
+  if (!env.RESEND_API_KEY) return json({ erro: "O envio por e-mail ainda não está ligado. Falta a chave do Resend na Cloudflare." }, 503);
+  const para = txt(corpo?.para, 160).toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(para)) return json({ erro: "Confira o e-mail do contratante." }, 400);
+  const mensagem = txt(corpo?.mensagem, 2000);
+  const p = await env.DB.prepare(
+    "SELECT p.token, s.artista, s.artista_texto, s.data, s.contratante_id FROM propostas p JOIN shows s ON s.id = p.show_id WHERE p.show_id = ?"
+  ).bind(id).first();
+  if (!p) return json({ erro: "Gere a proposta antes de enviar." }, 404);
+  const artista = (await nomesArtistas(env, req))[p.artista] || p.artista_texto || p.artista;
+  const link = new URL("/proposta/" + p.token, req.url).href;
+  const e = (t) => String(t).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+  const html = `<div style="background:#0A0A0A;padding:32px 20px;font-family:Montserrat,Arial,sans-serif;color:#F2EFEA">
+  <div style="max-width:560px;margin:0 auto">
+    <p style="font:700 20px/1 Impact,'Arial Narrow',sans-serif;text-transform:uppercase;margin:0 0 28px">7A Produtora</p>
+    <p style="font-size:16px;line-height:1.6;margin:0 0 24px;white-space:pre-line">${e(mensagem || `Olá! Segue a proposta da 7A Produtora para o show de ${artista}.`)}</p>
+    <a href="${e(link)}" style="display:inline-block;background:#B5121B;color:#F2EFEA;font-weight:700;font-size:16px;padding:16px 24px;text-decoration:none">Ver a proposta de ${e(artista)}</a>
+    <p style="font-size:14px;line-height:1.6;color:#B8B2AA;margin:28px 0 0">A proposta abre no celular e pode ser salva em PDF.<br>WhatsApp (31) 99223-3295 · 7aprodutora.com.br</p>
+    <p style="font-size:14px;color:#B8B2AA;margin:20px 0 0">Aqui o artista é levado a sério.</p>
+  </div></div>`;
+  let r;
+  try {
+    r = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { authorization: "Bearer " + env.RESEND_API_KEY, "content-type": "application/json" },
+      body: JSON.stringify({
+        from: REMETENTE,
+        to: [para],
+        reply_to: RESPONDER_PARA,
+        subject: `Proposta de show: ${artista} | 7A Produtora`,
+        html,
+        text: `${mensagem || `Olá! Segue a proposta da 7A Produtora para o show de ${artista}.`}\n\nVer a proposta: ${link}\n\nWhatsApp (31) 99223-3295 · 7aprodutora.com.br`,
+      }),
+    });
+  } catch {
+    return json({ erro: "Não deu para falar com o Resend agora. Tente de novo em alguns minutos." }, 502);
+  }
+  if (!r.ok) {
+    const detalhe = await r.json().catch(() => ({}));
+    return json({ erro: "O Resend recusou o envio: " + (detalhe.message || r.status) }, 502);
+  }
+  // registra no histórico do contratante
+  if (p.contratante_id) {
+    const t = agora();
+    await env.DB.batch([
+      env.DB.prepare("INSERT INTO notas (contratante_id, texto, criado) VALUES (?, ?, ?)").bind(p.contratante_id, `Proposta de ${artista} enviada por e-mail para ${para}.`, t),
+      env.DB.prepare("UPDATE contratantes SET atualizado = ? WHERE id = ?").bind(t, p.contratante_id),
+    ]);
+  }
+  return json({ ok: true });
 }
 
 /* ---------------- planilha (CSV para Excel e Google Planilhas) ---------------- */

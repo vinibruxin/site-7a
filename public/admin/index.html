@@ -6,6 +6,11 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Editar o site | 7A Produtora</title>
 <link rel="icon" href="/img/logo-7a.png">
+<link rel="manifest" href="/admin/manifest.json">
+<link rel="apple-touch-icon" href="/admin/icone-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="7A Gestão">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&display=swap">
@@ -334,5 +339,6 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
   api("sessao").then(function (r) { if (r.ok) abrirEditor(); else mostrarEntrada(); }).catch(mostrarEntrada);
 })();
 </script>
+<script>if ("serviceWorker" in navigator) navigator.serviceWorker.register("/admin/sw.js", { scope: "/admin/" }).catch(() => {});</script>
 </body>
 </html>
