@@ -1,0 +1,17 @@
+# Copie para .dev.vars (que não vai para o GitHub) para rodar o site no computador com `npm run dev`.
+# Nada aqui é segredo de produção: os segredos de verdade ficam só na Cloudflare
+# (Workers > site-7a > Settings > Variables and Secrets).
+
+# Senha local do /admin: gere um sal e o hash SHA-256 de (sal + senha), por exemplo:
+#   node -e "const c=require('crypto'),s=c.randomBytes(16).toString('hex'),p='minha-senha-local';console.log('ADMIN_SAL='+s+'\nADMIN_HASH='+c.createHash('sha256').update(s+p).digest('hex'))"
+ADMIN_SAL=
+ADMIN_HASH=
+
+# Envio da proposta por e-mail (opcional no computador). Em produção é um secret do Worker.
+RESEND_API_KEY=
+
+# [VERSÃO PAGA, não usada nesta versão] API oficial do WhatsApp (Meta). Só como secret do Worker,
+# nunca no repositório nem no navegador.
+# WHATSAPP_TOKEN=
+# WHATSAPP_PHONE_ID=
+# WHATSAPP_APP_SECRET=

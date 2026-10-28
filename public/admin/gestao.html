@@ -118,6 +118,34 @@ a.item:active { transform: scale(.995); }
 .e-realizado, .e-fechado { background: var(--offwhite); color: var(--preto); }
 .e-cancelado, .e-perdido { background: var(--preto); color: var(--cinza); }
 .e-site { background: var(--ouro); color: var(--preto); }
+.e-bloqueado { background: #FF8A8F; color: var(--preto); }
+.e-andamento { background: var(--vermelho); }
+.e-pausada { background: var(--cinza); color: var(--preto); }
+.e-concluida { background: var(--offwhite); color: var(--preto); }
+.e-cancelada { background: var(--preto); color: var(--cinza); }
+
+/* whatsapp, campanhas, importação */
+.aviso { margin: 0 0 12px; padding: 12px 16px; border-left: 4px solid var(--ouro); background: var(--grafite); max-width: 52em; font-size: 15px; }
+.aviso-forte { border-left-color: #FF8A8F; }
+.aviso .texto-btn { padding: 0 0 0 6px; }
+.texto-msg { margin: 0; padding: 14px 16px; background: var(--grafite-2); white-space: pre-wrap; overflow-wrap: anywhere; max-width: 46em; font-size: 15px; line-height: 1.55; }
+.caixa-zap, .fila { background: var(--grafite); padding: 18px; margin: 0 0 24px; max-width: 900px; }
+.caixa-zap .ficha { max-width: none; }
+.caixa-zap textarea, .caixa-zap select { background: var(--grafite-2); }
+.fila .acoes-rapidas { margin: 14px 0 6px; }
+.fila-topo { margin: 0; color: var(--cinza); font-weight: 600; font-size: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn-grande { min-height: 52px; padding: 16px 26px; font-size: 16px; }
+.acoes-msg { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 6px; }
+.notas .etiqueta { justify-self: end; }
+.paginas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-top: 16px; color: var(--cinza); font-weight: 600; font-size: 14px; }
+.linha-marcas { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0 0 16px; }
+.linha-marcas .marcar { font-size: 15px; }
+.item-texto { display: block; }
+.item-texto summary { display: grid; gap: 4px; cursor: pointer; list-style: none; }
+.item-texto summary::-webkit-details-marker { display: none; }
+.item-texto .texto-msg { margin-top: 10px; }
+.variaveis { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-weight: 600; font-size: 13px; color: var(--cinza); }
+.variaveis .btn { min-height: 32px; padding: 6px 10px; font-size: 13px; font-weight: 600; }
 
 /* filtros */
 .filtros { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin: 0 calc(var(--m) * -1) 16px; padding-left: var(--m); padding-right: var(--m); scrollbar-width: none; }
@@ -225,6 +253,7 @@ a.item:active { transform: scale(.995); }
     <nav class="abas" aria-label="Seções">
       <a href="#hoje" data-aba="hoje">Hoje</a>
       <a href="#contratantes" data-aba="contratantes">Contratantes</a>
+      <a href="#campanhas" data-aba="campanhas">Campanhas</a>
       <a href="#shows" data-aba="shows">Shows</a>
       <a href="#ajustes" data-aba="ajustes">Ajustes</a>
     </nav>
@@ -241,11 +270,20 @@ a.item:active { transform: scale(.995); }
   let D = null;          // { contratantes, shows, config }
   let artistas = {};     // slug -> nome, vindo do conteúdo do site
   let sujo = false;      // ficha com mudança não salva
-  const filtro = { etapa: "", busca: "", status: "", passados: false };
+  const filtro = { etapa: "", busca: "", status: "", passados: false, perfil: "", bloqueados: false, arquivados: false, pagina: 1 };
+  let modelos = null;    // modelos de mensagem, carregados quando precisa
 
   const ETAPAS = [["contatar", "A contatar"], ["contatado", "Contatado"], ["negociando", "Negociando"], ["fechado", "Fechado"], ["perdido", "Perdido"]];
   const TIPOS = [["casa", "Bar ou casa de show"], ["restaurante", "Restaurante"], ["festival", "Festival"], ["evento", "Evento"], ["empresa", "Empresa"], ["particular", "Festa particular"], ["outro", "Outro"]];
   const STATUS = [["consulta", "Consulta"], ["reservado", "Reservado"], ["confirmado", "Confirmado"], ["realizado", "Realizado"], ["cancelado", "Cancelado"]];
+  const PERFIS = [["", "Não definido"], ["autoral", "Som autoral"], ["classicos", "Clássicos do rock"], ["ambos", "Autoral e clássicos"]];
+  const ETAPAS_MODELO = [["primeiro", "Primeiro contato"], ["cobranca", "Cobrança"], ["proposta", "Proposta"], ["outro", "Outro"]];
+  const LISTAS = [["contatar", "A contatar"], ["cobrar", "Cobrar hoje"], ["abertas", "Todas em aberto"]];
+  const STATUS_CAMP = { rascunho: "Rascunho", andamento: "Em andamento", pausada: "Pausada", cancelada: "Cancelada", concluida: "Concluída" };
+  const SIT_DEST = { pendente: "Na fila", aberta: "Aberta, falta confirmar", aguardando: "Esperando cobrança", enviada: "Enviada", cobrada: "Cobrada", respondeu: "Respondeu", bloqueado: "Bloqueado", pulado: "Pulado", cancelado: "Cancelado" };
+  const SIT_MSG = { aberta: "Falta confirmar", enviada: "Enviada", desistiu: "Não enviada" };
+  const TIPO_MSG = { abordagem: "Primeiro contato", cobranca: "Cobrança", avulsa: "Mensagem" };
+  const VARIAVEIS = ["primeiro_nome", "nome_contato", "casa", "cidade", "site"];
   const nomeDe = (lista, k) => (lista.find((x) => x[0] === k) || [k, k])[1];
   const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
   const DIAS = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
@@ -267,6 +305,10 @@ a.item:active { transform: scale(.995); }
     return Number.isFinite(n) && n > 0 ? n : 0;
   }
   const campoReais = (c) => (c ? (c / 100).toFixed(2).replace(".", ",") : "");
+  const dataHora = (iso) => new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+  // identifica cada toque de "abrir": repetir o mesmo toque não cria um segundo registro
+  const chaveNova = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 12));
+  const carregarModelos = () => (modelos ? Promise.resolve(modelos) : api("gestao/modelos").then((r) => (modelos = Array.isArray(r) ? r : [])));
 
   function api(rota, metodo = "GET", corpo) {
     return fetch("/api/" + rota, {
@@ -332,15 +374,24 @@ a.item:active { transform: scale(.995); }
     const h = location.hash || "#hoje";
     ultimo = h;
     const [nome, id] = h.slice(1).split("/");
-    const aba = { contratante: "contratantes", show: "shows" }[nome] || nome;
+    const aba = { contratante: "contratantes", importar: "contratantes", show: "shows", campanha: "campanhas", modelos: "campanhas", modelo: "campanhas" }[nome] || nome;
     document.querySelectorAll("[data-aba]").forEach((a) => (a.dataset.aba === aba ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
-    const telas = { hoje: telaHoje, contratantes: telaContratantes, contratante: () => fichaContratante(id), shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes };
+    const telas = {
+      hoje: telaHoje, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
+      campanhas: telaCampanhas, campanha: () => fichaCampanha(id), modelos: telaModelos, modelo: () => fichaModelo(id),
+      shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes,
+    };
     (telas[nome] || telaHoje)();
     window.scrollTo(0, 0);
   }
 
   /* ---------- hoje ---------- */
   function telaHoje() {
+    desenharHoje();
+    // números e listas do dia sempre frescos
+    api("gestao/dados").then((r) => { if (r.contratantes && (location.hash || "#hoje") === "#hoje") { D = r; desenharHoje(); } });
+  }
+  function desenharHoje() {
     const h = hoje(), d = dia(h);
     const ativos = D.shows.filter((s) => s.status === "confirmado" || s.status === "realizado");
     const aReceber = ativos.reduce((t, s) => t + Math.max(0, s.cache - s.recebido), 0);
@@ -349,20 +400,27 @@ a.item:active { transform: scale(.995); }
     const doMes = ativos.filter((s) => s.data.startsWith(mes));
     const comissaoMes = doMes.reduce((t, s) => t + (contas(s).comissao || 0), 0);
     const semPct = D.config.pct_padrao === "" && doMes.some((s) => s.pct == null);
-
-    const fazer = D.contratantes
-      .filter((c) => c.proxima_data && c.proxima_data <= h && c.etapa !== "fechado" && c.etapa !== "perdido")
-      .sort((a, b) => a.proxima_data.localeCompare(b.proxima_data));
+    const fazer = D.fazer || [];
     const proximos = D.shows.filter((s) => s.data && s.data >= h && s.status !== "cancelado" && diasEntre(h, s.data) <= 60);
+    const ind = D.indicadores || { hoje: { abordagens: 0, limite: 20 }, sem_confirmar: 0 };
+    const camp = D.campanhas || [];
 
     tela.innerHTML = `
       <div class="cabeca"><div><h1 class="display">Hoje</h1><p>${DIAS[d.getUTCDay()]}, ${d.getUTCDate()} de ${MESES[d.getUTCMonth()]}</p></div>
         <a class="btn" href="#contratante/novo">Novo contratante</a></div>
+      ${D.config.simulacao === "1" ? '<p class="aviso">Modo simulação ligado: as mensagens são registradas como teste e o WhatsApp não abre. Desligue em <a href="#ajustes">Ajustes</a>.</p>' : ""}
       <dl class="numeros">
         <div><dt>A receber dos contratantes</dt><dd class="num">${reais(aReceber)}</dd><small>Shows confirmados e realizados</small></div>
         <div><dt>A repassar aos artistas</dt><dd class="num">${D.config.pct_padrao === "" && aRepassar === 0 && ativos.length ? "—" : reais(aRepassar)}</dd></div>
         <div><dt>Comissão 7A em ${MESES[d.getUTCMonth()]}</dt><dd class="num">${semPct ? "—" : reais(comissaoMes)}</dd>${semPct ? '<small>Defina o % da 7A em <a href="#ajustes">Ajustes</a></small>' : ""}</div>
       </dl>
+      <h2 class="display">WhatsApp</h2>
+      <dl class="numeros numeros-zap">
+        <div><dt>Novas abordagens hoje</dt><dd class="num">${ind.hoje.abordagens} de ${ind.hoje.limite}</dd><small>Limite diário, para proteger o número</small></div>
+        <div><dt>Abertas sem confirmar</dt><dd class="num">${ind.sem_confirmar}</dd><small>Marque se enviou ou não</small></div>
+        <div><dt>Respostas em 30 dias</dt><dd class="num">${ind.respostas ?? 0}</dd><small>${ind.taxa_resposta != null ? ind.taxa_resposta + "% das enviadas" : "Nenhuma enviada ainda"}</small></div>
+      </dl>
+      ${camp.length ? `<ul class="lista" style="margin-top:8px">${camp.map((c) => `<li><a class="item" href="#campanha/${c.id}"><span class="nome">${esc(c.nome)}</span><span class="lado"><span class="etiqueta e-andamento">${c.na_vez ? c.na_vez + " na vez" : "Em dia"}</span></span><span class="meta">Campanha em andamento${c.simulada ? " (simulação)" : ""}</span></a></li>`).join("")}</ul>` : ""}
       <h2 class="display">Para fazer hoje</h2>
       ${fazer.length ? `<ul class="lista lista-contratantes">${fazer.map((c) => itemContratante(c, true)).join("")}</ul>`
         : `<p class="vazio">${D.contratantes.length ? "Nenhuma ação marcada para hoje. Abra um contratante e marque a próxima ação com data." : "Ainda não há contratantes. Comece pelas casas, festivais e eventos que a 7A quer abordar, um por um, com a próxima ação e a data."}${D.contratantes.length ? "" : '<br><a class="btn" href="#contratante/novo">Cadastrar o primeiro</a>'}</p>`}
@@ -375,60 +433,104 @@ a.item:active { transform: scale(.995); }
     const h = hoje();
     const atraso = c.proxima_data && c.proxima_data < h ? diasEntre(c.proxima_data, h) : 0;
     const quando = !c.proxima_data ? "" : atraso ? `<span class="atrasado">${atraso === 1 ? "Desde ontem" : `Há ${atraso} dias`}</span>` : c.proxima_data === h ? "<span>Hoje</span>" : `<span>${dataCurta(c.proxima_data)}</span>`;
-    const meta = comAcao && c.proxima_acao ? esc(c.proxima_acao) : [nomeDe(TIPOS, c.tipo), c.cidade].filter(Boolean).map(esc).join(" · ");
+    const meta = comAcao && c.proxima_acao ? esc(c.proxima_acao) : [nomeDe(TIPOS, c.tipo), c.cidade, c.perfil ? nomeDe(PERFIS, c.perfil) : ""].filter(Boolean).map(esc).join(" · ");
+    const etiqueta = c.arquivado ? '<span class="etiqueta e-cancelado">Arquivado</span>'
+      : c.comunicacao === "bloqueado" ? '<span class="etiqueta e-bloqueado">Bloqueado</span>'
+      : c.origem === "site" && c.etapa === "contatar" ? '<span class="etiqueta e-site">Pedido do site</span>'
+      : `<span class="etiqueta e-${c.etapa}">${nomeDe(ETAPAS, c.etapa)}</span>`;
     return `<li><a class="item" href="#contratante/${c.id}">
       <span class="nome">${esc(c.nome)}</span>
-      <span class="lado">${c.origem === "site" && c.etapa === "contatar" ? '<span class="etiqueta e-site">Pedido do site</span>' : `<span class="etiqueta e-${c.etapa}">${nomeDe(ETAPAS, c.etapa)}</span>`}${quando}</span>
+      <span class="lado">${etiqueta}${quando}</span>
       <span class="meta">${meta || "&nbsp;"}</span></a></li>`;
   }
 
+  let buscaSeq = 0;
   function telaContratantes() {
-    const conta = (e) => D.contratantes.filter((c) => !e || c.etapa === e).length;
-    const b = filtro.busca.toLowerCase();
-    const lista = D.contratantes
-      .filter((c) => (!filtro.etapa || c.etapa === filtro.etapa) && (!b || [c.nome, c.cidade, c.contato].join(" ").toLowerCase().includes(b)))
-      .sort((x, y) => (x.proxima_data || "9999").localeCompare(y.proxima_data || "9999") || x.nome.localeCompare(y.nome, "pt-BR"));
     tela.innerHTML = `
-      <div class="cabeca"><h1 class="display">Contratantes</h1><a class="btn" href="#contratante/novo">Novo contratante</a></div>
-      <div class="filtros" role="group" aria-label="Etapa do funil">
-        <button type="button" data-etapa="" aria-pressed="${!filtro.etapa}">Todos<span class="conta">${conta("")}</span></button>
-        ${ETAPAS.map(([k, n]) => `<button type="button" data-etapa="${k}" aria-pressed="${filtro.etapa === k}">${n}<span class="conta">${conta(k)}</span></button>`).join("")}
-      </div>
-      <div class="busca"><input type="search" id="busca" placeholder="Buscar por nome, cidade ou contato" value="${esc(filtro.busca)}" aria-label="Buscar contratante"></div>
-      <div id="resultado">${lista.length ? `<ul class="lista lista-contratantes">${lista.map((c) => itemContratante(c)).join("")}</ul>`
-        : `<p class="vazio">${D.contratantes.length ? "Nenhum contratante nesta etapa." : "Nenhum contratante ainda. Cadastre cada casa, festival, evento ou empresa que a 7A vai abordar."}</p>`}</div>`;
-    tela.querySelectorAll("[data-etapa]").forEach((x) => x.addEventListener("click", () => { filtro.etapa = x.dataset.etapa; telaContratantes(); }));
-    const busca = $("#busca");
-    busca.addEventListener("input", () => { filtro.busca = busca.value; const pos = busca.selectionStart; telaContratantes(); const n = $("#busca"); n.focus(); n.setSelectionRange(pos, pos); });
+      <div class="cabeca"><h1 class="display">Contratantes</h1><div class="acoes-rapidas" style="margin:0"><a class="btn btn-sec" href="#importar">Importar planilha</a><a class="btn" href="#contratante/novo">Novo contratante</a></div></div>
+      <div class="filtros" id="etapas" role="group" aria-label="Etapa do funil"></div>
+      <div class="busca"><input type="search" id="busca" placeholder="Buscar por nome, cidade, contato, e-mail ou telefone" value="${esc(filtro.busca)}" aria-label="Buscar contratante">
+        <select id="f-perfil" aria-label="Perfil musical" style="max-width:200px"><option value="">Todos os perfis</option>${PERFIS.slice(1).map(([k, n]) => `<option value="${k}"${filtro.perfil === k ? " selected" : ""}>${n}</option>`).join("")}<option value="nenhum"${filtro.perfil === "nenhum" ? " selected" : ""}>Perfil não definido</option></select></div>
+      <div class="linha-marcas"><label class="marcar"><input type="checkbox" id="f-bloq"${filtro.bloqueados ? " checked" : ""}> Só os bloqueados</label><label class="marcar"><input type="checkbox" id="f-arq"${filtro.arquivados ? " checked" : ""}> Arquivados</label></div>
+      <div id="resultado"><p class="vazio">Carregando...</p></div>`;
+    const carregar = () => {
+      const q = new URLSearchParams({ busca: filtro.busca, etapa: filtro.etapa, perfil: filtro.perfil, pagina: filtro.pagina, por: 50 });
+      if (filtro.bloqueados) q.set("bloqueados", "1");
+      if (filtro.arquivados) q.set("arquivados", "1");
+      const seq = ++buscaSeq;
+      api("gestao/contratantes?" + q).then((r) => {
+        if (seq !== buscaSeq || !$("#resultado")) return;
+        if (!r.itens) { $("#resultado").innerHTML = `<p class="vazio">${esc(r.erro || "Não deu para carregar.")}</p>`; return; }
+        const todos = Object.values(r.contagens).reduce((a, b) => a + b, 0);
+        $("#etapas").innerHTML = `<button type="button" data-etapa="" aria-pressed="${!filtro.etapa}">Todos<span class="conta">${todos}</span></button>`
+          + ETAPAS.map(([k, n]) => `<button type="button" data-etapa="${k}" aria-pressed="${filtro.etapa === k}">${n}<span class="conta">${r.contagens[k] || 0}</span></button>`).join("");
+        const paginas = Math.max(1, Math.ceil(r.total / r.por));
+        $("#resultado").innerHTML = r.itens.length
+          ? `<ul class="lista lista-contratantes">${r.itens.map((c) => itemContratante(c)).join("")}</ul>
+             ${paginas > 1 ? `<div class="paginas"><button class="btn btn-sec" type="button" data-pag="${r.pagina - 1}"${r.pagina <= 1 ? " disabled" : ""}>Anterior</button><span>Página ${r.pagina} de ${paginas} · ${r.total} contratantes</span><button class="btn btn-sec" type="button" data-pag="${r.pagina + 1}"${r.pagina >= paginas ? " disabled" : ""}>Próxima</button></div>` : ""}`
+          : `<p class="vazio">${todos || filtro.busca || filtro.arquivados || filtro.bloqueados ? "Nenhum contratante com esse filtro." : "Nenhum contratante ainda. Cadastre cada casa, festival, evento ou empresa que a 7A vai abordar, ou importe uma planilha."}</p>`;
+      });
+    };
+    $("#etapas").addEventListener("click", (ev) => { const b = ev.target.closest("[data-etapa]"); if (!b) return; filtro.etapa = b.dataset.etapa; filtro.pagina = 1; carregar(); });
+    $("#resultado").addEventListener("click", (ev) => { const b = ev.target.closest("[data-pag]"); if (!b) return; filtro.pagina = Number(b.dataset.pag); carregar(); window.scrollTo(0, 0); });
+    let espera;
+    $("#busca").addEventListener("input", (ev) => { filtro.busca = ev.target.value; filtro.pagina = 1; clearTimeout(espera); espera = setTimeout(carregar, 250); });
+    $("#f-perfil").addEventListener("change", (ev) => { filtro.perfil = ev.target.value; filtro.pagina = 1; carregar(); });
+    $("#f-bloq").addEventListener("change", (ev) => { filtro.bloqueados = ev.target.checked; filtro.pagina = 1; carregar(); });
+    $("#f-arq").addEventListener("change", (ev) => { filtro.arquivados = ev.target.checked; filtro.pagina = 1; carregar(); });
+    carregar();
   }
 
   const opcoes = (lista, sel) => lista.map(([k, n]) => `<option value="${k}"${k === sel ? " selected" : ""}>${esc(n)}</option>`).join("");
 
+  // mantém a lista leve (selects dos shows, propostas) igual ao servidor
+  function guardarLeve(c) {
+    D.contratantes = D.contratantes.filter((x) => x.id !== c.id);
+    if (!c.arquivado) D.contratantes.push({ id: c.id, nome: c.nome, cidade: c.cidade, contato: c.contato, telefone: c.telefone, email: c.email, etapa: c.etapa });
+  }
+
   function fichaContratante(id) {
-    const novo = id === "novo";
-    const c = novo ? { nome: "", tipo: "casa", contato: "", telefone: "", email: "", instagram: "", cep: "", endereco: "", numero: "", complemento: "", bairro: "", cidade: "", uf: "", referencia: "", etapa: "contatar", proxima_acao: "", proxima_data: "", obs: "" } : contratante(Number(id));
-    if (!c) { tela.innerHTML = '<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">Contratante não encontrado.</p>'; return; }
-    const w = whats(c.telefone);
+    if (id === "novo") return desenharFicha(null);
+    tela.innerHTML = '<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">Carregando...</p>';
+    api("gestao/contratantes/" + Number(id)).then((f) => {
+      if (location.hash !== "#contratante/" + id) return;
+      if (!f.contratante) { tela.innerHTML = '<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">Contratante não encontrado.</p>'; return; }
+      desenharFicha(f);
+    });
+  }
+
+  function desenharFicha(f) {
+    const novo = !f;
+    const c = novo ? { nome: "", tipo: "casa", contato: "", telefone: "", email: "", instagram: "", cep: "", endereco: "", numero: "", complemento: "", bairro: "", cidade: "", uf: "", referencia: "", perfil: "", etapa: "contatar", proxima_acao: "", proxima_data: "", obs: "" } : f.contratante;
+    const bloqueado = c.comunicacao === "bloqueado";
     const seus = novo ? [] : D.shows.filter((s) => s.contratante_id === c.id).sort((a, b) => (b.data || "").localeCompare(a.data || ""));
+    const ultimaAut = !novo && f.consentimentos[0];
     tela.innerHTML = `
       <a class="voltar" href="#contratantes">Voltar para contratantes</a>
       <div class="cabeca"><h1 class="display">${novo ? "Novo contratante" : esc(c.nome)}</h1></div>
-      ${novo ? "" : `<div class="acoes-rapidas">
-        ${w ? `<a class="btn" href="${w}" target="_blank" rel="noopener">WhatsApp</a>` : ""}
+      ${c.arquivado ? `<p class="aviso">Arquivado em ${dataCurta(c.arquivado)}. Não aparece nas listas nem nas campanhas. <button class="texto-btn" type="button" id="restaurar">Restaurar</button></p>` : ""}
+      ${bloqueado ? `<p class="aviso aviso-forte">Pediu para não receber mensagens (${dataCurta(c.bloqueado_em.slice(0, 10))}). Nenhuma mensagem pode ser aberta para esta casa. <button class="texto-btn" type="button" id="desbloquear">Desbloquear</button></p>` : ""}
+      ${novo || c.arquivado ? "" : `<div class="acoes-rapidas">
+        ${!bloqueado && c.telefone_norm ? '<button class="btn" type="button" id="zap">Mensagem no WhatsApp</button>' : ""}
+        ${!bloqueado && c.telefone && !c.telefone_norm ? '<span class="etiqueta e-bloqueado" style="align-self:center">Telefone fora do formato: corrija para usar o WhatsApp</span>' : ""}
+        ${!bloqueado ? '<button class="btn btn-sec" type="button" id="respondeu">Respondeu</button><button class="btn btn-sec" type="button" id="parar">Pediu para parar</button>' : ""}
         ${c.telefone ? `<a class="btn btn-sec" href="tel:${soDigitos(c.telefone)}">Ligar</a>` : ""}
         ${c.email ? `<a class="btn btn-sec" href="mailto:${esc(c.email)}">E-mail</a>` : ""}
         ${c.instagram ? `<a class="btn btn-sec" href="https://instagram.com/${encodeURIComponent(c.instagram)}" target="_blank" rel="noopener">Instagram</a>` : ""}
-        <a class="btn btn-sec" href="#show/novo?c=${c.id}">Novo show</a></div>`}
+        <a class="btn btn-sec" href="#show/novo?c=${c.id}">Novo show</a></div>
+        <p class="estado" id="estado-acao" role="status" style="margin:-8px 0 16px"></p>
+        <div class="caixa-zap" id="caixa-zap" hidden></div>`}
       <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
         <label class="c6">Nome da casa, restaurante, evento ou empresa<input name="nome" value="${esc(c.nome)}" required autocomplete="off"></label>
         <label>Tipo<select name="tipo">${opcoes(TIPOS, c.tipo)}</select></label>
-        <label>CEP<input name="cep" value="${esc(c.cep || "")}" placeholder="32600-000" inputmode="numeric" maxlength="9" autocomplete="off"><span class="dica" id="dica-cep">Preenche rua, bairro, cidade e UF.</span></label>
-        <label class="c3">Rua<input name="endereco" value="${esc(c.endereco || "")}" placeholder="Rua do Rosário" autocomplete="off"></label>
+        <label>Perfil musical<select name="perfil">${opcoes(PERFIS, c.perfil || "")}</select></label>
+        <label class="c2">CEP<input name="cep" value="${esc(c.cep || "")}" placeholder="32600-000" inputmode="numeric" maxlength="9" autocomplete="off"><span class="dica" id="dica-cep">Preenche rua, bairro, cidade e UF.</span></label>
+        <label class="c4">Rua<input name="endereco" value="${esc(c.endereco || "")}" placeholder="Rua do Rosário" autocomplete="off"></label>
         <label class="c1 meia">Número<input name="numero" value="${esc(c.numero || "")}" placeholder="120" autocomplete="off"></label>
         <label class="c2 meia">Complemento<input name="complemento" value="${esc(c.complemento || "")}" placeholder="Loja 2" autocomplete="off"></label>
-        <label class="c2">Bairro<input name="bairro" value="${esc(c.bairro || "")}" placeholder="Centro" autocomplete="off"></label>
-        <label class="c3 meia">Cidade<input name="cidade" value="${esc(c.cidade)}" placeholder="Betim" autocomplete="off"></label>
-        <label class="c1 meia">UF<input name="uf" value="${esc(c.uf || "")}" placeholder="MG" maxlength="2" autocomplete="off"></label>
+        <label class="c3">Bairro<input name="bairro" value="${esc(c.bairro || "")}" placeholder="Centro" autocomplete="off"></label>
+        <label class="c4 meia">Cidade<input name="cidade" value="${esc(c.cidade)}" placeholder="Betim" autocomplete="off"></label>
+        <label class="c2 meia">UF<input name="uf" value="${esc(c.uf || "")}" placeholder="MG" maxlength="2" autocomplete="off"></label>
         <label class="c6">Ponto de referência (opcional)<input name="referencia" value="${esc(c.referencia || "")}" placeholder="Em frente à praça, entrada pelos fundos" autocomplete="off"></label>
         <label class="c2">Pessoa de contato<input name="contato" value="${esc(c.contato)}" autocomplete="off"></label>
         <label class="c2">Telefone ou WhatsApp<input name="telefone" type="tel" value="${esc(c.telefone)}" placeholder="(31) 9..." autocomplete="off"></label>
@@ -442,9 +544,13 @@ a.item:active { transform: scale(.995); }
       <div class="salvar-barra">
         <button class="btn" type="button" id="salvar">${novo ? "Cadastrar" : "Salvar"}</button>
         <p class="estado" id="estado" role="status"></p>
-        ${novo ? "" : '<button class="texto-btn perigo apagar" type="button" id="apagar">Apagar contratante</button>'}
+        ${novo || c.arquivado ? "" : '<button class="texto-btn perigo apagar" type="button" id="apagar">Arquivar contratante</button>'}
       </div></div>
       ${novo ? "" : `
+      ${ultimaAut ? `<p class="ajuda">Autorização de contato: <strong>${{ livre: "livre", conversa: "em conversa", pediu_contato: "pediu contato", bloqueado: "bloqueado" }[ultimaAut.situacao] || ultimaAut.situacao}</strong> — ${esc(ultimaAut.prova)}</p>` : `<p class="ajuda">Autorização de contato: ${c.origem === "csv" ? "importado por planilha, sem autorização registrada" : "nenhuma registrada ainda"}. O primeiro contato é sempre manual, com o seu toque.</p>`}
+      <h2 class="display">Mensagens no WhatsApp</h2>
+      <div id="mensagens">${listaMensagens(f.mensagens)}</div>
+      ${f.campanhas.length ? `<h2 class="display">Campanhas</h2><ul class="lista">${f.campanhas.map((x) => `<li><a class="item" href="#campanha/${x.id}"><span class="nome">${esc(x.nome)}</span><span class="lado"><span class="etiqueta">${SIT_DEST[x.situacao] || x.situacao}</span></span><span class="meta">${STATUS_CAMP[x.status] || x.status}${x.situacao === "aguardando" && x.cobrar_em ? " · cobrança em " + dataCurta(x.cobrar_em) : ""}</span></a></li>`).join("")}</ul>` : ""}
       <h2 class="display">Histórico</h2>
       <div class="nova-nota"><label>O que aconteceu<textarea id="texto-nota" rows="2" placeholder="Liguei, pediu proposta para março"></textarea></label><button class="btn btn-sec" type="button" id="anotar">Anotar</button></div>
       <ul class="notas" id="notas"><li><span class="quando">Carregando...</span></li></ul>
@@ -476,27 +582,53 @@ a.item:active { transform: scale(.995); }
       const dados = Object.fromEntries(new FormData(form));
       if (!dados.nome.trim()) { estado("Dê um nome ao contratante.", "ruim"); form.nome.focus(); return; }
       salvar(novo ? "gestao/contratantes" : "gestao/contratantes/" + c.id, novo ? "POST" : "PUT", dados, (r) => {
-        if (novo) D.contratantes.unshift(r); else Object.assign(c, r);
+        guardarLeve(r);
         sujo = false;
-        if (novo) location.hash = "#contratante/" + r.id; else estado("Salvo.", "ok");
+        if (novo) location.hash = "#contratante/" + r.id;
+        else { estado("Salvo.", "ok"); if (r.telefone_norm !== c.telefone_norm) desenharFicha({ ...f, contratante: r }); else Object.assign(c, r); }
+      }, (r) => {
+        // telefone ou e-mail já cadastrado: mostra o cadastro que já existe
+        if (r.existente) $("#estado").innerHTML = `${esc(r.erro)} <a href="#contratante/${r.existente.id}">Abrir ${esc(r.existente.nome)}</a>`;
+        if (r.campo && form[r.campo]) form[r.campo].focus();
       });
     });
     if (novo) { form.nome.focus(); return; }
-    $("#apagar").addEventListener("click", () => {
-      if (!confirm(`Apagar ${c.nome} e todo o histórico? Os shows ficam, sem contratante.`)) return;
+
+    const recarregar = (msg) => api("gestao/contratantes/" + c.id).then((nf) => { if (nf.contratante) { guardarLeve(nf.contratante); desenharFicha(nf); if (msg) acaoEstado(msg, "ok"); } });
+    const acaoEstado = (t, tipo) => { const e = $("#estado-acao"); if (e) { e.textContent = t; e.className = "estado" + (tipo ? " " + tipo : ""); } };
+    if ($("#apagar")) $("#apagar").addEventListener("click", () => {
+      if (!confirm(`Arquivar ${c.nome}? Sai das listas e das campanhas, mas o histórico fica guardado e dá para restaurar.`)) return;
       api("gestao/contratantes/" + c.id, "DELETE").then((r) => {
-        if (!r.ok) return estado(r.erro || "Não deu para apagar.", "ruim");
+        if (!r.ok) return estado(r.erro || "Não deu para arquivar.", "ruim");
         D.contratantes = D.contratantes.filter((x) => x.id !== c.id);
-        D.shows.forEach((s) => { if (s.contratante_id === c.id) s.contratante_id = null; });
         sujo = false; location.hash = "#contratantes";
       });
     });
+    if ($("#restaurar")) $("#restaurar").addEventListener("click", () => api(`gestao/contratantes/${c.id}/restaurar`, "POST").then(() => recarregar("Restaurado.")));
+    if ($("#desbloquear")) $("#desbloquear").addEventListener("click", () => {
+      const motivo = prompt("Por que desbloquear? Escreva a prova do novo pedido (por exemplo: \"pediu para voltar a receber em 10/11\"). Fica registrado.");
+      if (!motivo) return;
+      if (!confirm(`Desbloquear ${c.nome}? A casa volta a poder receber mensagens.`)) return;
+      api(`gestao/contratantes/${c.id}/desbloquear`, "POST", { confirmo: true, motivo }).then((r) => (r.erro ? alert(r.erro) : recarregar("Desbloqueado.")));
+    });
+    if ($("#respondeu")) $("#respondeu").addEventListener("click", (ev) => {
+      ev.target.disabled = true;
+      api(`gestao/contratantes/${c.id}/respondeu`, "POST", {}).then((r) => (r.erro ? acaoEstado(r.erro, "ruim") : recarregar("Marcado: respondeu. Etapa em negociação e próxima ação para hoje.")));
+    });
+    if ($("#parar")) $("#parar").addEventListener("click", () => {
+      const detalhe = prompt(`${c.nome} pediu para não receber mais mensagens? Se quiser, cole o que a pessoa escreveu (fica como prova).`, "");
+      if (detalhe === null) return;
+      api(`gestao/contratantes/${c.id}/parar`, "POST", { detalhe }).then((r) => (r.erro ? acaoEstado(r.erro, "ruim") : recarregar("Bloqueado. A casa saiu de todas as campanhas.")));
+    });
+    if ($("#zap")) $("#zap").addEventListener("click", () => abrirCaixaZap(c, () => recarregar()));
+    ligarMensagens($("#mensagens"), () => recarregar());
+
     const desenharNotas = (lista) => {
       $("#notas").innerHTML = lista.length ? lista.map((n) => `<li data-n="${n.id}"><span class="quando">${new Date(n.criado).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}</span><button class="texto-btn" type="button" data-tirar>Apagar</button><span class="texto">${esc(n.texto)}</span></li>`).join("")
         : '<li><span class="texto">Nada anotado ainda. Registre cada contato para saber onde a conversa parou.</span></li>';
     };
     let notas = [];
-    api(`gestao/contratantes/${c.id}/notas`).then((r) => { notas = Array.isArray(r) ? r : []; desenharNotas(notas); });
+    api(`gestao/contratantes/${c.id}/notas`).then((r) => { notas = Array.isArray(r) ? r : []; if ($("#notas")) desenharNotas(notas); });
     $("#anotar").addEventListener("click", () => {
       const t = $("#texto-nota");
       if (!t.value.trim()) { t.focus(); return; }
@@ -510,6 +642,141 @@ a.item:active { transform: scale(.995); }
       const li = ev.target.closest("[data-n]"), nid = Number(li.dataset.n);
       if (!confirm("Apagar esta anotação?")) return;
       api("gestao/notas/" + nid, "DELETE").then((r) => { if (r.ok) { notas = notas.filter((n) => n.id !== nid); desenharNotas(notas); } });
+    });
+  }
+
+  /* ---------- whatsapp ---------- */
+  // abre o WhatsApp com o link que o servidor devolveu; a janela é aberta já no toque para o navegador não bloquear
+  function abrirNoWhats(registrar) {
+    let janela = null;
+    if (D.config.simulacao !== "1") { try { janela = window.open("", "_blank"); } catch { janela = null; } }
+    return registrar().then((r) => {
+      if (!r.link || r.simulada || r.repetida) { if (janela) janela.close(); return r; }
+      if (janela) { janela.opener = null; janela.location.href = r.link; } else location.href = r.link;
+      return r;
+    }).catch(() => { if (janela) janela.close(); return { erro: "Sem conexão. Tente de novo." }; });
+  }
+
+  function listaMensagens(lista) {
+    if (!lista || !lista.length) return '<p class="vazio">Nenhuma mensagem aberta pelo sistema ainda.</p>';
+    return `<ul class="notas">${lista.map((m) => `<li data-m="${m.id}">
+      <span class="quando">${dataHora(m.criado)} · ${TIPO_MSG[m.tipo] || m.tipo}${m.modelo ? " · " + esc(m.modelo) : ""}${m.simulada ? " · simulação" : ""}</span>
+      <span class="etiqueta ${m.situacao === "aberta" ? "e-site" : m.situacao === "enviada" ? "e-fechado" : "e-cancelado"}">${SIT_MSG[m.situacao] || m.situacao}</span>
+      <span class="texto">${esc(m.texto)}</span>
+      ${m.situacao === "aberta" ? `<span class="acoes-msg"><button class="btn" type="button" data-enviou="1">Enviei</button><button class="btn btn-sec" type="button" data-enviou="0">Não enviei</button><button class="texto-btn" type="button" data-reabrir>Abrir de novo</button></span>` : ""}
+    </li>`).join("")}</ul>`;
+  }
+  function ligarMensagens(caixa, depois) {
+    if (!caixa) return;
+    caixa.addEventListener("click", (ev) => {
+      const li = ev.target.closest("[data-m]");
+      if (!li) return;
+      const id = li.dataset.m;
+      if (ev.target.hasAttribute("data-enviou")) {
+        ev.target.disabled = true;
+        api(`gestao/mensagens/${id}/confirmar`, "POST", { enviou: ev.target.dataset.enviou === "1" }).then((r) => { if (r.erro) alert(r.erro); depois(); });
+      } else if (ev.target.hasAttribute("data-reabrir")) {
+        if (!confirm("Abrir esta mesma mensagem de novo no WhatsApp? Não cria um registro novo.")) return;
+        abrirNoWhats(() => api(`gestao/mensagens/${id}/reabrir`, "POST", {})).then((r) => { if (r.erro) alert(r.erro); });
+      }
+    });
+  }
+
+  // caixa da ficha: escolhe o modelo, confere o texto e abre no WhatsApp
+  function abrirCaixaZap(c, depois) {
+    const caixa = $("#caixa-zap");
+    if (!caixa.hidden) { caixa.hidden = true; return; }
+    caixa.hidden = false;
+    caixa.innerHTML = '<p class="ajuda">Carregando os modelos...</p>';
+    const chave = chaveNova();
+    let regra = null;
+    carregarModelos().then(() => {
+      const ativos = modelos.filter((m) => m.ativo);
+      // sugere o modelo da etapa da casa, de preferência o do mesmo perfil musical
+      const etapa = { contatar: "primeiro", contatado: "cobranca", negociando: "proposta" }[c.etapa] || "outro";
+      const daEtapa = ativos.filter((m) => m.etapa === etapa);
+      const sugerido = daEtapa.find((m) => c.perfil && m.perfil === c.perfil) || daEtapa.find((m) => !m.perfil) || null;
+      caixa.innerHTML = `
+        <div class="ficha">
+          <label class="c6">Modelo<select id="zap-modelo">${ativos.map((m) => `<option value="${m.id}"${m === sugerido ? " selected" : ""}>${esc(m.nome)} (${nomeDe(ETAPAS_MODELO, m.etapa)})</option>`).join("")}<option value=""${sugerido ? "" : " selected"}>Escrever sem modelo</option></select></label>
+          <label class="c6">Mensagem (pode ajustar antes de abrir)<textarea id="zap-texto" rows="8"></textarea></label>
+        </div>
+        <p class="estado" id="zap-aviso" role="status"></p>
+        <div class="acoes-rapidas" style="margin:12px 0 0"><button class="btn" type="button" id="zap-abrir">Abrir no WhatsApp</button><button class="texto-btn" type="button" id="zap-fechar">Cancelar</button></div>
+        <p class="ajuda" style="margin:12px 0 0">Versão gratuita: o sistema abre o seu WhatsApp com o texto pronto, e quem envia é você. Não há envio automático nem aviso de entregue ou lida. As respostas chegam só no celular: marque aqui "Respondeu" ou "Pediu para parar".</p>`;
+      const aviso = (t, tipo) => { const e = $("#zap-aviso"); e.textContent = t; e.className = "estado" + (tipo ? " " + tipo : ""); };
+      const previa = () => {
+        const id = $("#zap-modelo").value;
+        api("gestao/mensagens/previa", "POST", { contratante_id: c.id, modelo_id: id ? Number(id) : null, texto: id ? null : $("#zap-texto").value }).then((r) => {
+          if (id) $("#zap-texto").value = r.texto || "";
+          regra = r.regra;
+          const problemas = [...(r.erros || []), ...(r.regra && !r.regra.ok ? [r.regra.erro] : [])];
+          aviso(problemas.join(" ") || (r.simulacao ? "Modo simulação: a mensagem fica registrada como teste e o WhatsApp não abre." : r.tipo === "abordagem" ? "Primeiro contato: conta no limite diário de novas abordagens." : ""), problemas.length ? "ruim" : "");
+        });
+      };
+      $("#zap-modelo").addEventListener("change", previa);
+      $("#zap-fechar").addEventListener("click", () => { caixa.hidden = true; });
+      $("#zap-abrir").addEventListener("click", () => {
+        let forcar = false;
+        if (regra && !regra.ok && regra.codigo === "intervalo") {
+          if (!confirm(regra.erro + "\n\nAbrir mesmo assim?")) return;
+          forcar = true;
+        }
+        const b = $("#zap-abrir"); b.disabled = true;
+        const id = $("#zap-modelo").value;
+        abrirNoWhats(() => api("gestao/mensagens", "POST", { chave, contratante_id: c.id, modelo_id: id ? Number(id) : null, texto: $("#zap-texto").value, forcar })).then((r) => {
+          b.disabled = false;
+          if (r.erro) return aviso(r.erro, "ruim");
+          caixa.hidden = true;
+          depois();
+        });
+      });
+      if (!ativos.length) aviso("Nenhum modelo ativo. Escreva a mensagem ou crie um modelo em Campanhas > Modelos.");
+      previa();
+    });
+  }
+
+  /* ---------- importar ---------- */
+  function telaImportar() {
+    const exemplo = "﻿Nome;Contato;Telefone;E-mail;Cidade;UF;Categoria;Perfil;Observações\r\nBar do Exemplo;Ana Souza;(31) 99999-0000;contato@bardoexemplo.com.br;Betim;MG;Bar ou casa de show;Autoral;Toca rock às sextas\r\n";
+    tela.innerHTML = `
+      <a class="voltar" href="#contratantes">Voltar para contratantes</a>
+      <div class="cabeca"><h1 class="display">Importar planilha</h1></div>
+      <p class="ajuda">Salve a planilha como CSV (no Excel: Arquivo > Salvar como > CSV; no Google Planilhas: Arquivo > Fazer download > CSV). A primeira linha precisa ter os títulos. Colunas reconhecidas: Nome, Contato, Telefone (ou WhatsApp), E-mail, Cidade, UF, Categoria, Perfil, Instagram, Observações. Até 1.000 linhas por vez.</p>
+      <p class="ajuda">Antes de gravar, o sistema mostra quantas linhas entram e quais ficam de fora, com o motivo. Quem é importado entra como "a contatar": a importação não conta como contato feito nem autoriza mensagens.</p>
+      <div class="acoes-rapidas"><a class="btn btn-sec" download="modelo-contratantes-7a.csv" href="data:text/csv;charset=utf-8,${encodeURIComponent(exemplo)}">Baixar planilha de exemplo</a></div>
+      <label style="max-width:520px">Arquivo CSV<input type="file" id="arquivo" accept=".csv,text/csv"></label>
+      <p class="estado" id="estado" role="status" style="margin-top:12px"></p>
+      <div id="previa-csv"></div>`;
+    let csv = "";
+    $("#arquivo").addEventListener("change", (ev) => {
+      const arq = ev.target.files[0];
+      if (!arq) return;
+      $("#previa-csv").innerHTML = "";
+      estado("Lendo o arquivo...");
+      arq.arrayBuffer().then((buf) => {
+        // Excel em português costuma salvar em Windows-1252; Google Planilhas, em UTF-8
+        try { csv = new TextDecoder("utf-8", { fatal: true }).decode(buf); } catch { csv = new TextDecoder("windows-1252").decode(buf); }
+        return api("gestao/contratantes/importar", "POST", { csv });
+      }).then((r) => {
+        if (r.erro) return estado(r.erro, "ruim");
+        estado("");
+        $("#previa-csv").innerHTML = `
+          <dl class="numeros" style="margin-top:8px"><div><dt>Entram</dt><dd class="num">${r.entram}</dd><small>de ${r.total} linhas</small></div><div><dt>Ficam de fora</dt><dd class="num">${r.recusadas.length}</dd></div><div><dt>Colunas reconhecidas</dt><dd style="font:600 15px/1.4 var(--f-texto)">${r.colunas.map(esc).join(", ")}</dd></div></dl>
+          ${r.amostra.length ? `<h2 class="display">Como vão entrar</h2><ul class="lista">${r.amostra.map((x) => `<li><div class="item"><span class="nome">${esc(x.nome)}</span><span class="meta">${[x.contato, x.telefone, x.cidade].filter(Boolean).map(esc).join(" · ") || "&nbsp;"}</span></div></li>`).join("")}</ul>${r.entram > r.amostra.length ? `<p class="ajuda">E mais ${r.entram - r.amostra.length}.</p>` : ""}` : ""}
+          ${r.recusadas.length ? `<h2 class="display">Ficam de fora</h2><ul class="lista">${r.recusadas.map((x) => `<li><div class="item"><span class="nome">Linha ${x.linha}: ${esc(x.nome)}</span><span class="meta">${esc(x.motivo)}</span></div></li>`).join("")}</ul>` : ""}
+          ${r.entram ? `<div class="salvar-barra"><button class="btn" type="button" id="importar">Importar ${r.entram} contato${r.entram > 1 ? "s" : ""}</button><p class="estado" id="estado-imp" role="status"></p></div>` : '<p class="vazio">Nenhuma linha pode entrar. Corrija o arquivo e escolha de novo.</p>'}`;
+        if (!r.entram) return;
+        $("#importar").addEventListener("click", (ev) => {
+          ev.target.disabled = true;
+          api("gestao/contratantes/importar", "POST", { csv, confirmar: true }).then((f) => {
+            if (f.erro) { ev.target.disabled = false; $("#estado-imp").textContent = f.erro; return; }
+            $("#previa-csv").innerHTML = `<p class="aviso">${f.inseridos} contato${f.inseridos === 1 ? "" : "s"} importado${f.inseridos === 1 ? "" : "s"}${f.recusadas.length ? `, ${f.recusadas.length} linha${f.recusadas.length > 1 ? "s" : ""} de fora` : ""}. <a href="#contratantes">Ver contratantes</a></p>`;
+            $("#arquivo").value = "";
+            api("gestao/dados").then((d) => { if (d.contratantes) D = d; });
+          });
+        });
+      }).catch(() => estado("Não deu para ler o arquivo.", "ruim"));
     });
   }
 
@@ -788,6 +1055,292 @@ a.item:active { transform: scale(.995); }
     });
   }
 
+  /* ---------- campanhas ---------- */
+  const VERSAO_GRATIS = '<p class="ajuda">Versão gratuita: o sistema monta cada mensagem e abre o seu WhatsApp com o texto pronto; você confere e toca em enviar, uma por vez. Não há envio automático, disparo em lote, nem aviso de entregue ou lida. As respostas chegam só no celular: marque "Respondeu" ou "Pediu para parar" aqui.</p>';
+
+  function telaCampanhas() {
+    tela.innerHTML = `
+      <div class="cabeca"><h1 class="display">Campanhas</h1><div class="acoes-rapidas" style="margin:0"><a class="btn btn-sec" href="#modelos">Modelos de mensagem</a><a class="btn" href="#campanha/nova">Nova campanha</a></div></div>
+      ${VERSAO_GRATIS}
+      <div class="filtros" id="periodo" role="group" aria-label="Período dos números">${[7, 30, 90].map((n) => `<button type="button" data-dias="${n}" aria-pressed="${n === 30}">${n} dias</button>`).join("")}</div>
+      <dl class="numeros" id="indicadores"><div><dt>Carregando...</dt><dd>&nbsp;</dd></div></dl>
+      <h2 class="display">Campanhas</h2>
+      <div id="lista-camp"><p class="vazio">Carregando...</p></div>`;
+    const indicadores = (dias) => api("gestao/indicadores?dias=" + dias).then((r) => {
+      if (!$("#indicadores") || r.enviadas == null) return;
+      $("#indicadores").innerHTML = `
+        <div><dt>Mensagens enviadas</dt><dd class="num">${r.enviadas}</dd><small>${r.por_tipo.abordagem} primeiros contatos · ${r.por_tipo.cobranca} cobranças · ${r.por_tipo.avulsa} avulsas</small></div>
+        <div><dt>Responderam</dt><dd class="num">${r.respostas}</dd><small>${r.taxa_resposta != null ? r.taxa_resposta + "% das enviadas" : "—"}</small></div>
+        <div><dt>Pediram para parar</dt><dd class="num">${r.bloqueios}</dd><small>No funil hoje: ${r.funil.negociando} negociando, ${r.funil.fechado} fechados</small></div>`;
+    });
+    $("#periodo").addEventListener("click", (ev) => {
+      const b = ev.target.closest("[data-dias]"); if (!b) return;
+      $("#periodo").querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+      indicadores(Number(b.dataset.dias));
+    });
+    indicadores(30);
+    api("gestao/campanhas").then((r) => {
+      if (!$("#lista-camp")) return;
+      if (!Array.isArray(r)) { $("#lista-camp").innerHTML = `<p class="vazio">${esc(r.erro || "Não deu para carregar.")}</p>`; return; }
+      $("#lista-camp").innerHTML = r.length ? `<ul class="lista">${r.map((c) => `<li><a class="item" href="#campanha/${c.id}">
+        <span class="nome">${esc(c.nome)}</span>
+        <span class="lado"><span class="etiqueta e-${c.status}">${STATUS_CAMP[c.status]}</span>${c.simulada ? "<span>Simulação</span>" : ""}</span>
+        <span class="meta">${c.status === "rascunho" ? "Falta revisar a prévia e confirmar" : `${c.total} casas · ${c.pendentes} na fila · ${c.cobrar_hoje ? c.cobrar_hoje + " cobranças para hoje · " : ""}${c.respostas} respostas`}</span></a></li>`).join("")}</ul>`
+        : '<p class="vazio">Nenhuma campanha ainda. Uma campanha junta as casas de um público (por exemplo, todas "a contatar" de Betim com perfil autoral) e mostra uma por uma, com a mensagem pronta para abrir no WhatsApp.<br><a class="btn" href="#campanha/nova">Criar a primeira</a></p>';
+    });
+  }
+
+  function fichaCampanha(id) {
+    const voltar = '<a class="voltar" href="#campanhas">Voltar para campanhas</a>';
+    if (id === "nova") return carregarModelos().then(() => formCampanha(null));
+    tela.innerHTML = voltar + '<p class="vazio">Carregando...</p>';
+    Promise.all([api("gestao/campanhas/" + Number(id)), carregarModelos()]).then(([f]) => {
+      if (location.hash !== "#campanha/" + id) return;
+      if (!f.campanha) { tela.innerHTML = voltar + '<p class="vazio">Campanha não encontrada.</p>'; return; }
+      if (f.campanha.status === "rascunho") formCampanha(f.campanha);
+      else painelCampanha(f);
+    });
+  }
+
+  function formCampanha(ca) {
+    const novo = !ca;
+    const pub = ca ? JSON.parse(ca.publico || "{}") : { lista: "contatar", perfil: "", cidade: "", tipo: "" };
+    const v = ca || { nome: "", objetivo: "", modelo_id: null, cobranca_modelo_id: null, cobranca_dias: 3, inicio: "" };
+    const ativos = modelos.filter((m) => m.ativo);
+    const cidades = [...new Set(D.contratantes.map((c) => c.cidade).filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+    tela.innerHTML = `
+      <a class="voltar" href="#campanhas">Voltar para campanhas</a>
+      <div class="cabeca"><h1 class="display">${novo ? "Nova campanha" : esc(ca.nome)}</h1>${novo ? "" : '<span class="etiqueta e-rascunho">Rascunho</span>'}</div>
+      <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
+        <label class="c6">Nome<input name="nome" value="${esc(v.nome)}" placeholder="Bares de Betim, novembro" autocomplete="off"></label>
+        <label class="c6">Objetivo<input name="objetivo" value="${esc(v.objetivo)}" placeholder="Apresentar o casting e marcar datas de dezembro" autocomplete="off"></label>
+        <label class="c2">Público<select name="lista">${opcoes(LISTAS, pub.lista)}</select></label>
+        <label class="c2">Perfil musical<select name="perfil"><option value="">Todos</option>${opcoes(PERFIS.slice(1), pub.perfil)}</select></label>
+        <label class="c2">Cidade<input name="cidade" list="cidades" value="${esc(pub.cidade)}" placeholder="Todas" autocomplete="off"><datalist id="cidades">${cidades.map((c) => `<option value="${esc(c)}">`).join("")}</datalist></label>
+        <label class="c2">Tipo de casa<select name="tipo"><option value="">Todos</option>${opcoes(TIPOS, pub.tipo)}</select></label>
+        <label class="c4">Modelo de mensagem<select name="modelo_id"><option value="">Automático (pela etapa e pelo perfil de cada casa)</option>${ativos.map((m) => `<option value="${m.id}"${m.id === v.modelo_id ? " selected" : ""}>${esc(m.nome)}</option>`).join("")}</select></label>
+        <label class="c2">Início<input name="inicio" type="datetime-local" value="${esc(v.inicio)}"><span class="dica">Vazio: começa ao confirmar.</span></label>
+        <label class="c2">Cobrança sem resposta<select name="cobranca_dias">${[[0, "Sem cobrança"], [3, "3 dias depois"], [5, "5 dias depois"], [7, "7 dias depois"]].map(([n, t]) => `<option value="${n}"${Number(v.cobranca_dias) === n ? " selected" : ""}>${t}</option>`).join("")}</select></label>
+        <label class="c4">Modelo da cobrança<select name="cobranca_modelo_id"><option value="">Automático (modelo de cobrança do perfil)</option>${ativos.filter((m) => m.etapa === "cobranca").map((m) => `<option value="${m.id}"${m.id === v.cobranca_modelo_id ? " selected" : ""}>${esc(m.nome)}</option>`).join("")}</select></label>
+      </form>
+      <div class="salvar-barra">
+        <button class="btn" type="button" id="salvar">${novo ? "Criar e ver a prévia" : "Salvar e ver a prévia"}</button>
+        <p class="estado" id="estado" role="status"></p>
+        ${novo ? "" : '<button class="texto-btn perigo apagar" type="button" id="cancelar">Descartar rascunho</button>'}
+      </div></div>
+      <div id="previa"></div>`;
+    const form = $("#ficha");
+    form.addEventListener("input", () => { sujo = true; estado(""); $("#previa").innerHTML = ""; });
+    const ler = () => {
+      const f = Object.fromEntries(new FormData(form));
+      return { nome: f.nome, objetivo: f.objetivo, publico: { lista: f.lista, perfil: f.perfil, cidade: f.cidade.trim(), tipo: f.tipo }, modelo_id: f.modelo_id ? Number(f.modelo_id) : null, cobranca_modelo_id: f.cobranca_modelo_id ? Number(f.cobranca_modelo_id) : null, cobranca_dias: Number(f.cobranca_dias), inicio: f.inicio };
+    };
+    $("#salvar").addEventListener("click", () => {
+      const dados = ler();
+      if (!dados.nome.trim()) { estado("Dê um nome à campanha.", "ruim"); form.nome.focus(); return; }
+      salvar(novo ? "gestao/campanhas" : "gestao/campanhas/" + ca.id, novo ? "POST" : "PUT", dados, (r) => {
+        sujo = false;
+        if (novo) { location.hash = "#campanha/" + r.id; return; }
+        Object.assign(ca, r); estado("Salvo.", "ok"); mostrarPrevia(ca);
+      });
+    });
+    if (novo) { form.nome.focus(); return; }
+    $("#cancelar").addEventListener("click", () => {
+      if (!confirm("Descartar este rascunho? Ele fica como cancelado no histórico.")) return;
+      api(`gestao/campanhas/${ca.id}/cancelar`, "POST").then(() => { sujo = false; location.hash = "#campanhas"; });
+    });
+    mostrarPrevia(ca);
+  }
+
+  // o que o operador precisa ver antes de iniciar; a confirmação manda a assinatura desta lista
+  function mostrarPrevia(ca, avisoMudou) {
+    const caixa = $("#previa");
+    caixa.innerHTML = '<p class="vazio">Montando a prévia...</p>';
+    api(`gestao/campanhas/${ca.id}/previa`).then((p) => desenharPrevia(ca, p, avisoMudou));
+  }
+  function desenharPrevia(ca, p, avisoMudou) {
+    const caixa = $("#previa");
+    if (!caixa) return;
+    if (!p.incluidos) { caixa.innerHTML = `<p class="vazio">${esc(p.erro || "Não deu para montar a prévia.")}</p>`; return; }
+    const e = p.estimativa;
+    const porMotivo = {};
+    p.excluidos.forEach((x) => { const k = x.motivo.replace(/ \(.*\)$/, "").replace(/"[^"]*"/, "outra"); porMotivo[k] = (porMotivo[k] || 0) + 1; });
+    caixa.innerHTML = `
+      <h2 class="display">Prévia</h2>
+      ${avisoMudou ? `<p class="aviso aviso-forte">${esc(avisoMudou)}</p>` : ""}
+      ${p.alertas.map((a) => `<p class="aviso">${esc(a)}</p>`).join("")}
+      <dl class="numeros">
+        <div><dt>Destinatários</dt><dd class="num">${p.incluidos.length}</dd><small>${e.toques} toques para abrir, um por mensagem, e um para confirmar cada envio</small></div>
+        <div><dt>Excluídos</dt><dd class="num">${p.excluidos.length}</dd><small>${Object.entries(porMotivo).map(([k, n]) => `${n} ${k.toLowerCase()}`).join(" · ") || "Nenhum"}</small></div>
+        <div><dt>Quando</dt><dd style="font:700 16px/1.4 var(--f-texto)">${p.inicio ? `${dataCurta(p.inicio.slice(0, 10))} às ${p.inicio.slice(11)}` : "Ao confirmar"}</dd><small>${e.abordagens} primeiros contatos · limite de ${e.limite} por dia${e.dias > 1 ? ` · uns ${e.dias} dias` : ""}${p.cobranca.dias ? ` · cobrança ${p.cobranca.dias} dias depois, sem resposta (${esc(p.cobranca.modelo)})` : " · sem cobrança"}</small></div>
+      </dl>
+      ${p.incluidos.length ? `<h2 class="display">Quem recebe</h2><ul class="lista">${p.incluidos.map((x, i) => `<li><details class="item item-texto"><summary><span class="nome">${i + 1}. ${esc(x.nome)}</span><span class="meta">${[x.cidade, x.telefone, x.modelo].filter(Boolean).map(esc).join(" · ")}</span></summary><p class="texto-msg">${esc(x.texto)}</p></details></li>`).join("")}</ul>` : ""}
+      ${p.excluidos.length ? `<h2 class="display">Ficam de fora</h2><ul class="lista">${p.excluidos.map((x) => `<li><a class="item" href="#contratante/${x.contratante_id}"><span class="nome">${esc(x.nome)}</span><span class="meta">${esc(x.motivo)}</span></a></li>`).join("")}</ul>` : ""}
+      ${p.incluidos.length ? `<div class="salvar-barra"><button class="btn" type="button" id="confirmar">Confirmar e iniciar com ${p.incluidos.length} casa${p.incluidos.length > 1 ? "s" : ""}</button><p class="estado" id="estado-conf" role="status"></p></div>` : ""}`;
+    if (!p.incluidos.length) return;
+    $("#confirmar").addEventListener("click", (ev) => {
+      if (sujo) return ($("#estado-conf").textContent = "Salve as mudanças antes de confirmar.");
+      if (!confirm(`Iniciar "${ca.nome}" com ${p.incluidos.length} casas? A fila grava exatamente esta lista. Cada mensagem ainda depende do seu toque.`)) return;
+      ev.target.disabled = true;
+      api(`gestao/campanhas/${ca.id}/confirmar`, "POST", { assinatura: p.assinatura }).then((r) => {
+        if (r.codigo === "mudou") return desenharPrevia(ca, r.previa, r.erro);
+        if (r.erro) { ev.target.disabled = false; $("#estado-conf").textContent = r.erro; return; }
+        fichaCampanha(String(ca.id));
+      });
+    });
+  }
+
+  function painelCampanha(f) {
+    const ca = f.campanha, k = f.indicadores;
+    const ativa = ca.status === "andamento" || ca.status === "pausada";
+    tela.innerHTML = `
+      <a class="voltar" href="#campanhas">Voltar para campanhas</a>
+      <div class="cabeca"><div><h1 class="display">${esc(ca.nome)}</h1>${ca.objetivo ? `<p>${esc(ca.objetivo)}</p>` : ""}</div>
+        <div class="acoes-rapidas" style="margin:0"><span class="etiqueta e-${ca.status}" style="align-self:center">${STATUS_CAMP[ca.status]}${ca.simulada ? " · simulação" : ""}</span>
+        ${ca.status === "andamento" ? '<button class="btn btn-sec" type="button" data-acao="pausar">Pausar</button>' : ""}
+        ${ca.status === "pausada" ? '<button class="btn" type="button" data-acao="retomar">Retomar</button>' : ""}
+        ${ativa ? '<button class="texto-btn perigo" type="button" data-acao="cancelar">Cancelar campanha</button>' : ""}</div></div>
+      ${ativa ? '<div id="fila" class="fila"><p class="vazio">Carregando a fila...</p></div>' : ""}
+      <dl class="numeros" style="margin-top:20px">
+        <div><dt>Abertas no WhatsApp</dt><dd class="num">${k.abertas}</dd><small>${k.enviadas} confirmadas como enviadas</small></div>
+        <div><dt>Respostas</dt><dd class="num">${k.respostas}</dd><small>${k.fechamentos} fecharam show</small></div>
+        <div><dt>Bloqueios</dt><dd class="num">${k.bloqueios}</dd><small>${k.pendentes} na fila · ${k.aguardando_cobranca} esperando cobrança</small></div>
+      </dl>
+      <h2 class="display">Casas</h2>
+      <ul class="lista">${f.destinatarios.map((d) => `<li><a class="item" href="#contratante/${d.contratante_id}"><span class="nome">${d.ordem}. ${esc(d.nome)}</span><span class="lado"><span class="etiqueta">${SIT_DEST[d.situacao] || d.situacao}</span></span><span class="meta">${[d.cidade, d.situacao === "aguardando" && d.cobrar_em ? "cobrança em " + dataCurta(d.cobrar_em) : "", d.motivo].filter(Boolean).map(esc).join(" · ") || "&nbsp;"}</span></a></li>`).join("")}</ul>
+      <h2 class="display">Histórico</h2>
+      <ul class="notas">${f.historico.map((h) => `<li><span class="quando">${dataHora(h.quando)}</span><span class="texto">${esc(h.acao.charAt(0).toUpperCase() + h.acao.slice(1))}${h.detalhe ? ": " + esc(h.detalhe) : ""}</span></li>`).join("")}</ul>`;
+    tela.querySelectorAll("[data-acao]").forEach((b) => b.addEventListener("click", () => {
+      const acao = b.dataset.acao;
+      if (acao === "cancelar" && !confirm("Cancelar a campanha? Quem ainda está na fila sai dela, e não dá para retomar.")) return;
+      api(`gestao/campanhas/${ca.id}/${acao}`, "POST").then((r) => { if (r.erro) alert(r.erro); fichaCampanha(String(ca.id)); });
+    }));
+    if (ativa) desenharFila(ca);
+  }
+
+  // a fila: uma casa por vez, com a mensagem pronta
+  function desenharFila(ca) {
+    const caixa = $("#fila");
+    const recarregar = () => fichaCampanha(String(ca.id));
+    api(`gestao/campanhas/${ca.id}/fila`).then((r) => {
+      if (!$("#fila")) return;
+      const cont = r.contagem || {};
+      const resumo = `${cont.pendente || 0} na fila${cont.aguardando ? ` · ${cont.aguardando.n} esperando cobrança (a próxima em ${dataCurta(cont.aguardando.proxima)})` : ""}`;
+      if (r.status === "pausada") { caixa.innerHTML = `<p class="vazio">Campanha pausada. Nada é mostrado nem aberto até você retomar. ${resumo}.</p>`; return; }
+      if (r.status === "concluida") return recarregar();
+      if (r.espera) { caixa.innerHTML = `<p class="vazio">A fila abre em ${dataCurta(r.espera.slice(0, 10))} às ${r.espera.slice(11)}. ${resumo}.</p>`; return; }
+      if (r.limite) { caixa.innerHTML = `<p class="aviso">${esc(r.limite)} ${resumo}.</p>`; return; }
+      if (r.vazia) { caixa.innerHTML = `<p class="vazio">Ninguém na vez agora.${r.esperando ? ` ${r.esperando} casa${r.esperando > 1 ? "s esperam" : " espera"} o intervalo mínimo entre mensagens.` : ""} ${resumo}.</p>`; return; }
+      const a = r.atual, c = a.contratante;
+      const chave = chaveNova();
+      caixa.innerHTML = `
+        <p class="fila-topo"><span class="etiqueta ${a.etapa === "cobranca" ? "e-site" : "e-andamento"}">${a.etapa === "cobranca" ? "Cobrança" : "Mensagem"}</span> ${resumo}${r.simulada ? " · simulação, o WhatsApp não abre" : ""}</p>
+        <h2 class="display" style="margin:8px 0 4px"><a href="#contratante/${c.id}" style="text-decoration:none">${esc(c.nome)}</a></h2>
+        <p class="ajuda" style="margin:0 0 12px">${[c.contato, c.cidade, c.telefone].filter(Boolean).map(esc).join(" · ")}</p>
+        <p class="texto-msg">${esc(a.texto)}</p>
+        ${r.mensagem ? `<p class="aviso">Aberta às ${dataHora(r.mensagem.criado).slice(-5)}. Você enviou?</p>
+          <div class="acoes-rapidas"><button class="btn" type="button" data-f="enviei">Enviei</button><button class="btn btn-sec" type="button" data-f="nao">Não enviei</button><button class="texto-btn" type="button" data-f="reabrir">Abrir de novo</button></div>`
+          : `<div class="acoes-rapidas"><button class="btn btn-grande" type="button" data-f="abrir">Abrir no WhatsApp</button><button class="btn btn-sec" type="button" data-f="pular">Pular</button></div>`}
+        <div class="acoes-rapidas" style="margin:0"><button class="texto-btn" type="button" data-f="respondeu">Já respondeu</button><button class="texto-btn perigo" type="button" data-f="parar">Pediu para parar</button></div>
+        <p class="estado" id="estado-fila" role="status"></p>`;
+      const aviso = (t) => { $("#estado-fila").textContent = t; $("#estado-fila").className = "estado ruim"; };
+      caixa.querySelectorAll("[data-f]").forEach((b) => b.addEventListener("click", () => {
+        const f = b.dataset.f;
+        if (f === "abrir") {
+          b.disabled = true;
+          abrirNoWhats(() => api("gestao/mensagens", "POST", { chave, contratante_id: c.id, destinatario_id: a.destinatario_id })).then((m) => (m.erro ? (aviso(m.erro), (b.disabled = false)) : desenharFila(ca)));
+        } else if (f === "enviei" || f === "nao") {
+          b.disabled = true;
+          api(`gestao/mensagens/${r.mensagem.id}/confirmar`, "POST", { enviou: f === "enviei" }).then((m) => (m.erro ? aviso(m.erro) : desenharFila(ca)));
+        } else if (f === "reabrir") {
+          if (confirm("Abrir esta mesma mensagem de novo no WhatsApp? Não cria um registro novo.")) abrirNoWhats(() => api(`gestao/mensagens/${r.mensagem.id}/reabrir`, "POST", {})).then((m) => m.erro && aviso(m.erro));
+        } else if (f === "pular") {
+          const motivo = prompt("Por que pular esta casa? (opcional)", "");
+          if (motivo === null) return;
+          api(`gestao/campanhas/${ca.id}/pular`, "POST", { destinatario_id: a.destinatario_id, motivo }).then((m) => (m.erro ? aviso(m.erro) : desenharFila(ca)));
+        } else if (f === "respondeu") {
+          api(`gestao/contratantes/${c.id}/respondeu`, "POST", {}).then(recarregar);
+        } else if (f === "parar") {
+          const detalhe = prompt(`${c.nome} pediu para não receber mais mensagens? Se quiser, cole o que a pessoa escreveu.`, "");
+          if (detalhe === null) return;
+          api(`gestao/contratantes/${c.id}/parar`, "POST", { detalhe }).then(recarregar);
+        }
+      }));
+    });
+  }
+
+  /* ---------- modelos ---------- */
+  const EXEMPLO = { primeiro_nome: "Ana", nome_contato: "Ana Souza", casa: "Bar do Exemplo", cidade: "Betim", site: "https://7aprodutora.com.br" };
+  // mesma conferência do servidor (src/modelos.js), para avisar enquanto digita
+  function errosModelo(t) {
+    const erros = [];
+    if (!t.trim()) erros.push("Escreva o texto da mensagem.");
+    let i = 0;
+    while (i < t.length) {
+      const abre = t.indexOf("{{", i), fecha = t.indexOf("}}", i);
+      if (abre === -1 && fecha === -1) break;
+      if (abre === -1 || (fecha !== -1 && fecha < abre)) { erros.push("Tem um }} sem o {{ de abertura."); break; }
+      const prox = t.indexOf("{{", abre + 2);
+      if (fecha === -1 || (prox !== -1 && prox < fecha)) { erros.push("Tem uma variável aberta com {{ e não fechada com }}."); break; }
+      const chave = t.slice(abre + 2, fecha).split("|")[0].trim();
+      if (!VARIAVEIS.includes(chave)) erros.push(chave ? `Variável desconhecida: {{${chave}}}.` : "Tem uma variável vazia: {{}}.");
+      i = fecha + 2;
+    }
+    return erros;
+  }
+  const exemploDe = (t) => t.replace(/\{\{([^{}]*)\}\}/g, (todo, dentro) => { const [n, ...r] = dentro.split("|"); return EXEMPLO[n.trim()] || r.join("|").trim() || todo; });
+
+  function telaModelos() {
+    tela.innerHTML = '<a class="voltar" href="#campanhas">Voltar para campanhas</a><div class="cabeca"><h1 class="display">Modelos</h1><a class="btn" href="#modelo/novo">Novo modelo</a></div><div id="lista-mod"><p class="vazio">Carregando...</p></div>';
+    carregarModelos().then(() => {
+      if (!$("#lista-mod")) return;
+      $("#lista-mod").innerHTML = `<p class="ajuda">Nas campanhas automáticas, cada casa recebe o modelo ativo da sua etapa (primeiro contato, cobrança ou proposta), de preferência o do mesmo perfil musical.</p>
+        <ul class="lista">${modelos.map((m) => `<li><a class="item" href="#modelo/${m.id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta${m.ativo ? "" : " e-cancelado"}">${m.ativo ? nomeDe(ETAPAS_MODELO, m.etapa) : "Desativado"}</span></span><span class="meta">${m.perfil ? nomeDe(PERFIS, m.perfil) : "Qualquer perfil"} · ${m.enviadas} enviadas</span></a></li>`).join("")}</ul>`;
+    });
+  }
+
+  function fichaModelo(id) {
+    carregarModelos().then(() => {
+      const novo = id === "novo";
+      const m = novo ? { nome: "", etapa: "primeiro", perfil: "", texto: "", ativo: 1 } : modelos.find((x) => x.id === Number(id));
+      if (!m) { tela.innerHTML = '<a class="voltar" href="#modelos">Voltar para modelos</a><p class="vazio">Modelo não encontrado.</p>'; return; }
+      tela.innerHTML = `
+        <a class="voltar" href="#modelos">Voltar para modelos</a>
+        <div class="cabeca"><h1 class="display">${novo ? "Novo modelo" : esc(m.nome)}</h1></div>
+        <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
+          <label class="c6">Nome<input name="nome" value="${esc(m.nome)}" placeholder="Primeiro contato, bares de rock" autocomplete="off"></label>
+          <label>Etapa<select name="etapa">${opcoes(ETAPAS_MODELO, m.etapa)}</select></label>
+          <label>Perfil musical<select name="perfil"><option value="">Qualquer perfil</option>${opcoes(PERFIS.slice(1), m.perfil)}</select></label>
+          <div class="c6 variaveis"><span>Inserir:</span>${VARIAVEIS.map((v) => `<button type="button" class="btn btn-sec" data-var="${v}">${v}</button>`).join("")}</div>
+          <label class="c6">Texto<textarea name="texto" rows="9">${esc(m.texto)}</textarea><span class="dica">Use {{primeiro_nome|pessoal}} para escrever "pessoal" quando faltar o nome. Sem reserva, a casa sem o dado fica fora da campanha.</span></label>
+          <p class="c6 estado ruim" id="erros-mod" role="status" style="margin:0"></p>
+          <div class="c6"><span class="dica" style="margin:0 0 6px">Como fica (exemplo com Ana, do Bar do Exemplo, em Betim):</span><p class="texto-msg" id="exemplo-mod"></p></div>
+          <label class="c6 marcar"><input type="checkbox" name="ativo"${m.ativo ? " checked" : ""}> Ativo (aparece para escolher e entra nas campanhas automáticas)</label>
+        </form>
+        <div class="salvar-barra"><button class="btn" type="button" id="salvar">${novo ? "Criar modelo" : "Salvar"}</button><p class="estado" id="estado" role="status"></p></div></div>`;
+      const form = $("#ficha");
+      const conferir = () => { $("#erros-mod").textContent = errosModelo(form.texto.value).join(" "); $("#exemplo-mod").textContent = exemploDe(form.texto.value); };
+      form.addEventListener("input", () => { sujo = true; estado(""); conferir(); });
+      form.querySelectorAll("[data-var]").forEach((b) => b.addEventListener("click", () => {
+        const t = form.texto, ins = `{{${b.dataset.var}}}`, p = t.selectionStart ?? t.value.length;
+        t.value = t.value.slice(0, p) + ins + t.value.slice(t.selectionEnd ?? p);
+        t.focus(); t.setSelectionRange(p + ins.length, p + ins.length);
+        sujo = true; conferir();
+      }));
+      conferir();
+      $("#salvar").addEventListener("click", () => {
+        const erros = errosModelo(form.texto.value);
+        if (!form.nome.value.trim()) { estado("Dê um nome ao modelo.", "ruim"); form.nome.focus(); return; }
+        if (erros.length) { estado(erros[0], "ruim"); form.texto.focus(); return; }
+        const dados = { nome: form.nome.value, etapa: form.etapa.value, perfil: form.perfil.value, texto: form.texto.value, ativo: form.ativo.checked };
+        salvar(novo ? "gestao/modelos" : "gestao/modelos/" + m.id, novo ? "POST" : "PUT", dados, (r) => {
+          sujo = false; modelos = null;
+          if (novo) location.hash = "#modelo/" + r.id; else estado("Salvo.", "ok");
+        });
+      });
+    });
+  }
+
   /* ---------- ajustes ---------- */
   function telaAjustes() {
     const c = D.config;
@@ -801,6 +1354,12 @@ a.item:active { transform: scale(.995); }
           <label class="marcar"><input type="radio" name="base" value="bruto"${c.base !== "liquido" ? " checked" : ""}> O cachê bruto</label>
           <label class="marcar"><input type="radio" name="base" value="liquido"${c.base === "liquido" ? " checked" : ""}> O cachê menos as despesas do show</label>
         </fieldset>
+        <h2 class="display" style="margin:20px 0 0">WhatsApp</h2>
+        <label>Novas abordagens por dia (no máximo)<input name="limite_diario" type="number" min="1" max="250" inputmode="numeric" value="${esc(c.limite_diario)}"></label>
+        <p class="ajuda" style="margin:0">Primeiras mensagens para quem nunca falou com a 7A. Muitas num dia só fazem o WhatsApp desconfiar e podem bloquear o número. O padrão é 20.</p>
+        <label>Dias mínimos entre duas mensagens para a mesma casa<input name="intervalo_dias" type="number" min="1" max="30" inputmode="numeric" value="${esc(c.intervalo_dias)}"></label>
+        <label class="marcar"><input type="checkbox" name="simulacao"${c.simulacao === "1" ? " checked" : ""}> Modo simulação</label>
+        <p class="ajuda" style="margin:0">Para treinar e testar: as mensagens ficam registradas como teste, o WhatsApp não abre, os contratantes não mudam de etapa e nada entra nos números. Campanhas iniciadas em simulação continuam como simulação até o fim.</p>
         <div><button class="btn" type="button" id="salvar">Salvar ajustes</button> <span class="estado" id="estado" role="status"></span></div>
       </form>
       <h2 class="display">Planilhas</h2>
@@ -808,24 +1367,26 @@ a.item:active { transform: scale(.995); }
       <div class="acoes-rapidas">
         <a class="btn btn-sec" href="/api/gestao/exportar/contratantes.csv">Baixar contratantes</a>
         <a class="btn btn-sec" href="/api/gestao/exportar/shows.csv">Baixar shows e cachês</a>
+        <a class="btn btn-sec" href="#importar">Importar contratantes</a>
       </div>`;
     const form = $("#ficha");
     form.addEventListener("input", () => { sujo = true; estado(""); });
     $("#salvar").addEventListener("click", () => {
       const v = form.pct_padrao.value.trim().replace(",", ".");
-      salvar("gestao/config", "PUT", { pct_padrao: v === "" ? "" : Number(v), base: form.base.value }, (r) => { D.config = r; sujo = false; estado("Salvo.", "ok"); });
+      const dados = { pct_padrao: v === "" ? "" : Number(v), base: form.base.value, limite_diario: Number(form.limite_diario.value), intervalo_dias: Number(form.intervalo_dias.value), simulacao: form.simulacao.checked };
+      salvar("gestao/config", "PUT", dados, (r) => { D.config = r; sujo = false; estado("Salvo.", "ok"); });
     });
   }
 
   /* ---------- comum ---------- */
   function estado(t, tipo) { const e = $("#estado"); if (e) { e.textContent = t; e.className = "estado" + (tipo ? " " + tipo : ""); } }
-  function salvar(rota, metodo, dados, depois) {
+  function salvar(rota, metodo, dados, depois, falhou) {
     const b = $("#salvar"); b.disabled = true; estado("Salvando...");
     api(rota, metodo, dados).then((r) => {
       b.disabled = false;
       if (r._status === 200 && !r.erro) depois(r);
       else if (r._status === 401) { estado("A sessão expirou. Entre de novo; o que você digitou continua aqui.", "ruim"); $("#tela-entrada").hidden = false; }
-      else estado(r.erro || "Não deu para salvar. Tente de novo.", "ruim");
+      else { estado(r.erro || "Não deu para salvar. Tente de novo.", "ruim"); if (falhou) falhou(r); }
     }).catch(() => { b.disabled = false; estado("Sem conexão. Tente de novo.", "ruim"); });
   }
   // com a sessão expirada, entrar de novo volta para a mesma tela sem perder o que foi digitado
