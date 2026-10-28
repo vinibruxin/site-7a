@@ -1,37 +1,17 @@
-// Sistema de gestão da 7A: contratantes (funil), notas, shows com cachê e repasse, e ajustes.
-// Tudo fica no D1 (binding DB). As rotas abaixo exigem login, exceto pedidoDoSite (formulário público).
+// Sistema de gestão da 7A: contratantes (funil), mensagens e campanhas pelo WhatsApp, shows com cachê e repasse, e ajustes.
+// Tudo fica no D1 (binding DB). As rotas abaixo exigem login, exceto pedidoDoSite (formulário público) e propostaPublica.
 
-import { ESQUEMA, COLUNAS_NOVAS } from "./esquema.js";
+import { agora, auditoria, dataBR, dataOk, hojeSP, json, lerConfig, prepararBanco, txt } from "./banco.js";
+import { NOMES_ETAPA, NOMES_PERFIL, rotasContratantes } from "./contratantes.js";
+import { rotasMensagens, rotasModelos } from "./mensagens.js";
+import { indicadores, rotasCampanhas } from "./campanhas.js";
 
-export const ETAPAS = ["contatar", "contatado", "negociando", "fechado", "perdido"];
-export const TIPOS = ["casa", "restaurante", "festival", "evento", "empresa", "particular", "outro"];
+export { prepararBanco };
 export const STATUS = ["consulta", "reservado", "confirmado", "realizado", "cancelado"];
-const NOMES_ETAPA = { contatar: "A contatar", contatado: "Contatado", negociando: "Negociando", fechado: "Fechado", perdido: "Perdido" };
 const NOMES_STATUS = { consulta: "Consulta", reservado: "Reservado", confirmado: "Confirmado", realizado: "Realizado", cancelado: "Cancelado" };
 
-const CAMPOS_CONTRATANTE = ["nome", "tipo", "contato", "telefone", "email", "instagram", "cep", "endereco", "numero", "complemento", "bairro", "cidade", "uf", "referencia", "etapa", "proxima_acao", "proxima_data", "obs"];
 const CAMPOS_SHOW = ["data", "hora", "artista", "artista_texto", "contratante_id", "evento", "local", "cidade", "status", "cache", "pct", "despesas", "recebido", "repassado", "publicar", "link", "obs"];
 
-let pronto = null;
-export function prepararBanco(env) {
-  if (!pronto) pronto = env.DB.batch(ESQUEMA.map((s) => env.DB.prepare(s)))
-    .then(() => completarColunas(env))
-    .catch((e) => { pronto = null; throw e; });
-  return pronto;
-}
-
-// colunas que entraram depois da primeira versão: acrescenta nas tabelas que já existem
-async function completarColunas(env) {
-  for (const [tabela, colunas] of Object.entries(COLUNAS_NOVAS)) {
-    const { results } = await env.DB.prepare(`PRAGMA table_info(${tabela})`).all();
-    const tem = new Set(results.map((r) => r.name));
-    for (const c of colunas) if (!tem.has(c)) await env.DB.prepare(`ALTER TABLE ${tabela} ADD COLUMN ${c} TEXT NOT NULL DEFAULT ''`).run();
-  }
-}
-
-const agora = () => new Date().toISOString();
-const txt = (s, n = 400) => String(s ?? "").trim().slice(0, n);
-const dataOk = (s) => (/^\d{4}-\d{2}-\d{2}$/.test(s || "") ? s : "");
 const horaOk = (s) => (/^\d{2}:\d{2}$/.test(s || "") ? s : "");
 const centavos = (v) => {
   const n = Math.round(Number(v));
@@ -44,30 +24,6 @@ function linkSeguro(u) {
   } catch {
     return "";
   }
-}
-
-function limparContratante(c) {
-  const r = {
-    nome: txt(c?.nome, 120),
-    tipo: TIPOS.includes(c?.tipo) ? c.tipo : "outro",
-    contato: txt(c?.contato, 120),
-    telefone: txt(c?.telefone, 40),
-    email: txt(c?.email, 160),
-    instagram: txt(c?.instagram, 80).replace(/^@/, ""),
-    endereco: txt(c?.endereco, 200),
-    numero: txt(c?.numero, 20),
-    complemento: txt(c?.complemento, 120),
-    bairro: txt(c?.bairro, 80),
-    uf: txt(c?.uf, 2).toUpperCase(),
-    cep: txt(c?.cep, 12),
-    referencia: txt(c?.referencia, 300),
-    cidade: txt(c?.cidade, 80),
-    etapa: ETAPAS.includes(c?.etapa) ? c.etapa : "contatar",
-    proxima_acao: txt(c?.proxima_acao, 200),
-    proxima_data: dataOk(c?.proxima_data),
-    obs: txt(c?.obs, 4000),
-  };
-  return r.nome ? r : { erro: "Dê um nome ao contratante (a casa, o evento ou a empresa)." };
 }
 
 function limparShow(s) {
@@ -96,13 +52,6 @@ function limparShow(s) {
   return r;
 }
 
-async function lerConfig(env) {
-  const { results } = await env.DB.prepare("SELECT chave, valor FROM config").all();
-  const c = { pct_padrao: "", base: "bruto" };
-  for (const l of results) c[l.chave] = l.valor;
-  return c;
-}
-
 // mesma conta que o painel mostra: comissão sobre o cachê bruto ou sobre o que sobra depois das despesas
 export function contas(s, config) {
   const pct = s.pct != null ? s.pct : config.pct_padrao === "" ? null : Number(config.pct_padrao);
@@ -121,62 +70,39 @@ export async function gestao(req, env, rota) {
   const id = Number(partes[1]);
   const corpo = metodo === "POST" || metodo === "PUT" ? await req.json().catch(() => ({})) : null;
 
+  // carga inicial do painel: a lista completa de contratantes fica só com o essencial (a busca e a ficha vêm do servidor)
   if (rota === "dados" && metodo === "GET") {
-    const [cs, ss, config] = await Promise.all([
-      env.DB.prepare("SELECT * FROM contratantes ORDER BY atualizado DESC").all(),
+    const h = hojeSP();
+    const [cs, ss, fazer, config, nums] = await Promise.all([
+      env.DB.prepare("SELECT id, nome, cidade, contato, telefone, email, etapa FROM contratantes WHERE arquivado = '' ORDER BY nome COLLATE NOCASE").all(),
       env.DB.prepare("SELECT * FROM shows ORDER BY data, hora").all(),
+      env.DB.prepare("SELECT * FROM contratantes WHERE arquivado = '' AND proxima_data <> '' AND proxima_data <= ? AND etapa NOT IN ('fechado', 'perdido') ORDER BY proxima_data LIMIT 200").bind(h).all(),
       lerConfig(env),
+      indicadores(env, 30),
     ]);
-    return json({ contratantes: cs.results, shows: ss.results, config: { ...config, email_ativo: !!env.RESEND_API_KEY } });
+    const { results: campanhas } = await env.DB.prepare(
+      `SELECT ca.id, ca.nome, ca.simulada, SUM(CASE WHEN d.situacao IN ('pendente', 'aberta') OR (d.situacao = 'aguardando' AND d.cobrar_em <= ?) THEN 1 ELSE 0 END) AS na_vez
+       FROM campanhas ca LEFT JOIN campanha_destinatarios d ON d.campanha_id = ca.id WHERE ca.status = 'andamento' GROUP BY ca.id ORDER BY ca.criado`
+    ).bind(h).all();
+    return json({ contratantes: cs.results, shows: ss.results, fazer: fazer.results, campanhas, indicadores: nums, config: { ...config, email_ativo: !!env.RESEND_API_KEY } });
   }
 
-  if (partes[0] === "contratantes") {
-    if (metodo === "POST" && partes.length === 1) {
-      const c = limparContratante(corpo);
-      if (c.erro) return json(c, 400);
-      const t = agora();
-      const linha = await env.DB.prepare(
-        `INSERT INTO contratantes (${CAMPOS_CONTRATANTE.join(", ")}, origem, criado, atualizado) VALUES (${CAMPOS_CONTRATANTE.map(() => "?").join(", ")}, 'manual', ?, ?) RETURNING *`
-      ).bind(...CAMPOS_CONTRATANTE.map((k) => c[k]), t, t).first();
-      return json(linha);
-    }
-    if (!id) return json({ erro: "Contratante não encontrado." }, 404);
-    if (partes[2] === "notas") {
-      if (metodo === "GET") {
-        const { results } = await env.DB.prepare("SELECT * FROM notas WHERE contratante_id = ? ORDER BY criado DESC").bind(id).all();
-        return json(results);
-      }
-      if (metodo === "POST") {
-        const texto = txt(corpo?.texto, 4000);
-        if (!texto) return json({ erro: "Escreva a anotação antes de salvar." }, 400);
-        const t = agora();
-        const [nota] = await env.DB.batch([
-          env.DB.prepare("INSERT INTO notas (contratante_id, texto, criado) VALUES (?, ?, ?) RETURNING *").bind(id, texto, t),
-          env.DB.prepare("UPDATE contratantes SET atualizado = ? WHERE id = ?").bind(t, id),
-        ]);
-        return json(nota.results[0]);
-      }
-    }
-    if (metodo === "PUT") {
-      const c = limparContratante(corpo);
-      if (c.erro) return json(c, 400);
-      const linha = await env.DB.prepare(
-        `UPDATE contratantes SET ${CAMPOS_CONTRATANTE.map((k) => k + " = ?").join(", ")}, atualizado = ? WHERE id = ? RETURNING *`
-      ).bind(...CAMPOS_CONTRATANTE.map((k) => c[k]), agora(), id).first();
-      return linha ? json(linha) : json({ erro: "Contratante não encontrado." }, 404);
-    }
-    if (metodo === "DELETE") {
-      await env.DB.batch([
-        env.DB.prepare("DELETE FROM notas WHERE contratante_id = ?").bind(id),
-        env.DB.prepare("UPDATE shows SET contratante_id = NULL WHERE contratante_id = ?").bind(id),
-        env.DB.prepare("DELETE FROM contratantes WHERE id = ?").bind(id),
-      ]);
-      return json({ ok: true });
-    }
+  if (partes[0] === "contratantes") return rotasContratantes(req, env, partes, corpo, new URL(req.url));
+  if (partes[0] === "mensagens") return rotasMensagens(req, env, partes, corpo);
+  if (partes[0] === "modelos") return rotasModelos(req, env, partes, corpo);
+  if (partes[0] === "campanhas") return rotasCampanhas(req, env, partes, corpo);
+  if (rota === "indicadores" && metodo === "GET") {
+    const dias = [7, 30, 90].includes(Number(new URL(req.url).searchParams.get("dias"))) ? Number(new URL(req.url).searchParams.get("dias")) : 30;
+    return json(await indicadores(env, dias));
   }
 
   if (partes[0] === "notas" && metodo === "DELETE" && id) {
-    await env.DB.prepare("DELETE FROM notas WHERE id = ?").bind(id).run();
+    const n = await env.DB.prepare("SELECT * FROM notas WHERE id = ?").bind(id).first();
+    if (!n) return json({ ok: true });
+    await env.DB.batch([
+      env.DB.prepare("DELETE FROM notas WHERE id = ?").bind(id),
+      auditoria(env, req, "apagou nota", "contratante", n.contratante_id, n.texto),
+    ]);
     return json({ ok: true });
   }
 
@@ -235,9 +161,22 @@ export async function gestao(req, env, rota) {
     const pct = corpo?.pct_padrao === "" || corpo?.pct_padrao == null ? "" : Number(corpo.pct_padrao);
     if (pct !== "" && !(Number.isFinite(pct) && pct >= 0 && pct <= 100)) return json({ erro: "O % precisa ficar entre 0 e 100." }, 400);
     const base = corpo?.base === "liquido" ? "liquido" : "bruto";
+    const atual = await lerConfig(env);
+    const limite = corpo?.limite_diario == null ? Number(atual.limite_diario) : Math.round(Number(corpo.limite_diario));
+    if (!(limite >= 1 && limite <= 250)) return json({ erro: "O limite diário precisa ficar entre 1 e 250 novas abordagens." }, 400);
+    const intervalo = corpo?.intervalo_dias == null ? Number(atual.intervalo_dias) : Math.round(Number(corpo.intervalo_dias));
+    if (!(intervalo >= 1 && intervalo <= 30)) return json({ erro: "O intervalo entre mensagens precisa ficar entre 1 e 30 dias." }, 400);
+    const simulacao = corpo?.simulacao == null ? atual.simulacao : corpo.simulacao === true || corpo.simulacao === "1" ? "1" : "0";
     const up = "INSERT INTO config (chave, valor) VALUES (?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor";
-    await env.DB.batch([env.DB.prepare(up).bind("pct_padrao", String(pct)), env.DB.prepare(up).bind("base", base)]);
-    return json(await lerConfig(env));
+    await env.DB.batch([
+      env.DB.prepare(up).bind("pct_padrao", String(pct)),
+      env.DB.prepare(up).bind("base", base),
+      env.DB.prepare(up).bind("limite_diario", String(limite)),
+      env.DB.prepare(up).bind("intervalo_dias", String(intervalo)),
+      env.DB.prepare(up).bind("simulacao", simulacao),
+      ...(simulacao !== atual.simulacao ? [auditoria(env, req, simulacao === "1" ? "ligou a simulação" : "desligou a simulação", "config", null)] : []),
+    ]);
+    return json({ ...(await lerConfig(env)), email_ativo: !!env.RESEND_API_KEY });
   }
 
   if (partes[0] === "exportar" && metodo === "GET") return exportar(env, req, partes[1]);
@@ -365,8 +304,9 @@ async function exportar(env, req, qual) {
   let linhas;
   if (qual === "contratantes.csv") {
     const { results } = await env.DB.prepare("SELECT * FROM contratantes ORDER BY nome").all();
-    linhas = [["Nome", "Tipo", "Contato", "Telefone", "E-mail", "Instagram", "CEP", "Rua", "Número", "Complemento", "Bairro", "Cidade", "UF", "Referência", "Etapa", "Próxima ação", "Data da próxima ação", "Origem", "Observações", "Criado em"]];
-    for (const c of results) linhas.push([c.nome, c.tipo, c.contato, c.telefone, c.email, c.instagram, c.cep, c.endereco, c.numero, c.complemento, c.bairro, c.cidade, c.uf, c.referencia, NOMES_ETAPA[c.etapa] || c.etapa, c.proxima_acao, c.proxima_data, c.origem === "site" ? "Site" : "Manual", c.obs, c.criado.slice(0, 10)]);
+    linhas = [["Nome", "Tipo", "Contato", "Telefone", "WhatsApp (55+DDD)", "E-mail", "Instagram", "CEP", "Rua", "Número", "Complemento", "Bairro", "Cidade", "UF", "Referência", "Perfil musical", "Etapa", "Comunicação", "Bloqueado em", "Próxima ação", "Data da próxima ação", "Origem", "Observações", "Criado em", "Arquivado em"]];
+    const origens = { site: "Site", csv: "Importação CSV" };
+    for (const c of results) linhas.push([c.nome, c.tipo, c.contato, c.telefone, c.telefone_norm, c.email, c.instagram, c.cep, c.endereco, c.numero, c.complemento, c.bairro, c.cidade, c.uf, c.referencia, NOMES_PERFIL[c.perfil] || "", NOMES_ETAPA[c.etapa] || c.etapa, c.comunicacao === "bloqueado" ? "Bloqueado (pediu para parar)" : "Livre", c.bloqueado_em.slice(0, 10), c.proxima_acao, c.proxima_data, origens[c.origem] || "Manual", c.obs, c.criado.slice(0, 10), c.arquivado]);
   } else if (qual === "shows.csv") {
     const [{ results }, config, cs, art] = await Promise.all([
       env.DB.prepare("SELECT * FROM shows ORDER BY data, hora").all(),
@@ -435,6 +375,8 @@ export async function pedidoDoSite(req, env) {
   ).bind(titulo, tipo, nome, cidade, t.slice(0, 10), t, t).first();
   await env.DB.batch([
     env.DB.prepare("INSERT INTO notas (contratante_id, texto, criado) VALUES (?, ?, ?)").bind(c.id, detalhe + ".", t),
+    // quem pede pelo site autoriza o contato sobre o pedido; fica a prova
+    env.DB.prepare("INSERT INTO consentimentos (contratante_id, situacao, origem, prova, criado) VALUES (?, 'pediu_contato', 'site', ?, ?)").bind(c.id, `Pedido pelo site em ${dataBR(hojeSP())}`, t),
     env.DB.prepare("INSERT INTO pedidos_ip (ip, quando, assinatura) VALUES (?, ?, ?)").bind(ip, t, assinatura),
     env.DB.prepare("DELETE FROM pedidos_ip WHERE quando < ?").bind(umDia),
   ]);
@@ -502,8 +444,4 @@ export async function showsPublicos(env, hoje) {
     "SELECT data, hora, artista, artista_texto, evento, local, cidade, link FROM shows WHERE publicar = 1 AND status IN ('confirmado', 'realizado') AND data >= ? ORDER BY data, hora"
   ).bind(hoje).all();
   return results;
-}
-
-function json(dados, status = 200) {
-  return new Response(JSON.stringify(dados), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
 }
