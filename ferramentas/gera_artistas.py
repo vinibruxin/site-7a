@@ -40,7 +40,7 @@ A = [
        fecho="Energia bruta, história construída e rock sem concessões.",
        galeria=["img/galeria/ossos-1.jpg", "img/galeria/ossos-2.jpg", "img/galeria/ossos-3.jpg", "img/galeria/ossos-4.jpg"],
        formacao=[("Reinaldo Ratto", "Vocal e guitarra"), ("Leandro Santana", "Guitarra"), ("Dan Ribeiro", "Baixo"), ("Wallison Bisu", "Bateria")],
-       midia=[("spotify", "63o2iaMLCmkQDTg797RnIk", None, 0, 0, "Mineiridade", "Spotify"),
+       midia=[("spotify", "5SBjP8d7bOBtwN3MdXrxmS", None, 0, 0, "Safra Recorde", "Spotify"),
               ("youtube", "oAqmHzCPh78", None, 0, 0, "Ao vivo no Espaço DellArt", "YouTube"),
               ("video", "midia/ossos-jesus-numa-moto.mp4", "midia/ossos-jesus-numa-moto.jpg", 540, 960, "Jesus Numa Moto", "Ao vivo")]),
   dict(slug="athos-tibaes", nome="Athos Tibães", serie="7A-004", genero="MPB, voz e violão",
@@ -82,7 +82,7 @@ CSS = open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "artista.css
 
 # capas do Spotify (thumbnail_url do oEmbed); se a imagem externa não carregar, entra a foto da banda
 CAPAS = {
-    "63o2iaMLCmkQDTg797RnIk": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02a22694c085fef6b366b3fab5",
+    "5SBjP8d7bOBtwN3MdXrxmS": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02274f06c076a98296df1e0643",
     "2lvRwg4Ua9PL6bKmYMrR0U": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02a79bd17da5739cc90078b9bf",
     "6X8IUUwXG2B6eGvXMoIxSo": "https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e026ee39de893253924c7750d53",
 }
@@ -101,9 +101,9 @@ def midia_html(a):
           <figcaption><span class="titulo">{e(titulo)}</span><span class="rotulo">{e(rotulo)}</span><a class="link" href="https://open.spotify.com/track/{src}" target="_blank" rel="noopener">Ouvir no Spotify</a></figcaption>
         </figure>''')
         elif tipo == "youtube":
-            itens.append(f'''<figure class="faixa-yt" data-revela>
-          <a class="capa-link quadro" href="https://youtu.be/{src}" target="_blank" rel="noopener" aria-label="Ver {e(titulo)} no YouTube"><img src="https://i.ytimg.com/vi/{src}/hqdefault.jpg" alt="Imagem do vídeo {e(titulo)}" width="480" height="360" loading="lazy" onerror="this.onerror=null;this.src='{reserva}'"><span class="play" aria-hidden="true"></span></a>
-          <figcaption><span class="titulo">{e(titulo)}</span><span class="rotulo">{e(rotulo)}</span><a class="link" href="https://youtu.be/{src}" target="_blank" rel="noopener">Ver no YouTube</a></figcaption>
+            itens.append(f'''<figure class="faixa-video" data-revela>
+          <div class="tela" data-tela><button type="button" class="capa-link" data-yt="{src}" aria-label="Tocar {e(titulo)} aqui no site"><img src="https://i.ytimg.com/vi/{src}/hqdefault.jpg" alt="" width="480" height="360" loading="lazy" onerror="this.onerror=null;this.src='{reserva}'"><span class="play" aria-hidden="true"></span></button></div>
+          <figcaption><span class="titulo">{e(titulo)}</span><span class="rotulo">{e(rotulo)}</span><span class="acoes"><button type="button" class="link" data-ampliar>Tela cheia</button><a class="link" href="https://youtu.be/{src}" target="_blank" rel="noopener">Abrir no YouTube</a></span></figcaption>
         </figure>''')
         elif tipo == "audio":
             itens.append(f'''<figure class="faixa-audio" data-revela>
@@ -111,10 +111,9 @@ def midia_html(a):
           <audio controls preload="none" src="{src}"></audio>
         </figure>''')
         else:
-            classe = "vertical" if h > w else "horizontal"
-            itens.append(f'''<figure class="faixa-video {classe}" data-revela>
-          <video controls preload="none" playsinline poster="{poster}" width="{w}" height="{h}" src="{src}"></video>
-          <figcaption><span class="titulo">{e(titulo)}</span><span class="rotulo">{e(rotulo)}</span></figcaption>
+            itens.append(f'''<figure class="faixa-video" data-revela>
+          <div class="tela" data-tela><video controls preload="none" playsinline poster="{poster}" width="{w}" height="{h}" src="{src}"></video></div>
+          <figcaption><span class="titulo">{e(titulo)}</span><span class="rotulo">{e(rotulo)}</span><span class="acoes"><button type="button" class="link" data-ampliar>Tela cheia</button></span></figcaption>
         </figure>''')
     return '<div class="grade-midia">\n        ' + "\n        ".join(itens) + "\n      </div>"
 
@@ -304,9 +303,38 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
     document.documentElement.classList.toggle("sem-rolagem", aberto);
   }});
   barra.querySelectorAll(".menu a").forEach(function (l) {{ l.addEventListener("click", function () {{ if (barra.classList.contains("aberta")) botao.click(); }}); }});
-  // uma mídia por vez
-  var midias = document.querySelectorAll("audio, video");
-  midias.forEach(function (m) {{ m.addEventListener("play", function () {{ midias.forEach(function (o) {{ if (o !== m) o.pause(); }}); }}); }});
+  // uma mídia por vez: tocar um vídeo para os outros (os do YouTube voltam para a capa)
+  function pararOutros(atual) {{
+    document.querySelectorAll("video").forEach(function (o) {{ if (o !== atual) o.pause(); }});
+    document.querySelectorAll("[data-tela] iframe").forEach(function (f) {{ if (f !== atual && f.capa) f.replaceWith(f.capa); }});
+  }}
+  document.addEventListener("play", function (ev) {{ if (ev.target.matches("video, audio")) pararOutros(ev.target); }}, true);
+  // vídeo do YouTube toca aqui na página, com som e controles do próprio YouTube
+  function tocarYT(botao) {{
+    var f = document.createElement("iframe");
+    f.src = "https://www.youtube-nocookie.com/embed/" + botao.getAttribute("data-yt") + "?autoplay=1&rel=0&playsinline=1";
+    f.title = botao.getAttribute("aria-label").replace(" aqui no site", "");
+    f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    f.allowFullscreen = true;
+    f.capa = botao;
+    pararOutros(f);
+    botao.replaceWith(f);
+    return f;
+  }}
+  function tocar(v) {{ var r = v.play(); if (r && r.catch) r.catch(function () {{}}); }}
+  document.addEventListener("click", function (ev) {{
+    var yt = ev.target.closest("[data-yt]");
+    if (yt) {{ tocarYT(yt); return; }}
+    var amplia = ev.target.closest("[data-ampliar]");
+    if (!amplia) return;
+    var fig = amplia.closest("figure"), tela = fig.querySelector("[data-tela]");
+    var capa = tela.querySelector("[data-yt]"); if (capa) tocarYT(capa);
+    var v = tela.querySelector("video");
+    var pede = tela.requestFullscreen || tela.webkitRequestFullscreen;
+    if (pede) {{ pede.call(tela); if (v) tocar(v); }}
+    else if (v && v.webkitEnterFullscreen) {{ tocar(v); v.webkitEnterFullscreen(); }}
+    else {{ var link = fig.querySelector('a[href*="youtu"]'); if (link) window.open(link.href, "_blank", "noopener"); }}
+  }});
 }})();
 </script>
 </body>

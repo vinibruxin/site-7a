@@ -95,25 +95,30 @@ a { color: inherit; }
 .lista-formacao .quem { font: 400 var(--t-sub)/1 var(--f-display); text-transform: uppercase; }
 .lista-formacao .faz { font-size: var(--t-nota); color: var(--cinza); }
 
-.grade-midia { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 28px; }
-.grade-midia figure { margin: 0; }
-.faixa-video.horizontal { flex: 2 1 520px; }
-.faixa-video.vertical { flex: 0 1 300px; }
-.faixa-video video { width: 100%; height: auto; background: var(--grafite); }
-.faixa-spotify { flex: 1 1 100%; display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px; align-items: end; }
+.grade-midia { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; gap: 48px 28px; }
+.grade-midia figure { margin: 0; min-width: 0; }
+.faixa-spotify, .faixa-audio { grid-column: 1 / -1; }
+.faixa-spotify { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 24px; align-items: end; }
 .faixa-spotify figcaption { margin-top: 0; }
-.faixa-yt { flex: 2 1 520px; }
+/* todo vídeo ocupa o mesmo quadro 16:9; vertical aparece inteiro com faixas pretas e cresce na tela cheia */
+.tela { position: relative; aspect-ratio: 16 / 9; background: #000; overflow: hidden; }
+.tela video, .tela iframe, .tela .capa-link { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.tela video { object-fit: contain; background: #000; }
+.tela:fullscreen, .tela:-webkit-full-screen { width: 100%; height: 100%; aspect-ratio: auto; }
+button.capa-link { padding: 0; cursor: pointer; font: inherit; color: inherit; }
 .capa-link { position: relative; display: block; overflow: hidden; background: var(--grafite); }
 .faixa-spotify .capa-link { aspect-ratio: 1; }
-.faixa-yt .quadro { aspect-ratio: 16 / 9; }
 .capa-link img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s var(--ease); }
-.capa-link:hover img { transform: scale(1.04); }
+.capa-link:hover img, .capa-link:focus-visible img { transform: scale(1.04); }
 .capa-link .play { position: absolute; left: 50%; top: 50%; width: 64px; height: 64px; margin: -32px 0 0 -32px; background: var(--vermelho); transition: transform .2s var(--ease); }
 .capa-link .play::after { content: ""; position: absolute; left: 25px; top: 20px; border-style: solid; border-width: 12px 0 12px 19px; border-color: transparent transparent transparent var(--offwhite); }
 .capa-link:hover .play { transform: scale(1.08); }
+.capa-link:active .play { transform: scale(.96); }
+.acoes { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-top: 6px; }
+button.link { padding: 0; border: 0; background: none; line-height: inherit; color: var(--offwhite); font-family: var(--f-texto); cursor: pointer; }
 .grade-midia figcaption .link { justify-self: start; margin-top: 4px; }
 .grade-midia .rotulo a { color: var(--offwhite); text-decoration-color: var(--vermelho); text-underline-offset: 3px; }
-.faixa-audio { flex: 1 1 420px; padding: 22px 24px; background: var(--grafite); display: grid; gap: 16px; }
+.faixa-audio { padding: 22px 24px; background: var(--grafite); display: grid; gap: 16px; }
 .faixa-audio audio { width: 100%; }
 .grade-midia figcaption { display: grid; gap: 8px; margin-top: 14px; }
 .faixa-audio figcaption { margin-top: 0; }
@@ -121,6 +126,7 @@ a { color: inherit; }
 .grade-midia .titulo { font: 400 var(--t-sub)/1 var(--f-display); text-transform: uppercase; }
 .grade-midia.extra { margin-top: 28px; }
 .grade-midia:empty { display: none; }
+@media (max-width: 600px) { .grade-midia { grid-template-columns: minmax(0, 1fr); gap: 40px; } }
 .vazio { margin: 0; max-width: 34em; font-size: var(--t-lead); line-height: 1.5; color: var(--cinza); }
 
 .galeria { padding-bottom: 72px; }
@@ -218,7 +224,6 @@ a { color: inherit; }
   .resumo, .destaques, .formacao, .agenda-artista, .ouvir { grid-template-columns: minmax(0, 1fr); gap: 24px; padding-top: 56px; padding-bottom: 64px; }
   .lista-destaques li { font-size: 24px; }
   .resumo .corpo p { font-size: var(--t-texto); }
-  .faixa-video.vertical { flex-basis: 100%; max-width: 360px; }
   .faixa-spotify { grid-template-columns: 120px minmax(0, 1fr); gap: 16px; }
   .fecho .grande { font-size: 24vw; }
   .trilho li { height: 62vw; max-height: 420px; }
@@ -315,13 +320,13 @@ a { color: inherit; }
           <a class="capa-link" href="https://open.spotify.com/track/2lvRwg4Ua9PL6bKmYMrR0U" target="_blank" rel="noopener" aria-label="Ouvir 21 de Abril no Spotify"><img src="https://image-cdn-fa.spotifycdn.com/image/ab67616d00001e02a79bd17da5739cc90078b9bf" alt="Capa de 21 de Abril" width="300" height="300" loading="lazy" onerror="this.onerror=null;this.src='img/galeria/ordem-1.jpg'"><span class="play" aria-hidden="true"></span></a>
           <figcaption><span class="titulo">21 de Abril</span><span class="rotulo">Spotify · do disco Co.Rec, Vol. I</span><a class="link" href="https://open.spotify.com/track/2lvRwg4Ua9PL6bKmYMrR0U" target="_blank" rel="noopener">Ouvir no Spotify</a></figcaption>
         </figure>
-        <figure class="faixa-yt" data-revela>
-          <a class="capa-link quadro" href="https://youtu.be/8_y2PDSxRYA" target="_blank" rel="noopener" aria-label="Ver República no YouTube"><img src="https://i.ytimg.com/vi/8_y2PDSxRYA/hqdefault.jpg" alt="Imagem do vídeo República" width="480" height="360" loading="lazy" onerror="this.onerror=null;this.src='img/galeria/ordem-1.jpg'"><span class="play" aria-hidden="true"></span></a>
-          <figcaption><span class="titulo">República</span><span class="rotulo">YouTube · EP novo</span><a class="link" href="https://youtu.be/8_y2PDSxRYA" target="_blank" rel="noopener">Ver no YouTube</a></figcaption>
+        <figure class="faixa-video" data-revela>
+          <div class="tela" data-tela><button type="button" class="capa-link" data-yt="8_y2PDSxRYA" aria-label="Tocar República aqui no site"><img src="https://i.ytimg.com/vi/8_y2PDSxRYA/hqdefault.jpg" alt="" width="480" height="360" loading="lazy" onerror="this.onerror=null;this.src='img/galeria/ordem-1.jpg'"><span class="play" aria-hidden="true"></span></button></div>
+          <figcaption><span class="titulo">República</span><span class="rotulo">YouTube · EP novo</span><span class="acoes"><button type="button" class="link" data-ampliar>Tela cheia</button><a class="link" href="https://youtu.be/8_y2PDSxRYA" target="_blank" rel="noopener">Abrir no YouTube</a></span></figcaption>
         </figure>
-        <figure class="faixa-video horizontal" data-revela>
-          <video controls preload="none" playsinline poster="midia/ordem-come-undone.jpg" width="640" height="360" src="midia/ordem-come-undone.mp4"></video>
-          <figcaption><span class="titulo">Come Undone</span><span class="rotulo">Vídeo</span></figcaption>
+        <figure class="faixa-video" data-revela>
+          <div class="tela" data-tela><video controls preload="none" playsinline poster="midia/ordem-come-undone.jpg" width="640" height="360" src="midia/ordem-come-undone.mp4"></video></div>
+          <figcaption><span class="titulo">Come Undone</span><span class="rotulo">Vídeo</span><span class="acoes"><button type="button" class="link" data-ampliar>Tela cheia</button></span></figcaption>
         </figure>
       </div>
       <div class="grade-midia extra" data-campo="midia-extra" data-reserva="img/galeria/ordem-1.jpg" hidden></div>
@@ -388,9 +393,38 @@ a { color: inherit; }
     document.documentElement.classList.toggle("sem-rolagem", aberto);
   });
   barra.querySelectorAll(".menu a").forEach(function (l) { l.addEventListener("click", function () { if (barra.classList.contains("aberta")) botao.click(); }); });
-  // uma mídia por vez
-  var midias = document.querySelectorAll("audio, video");
-  midias.forEach(function (m) { m.addEventListener("play", function () { midias.forEach(function (o) { if (o !== m) o.pause(); }); }); });
+  // uma mídia por vez: tocar um vídeo para os outros (os do YouTube voltam para a capa)
+  function pararOutros(atual) {
+    document.querySelectorAll("video").forEach(function (o) { if (o !== atual) o.pause(); });
+    document.querySelectorAll("[data-tela] iframe").forEach(function (f) { if (f !== atual && f.capa) f.replaceWith(f.capa); });
+  }
+  document.addEventListener("play", function (ev) { if (ev.target.matches("video, audio")) pararOutros(ev.target); }, true);
+  // vídeo do YouTube toca aqui na página, com som e controles do próprio YouTube
+  function tocarYT(botao) {
+    var f = document.createElement("iframe");
+    f.src = "https://www.youtube-nocookie.com/embed/" + botao.getAttribute("data-yt") + "?autoplay=1&rel=0&playsinline=1";
+    f.title = botao.getAttribute("aria-label").replace(" aqui no site", "");
+    f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
+    f.allowFullscreen = true;
+    f.capa = botao;
+    pararOutros(f);
+    botao.replaceWith(f);
+    return f;
+  }
+  function tocar(v) { var r = v.play(); if (r && r.catch) r.catch(function () {}); }
+  document.addEventListener("click", function (ev) {
+    var yt = ev.target.closest("[data-yt]");
+    if (yt) { tocarYT(yt); return; }
+    var amplia = ev.target.closest("[data-ampliar]");
+    if (!amplia) return;
+    var fig = amplia.closest("figure"), tela = fig.querySelector("[data-tela]");
+    var capa = tela.querySelector("[data-yt]"); if (capa) tocarYT(capa);
+    var v = tela.querySelector("video");
+    var pede = tela.requestFullscreen || tela.webkitRequestFullscreen;
+    if (pede) { pede.call(tela); if (v) tocar(v); }
+    else if (v && v.webkitEnterFullscreen) { tocar(v); v.webkitEnterFullscreen(); }
+    else { var link = fig.querySelector('a[href*="youtu"]'); if (link) window.open(link.href, "_blank", "noopener"); }
+  });
 })();
 </script>
 </body>

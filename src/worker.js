@@ -212,10 +212,21 @@ function itemMidia(m, reserva) {
   capa = capa || reserva;
   const acao = tipo === "spotify" ? "Ouvir no Spotify" : `Ver no ${NOMES[tipo]}`;
   const titulo = m.titulo || (tipo === "spotify" ? "Música" : "Vídeo");
-  const fig = tipo === "spotify" ? "faixa-spotify" : "faixa-yt";
-  const quadro = tipo === "spotify" ? "capa-link" : "capa-link quadro";
-  return `<figure class="${fig}" data-revela>
-          <a class="${quadro}" href="${esc(m.url)}" target="_blank" rel="noopener" aria-label="${esc(acao)}: ${esc(titulo)}"><img src="${esc(capa)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(reserva)}'"><span class="play" aria-hidden="true"></span></a>
+  if (tipo === "youtube") {
+    // toca aqui na página (o script da página troca a capa pelo player), com tela cheia e link para o YouTube
+    return `<figure class="faixa-video" data-revela>
+          <div class="tela" data-tela><button type="button" class="capa-link" data-yt="${esc(idYoutube(m.url))}" aria-label="Tocar ${esc(titulo)} aqui no site"><img src="${esc(capa)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(reserva)}'"><span class="play" aria-hidden="true"></span></button></div>
+          <figcaption><span class="titulo">${esc(titulo)}</span><span class="rotulo">YouTube</span><span class="acoes"><button type="button" class="link" data-ampliar>Tela cheia</button><a class="link" href="${esc(m.url)}" target="_blank" rel="noopener">Abrir no YouTube</a></span></figcaption>
+        </figure>`;
+  }
+  if (tipo === "spotify") {
+    return `<figure class="faixa-spotify" data-revela>
+          <a class="capa-link" href="${esc(m.url)}" target="_blank" rel="noopener" aria-label="${esc(acao)}: ${esc(titulo)}"><img src="${esc(capa)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(reserva)}'"><span class="play" aria-hidden="true"></span></a>
+          <figcaption><span class="titulo">${esc(titulo)}</span><span class="rotulo">Spotify</span><a class="link" href="${esc(m.url)}" target="_blank" rel="noopener">${esc(acao)}</a></figcaption>
+        </figure>`;
+  }
+  return `<figure class="faixa-video" data-revela>
+          <div class="tela"><a class="capa-link" href="${esc(m.url)}" target="_blank" rel="noopener" aria-label="${esc(acao)}: ${esc(titulo)}"><img src="${esc(capa)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(reserva)}'"><span class="play" aria-hidden="true"></span></a></div>
           <figcaption><span class="titulo">${esc(titulo)}</span><span class="rotulo">${esc(NOMES[tipo])}</span><a class="link" href="${esc(m.url)}" target="_blank" rel="noopener">${esc(acao)}</a></figcaption>
         </figure>`;
 }
