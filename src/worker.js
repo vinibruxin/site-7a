@@ -55,6 +55,12 @@ export default {
 
 async function lerConteudo(env) {
   const salvo = await env.CONTEUDO.get(CHAVE, "json");
+  // troca única pedida em 28/10/2026: a Ossos deixou de ser "punk rock autoral" também no texto salvo pelo /admin
+  const ossos = salvo?.artistas?.["ossos-do-banquete"];
+  if (ossos?.resumo?.some((p) => /punk rock autoral/i.test(p))) {
+    ossos.resumo = ossos.resumo.map((p) => p.replace(/punk rock autoral/gi, "rock clássico e autoral"));
+    await env.CONTEUDO.put(CHAVE, JSON.stringify(salvo));
+  }
   return salvo || null;
 }
 
