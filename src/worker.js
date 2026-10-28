@@ -219,6 +219,9 @@ function itemMidia(m, reserva) {
 async function api(req, env, url) {
   const rota = url.pathname.replace(/^\/api\//, "");
   const metodo = req.method;
+  // além do cookie SameSite=Strict: pedido que muda dados vindo de outro site é recusado
+  const origem = req.headers.get("origin");
+  if (metodo !== "GET" && metodo !== "HEAD" && origem && origem !== url.origin) return json({ erro: "Pedido de outro site recusado." }, 403);
 
   if (rota === "conteudo" && metodo === "GET") {
     return json((await lerConteudo(env)) || (await conteudoPadrao(env, req)));
