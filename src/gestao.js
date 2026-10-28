@@ -447,7 +447,7 @@ export async function pedidoDoSite(req, env) {
 const CASTING = {
   "ordem-mor": { genero: "Rock autoral", serie: "7A-001", formato: "Banda completa", foto: "/img/ordem-mor.jpg", foco: "50% 100%", claro: true },
   "sub-rosa": { genero: "Rock progressivo autoral", serie: "7A-002", formato: "Banda completa", foto: "/img/sub-rosa.jpg", foco: "50% 50%" },
-  "ossos-do-banquete": { genero: "Punk rock autoral", serie: "7A-003", formato: "Banda completa", foto: "/img/ossos.jpg", foco: "47% 50%" },
+  "ossos-do-banquete": { genero: "Rock Clássico / Autoral", serie: "7A-003", formato: "Banda completa", foto: "/img/ossos.jpg", foco: "47% 50%" },
   "athos-tibaes": { genero: "MPB e pop rock, voz e violão", serie: "7A-004", formato: "Voz e violão", foto: "/img/athos.jpg", foco: "50% 25%" },
   aenima: { genero: "Clássicos do rock em versões acústicas", serie: "7A-005", formato: "Duo acústico", foto: "/img/aenima.jpg", foco: "50% 30%", claro: true },
   "dj-ivan-lennon": { genero: "Pop e pop rock na pista", serie: "7A-006", formato: "Cabine de DJ", foto: "/img/dj-ivan.jpg", foco: "55% 40%" },
