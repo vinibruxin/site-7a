@@ -391,7 +391,37 @@ a.item:active { transform: scale(.995); }
     // números e listas do dia sempre frescos
     api("gestao/dados").then((r) => { if (r.contratantes && (location.hash || "#hoje") === "#hoje") { D = r; desenharHoje(); } });
   }
+  // fila: rascunhos da Évora (abrir ou descartar) e mensagens abertas (confirmar se foram enviadas)
+  function carregarFila() {
+    const box = $("#fila-mensagens");
+    if (!box) return;
+    api("gestao/fila").then((f) => {
+      if (f.erro) { box.innerHTML = `<p class="vazio">${esc(f.erro)}</p>`; return; }
+      const rascunhos = f.rascunhos.map((m) => `<li data-m="${m.id}">
+          <a class="item" href="#contratante/${m.contratante_id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Rascunho</span></span><span class="meta">${esc(m.texto)}</span></a>
+          <div class="acoes-rapidas"><button class="btn" type="button" data-fila="abrir" data-id="${m.id}">Abrir no WhatsApp</button><button class="texto-btn" type="button" data-fila="descartar" data-id="${m.id}">Descartar</button></div>
+        </li>`).join("");
+      const abertas = f.abertas.map((m) => `<li data-m="${m.id}">
+          <a class="item" href="#contratante/${m.contratante_id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Falta confirmar</span></span><span class="meta">${esc(m.texto)}</span></a>
+          <div class="acoes-rapidas"><button class="btn" type="button" data-fila="enviei" data-id="${m.id}">Enviei</button><button class="btn btn-sec" type="button" data-fila="nao" data-id="${m.id}">Não enviei</button></div>
+        </li>`).join("");
+      box.innerHTML = !rascunhos && !abertas
+        ? '<p class="vazio">Nenhuma mensagem na fila. Quando a Évora preparar um rascunho, ele aparece aqui.</p>'
+        : `${rascunhos ? `<ul class="lista">${rascunhos}</ul>` : ""}${abertas ? `<ul class="lista">${abertas}</ul>` : ""}`;
+    });
+  }
+  // delegação: os botões da fila são recriados a cada carga
+  document.addEventListener("click", (ev) => {
+    const b = ev.target.closest && ev.target.closest("[data-fila]");
+    if (!b) return;
+    const id = b.dataset.id, acao = b.dataset.fila;
+    if (acao === "abrir") abrirNoWhats(() => api(`gestao/mensagens/${id}/abrir`, "POST", {})).then((r) => { if (r.erro) alert(r.erro); carregarFila(); });
+    else if (acao === "descartar") { if (confirm("Descartar este rascunho?")) api(`gestao/mensagens/${id}/descartar`, "POST", {}).then((r) => { if (r.erro) alert(r.erro); carregarFila(); }); }
+    else api(`gestao/mensagens/${id}/confirmar`, "POST", { enviou: acao === "enviei" }).then((r) => { if (r.erro) alert(r.erro); carregarFila(); });
+  });
+
   function desenharHoje() {
+    setTimeout(carregarFila, 0);
     const h = hoje(), d = dia(h);
     const ativos = D.shows.filter((s) => s.status === "confirmado" || s.status === "realizado");
     const aReceber = ativos.reduce((t, s) => t + Math.max(0, s.cache - s.recebido), 0);
@@ -421,6 +451,8 @@ a.item:active { transform: scale(.995); }
         <div><dt>Respostas em 30 dias</dt><dd class="num">${ind.respostas ?? 0}</dd><small>${ind.taxa_resposta != null ? ind.taxa_resposta + "% das enviadas" : "Nenhuma enviada ainda"}</small></div>
       </dl>
       ${camp.length ? `<ul class="lista" style="margin-top:8px">${camp.map((c) => `<li><a class="item" href="#campanha/${c.id}"><span class="nome">${esc(c.nome)}</span><span class="lado"><span class="etiqueta e-andamento">${c.na_vez ? c.na_vez + " na vez" : "Em dia"}</span></span><span class="meta">Campanha em andamento${c.simulada ? " (simulação)" : ""}</span></a></li>`).join("")}</ul>` : ""}
+      <h2 class="display">Fila de mensagens</h2>
+      <div id="fila-mensagens"><p class="vazio">Carregando a fila…</p></div>
       <h2 class="display">Para fazer hoje</h2>
       ${fazer.length ? `<ul class="lista lista-contratantes">${fazer.map((c) => itemContratante(c, true)).join("")}</ul>`
         : `<p class="vazio">${D.contratantes.length ? "Nenhuma ação marcada para hoje. Abra um contratante e marque a próxima ação com data." : "Ainda não há contratantes. Comece pelas casas, festivais e eventos que a 7A quer abordar, um por um, com a próxima ação e a data."}${D.contratantes.length ? "" : '<br><a class="btn" href="#contratante/novo">Cadastrar o primeiro</a>'}</p>`}
@@ -514,6 +546,7 @@ a.item:active { transform: scale(.995); }
         ${!bloqueado && c.telefone_norm ? '<button class="btn" type="button" id="zap">Mensagem no WhatsApp</button>' : ""}
         ${!bloqueado && c.telefone && !c.telefone_norm ? '<span class="etiqueta e-bloqueado" style="align-self:center">Telefone fora do formato: corrija para usar o WhatsApp</span>' : ""}
         ${!bloqueado ? '<button class="btn btn-sec" type="button" id="respondeu">Respondeu</button><button class="btn btn-sec" type="button" id="parar">Pediu para parar</button>' : ""}
+        ${!bloqueado ? '<div class="nova-nota" style="width:100%"><label>Colar resposta da casa<textarea id="texto-resposta" rows="2" placeholder="Cole aqui o que a casa mandou no WhatsApp"></textarea></label><button class="btn btn-sec" type="button" id="colar-resposta">Registrar resposta</button></div>' : ""}
         ${c.telefone ? `<a class="btn btn-sec" href="tel:${soDigitos(c.telefone)}">Ligar</a>` : ""}
         ${c.email ? `<a class="btn btn-sec" href="mailto:${esc(c.email)}">E-mail</a>` : ""}
         ${c.instagram ? `<a class="btn btn-sec" href="https://instagram.com/${encodeURIComponent(c.instagram)}" target="_blank" rel="noopener">Instagram</a>` : ""}
@@ -614,6 +647,11 @@ a.item:active { transform: scale(.995); }
     if ($("#respondeu")) $("#respondeu").addEventListener("click", (ev) => {
       ev.target.disabled = true;
       api(`gestao/contratantes/${c.id}/respondeu`, "POST", {}).then((r) => (r.erro ? acaoEstado(r.erro, "ruim") : recarregar("Marcado: respondeu. Etapa em negociação e próxima ação para hoje.")));
+    });
+    if ($("#colar-resposta")) $("#colar-resposta").addEventListener("click", () => {
+      const texto = $("#texto-resposta").value.trim();
+      if (!texto) return acaoEstado("Cole a mensagem que a casa mandou.", "ruim");
+      api(`gestao/contratantes/${c.id}/resposta`, "POST", { texto }).then((r) => (r.erro ? acaoEstado(r.erro, "ruim") : recarregar("Resposta registrada. Etapa em negociação.")));
     });
     if ($("#parar")) $("#parar").addEventListener("click", () => {
       const detalhe = prompt(`${c.nome} pediu para não receber mais mensagens? Se quiser, cole o que a pessoa escreveu (fica como prova).`, "");
@@ -885,6 +923,7 @@ a.item:active { transform: scale(.995); }
         <a class="btn btn-sec" id="zap-proposta" target="_blank" rel="noopener">Enviar no WhatsApp</a>
         <button class="btn btn-sec" type="button" id="email-proposta">Enviar por e-mail</button>
         <button class="btn btn-sec" type="button" id="copiar-proposta">Copiar link</button>
+        <button class="btn" type="button" id="aprovar-proposta" hidden>Aprovar e enviar por e-mail</button>
       </div>
       <div class="ficha" id="caixa-email" hidden>
         <label class="c6">E-mail do contratante<input type="email" id="email-para" autocomplete="off" placeholder="contato@casa.com.br"></label>
@@ -1003,6 +1042,12 @@ a.item:active { transform: scale(.995); }
       $("#links-proposta").hidden = false;
       $("#gerar").textContent = "Atualizar proposta";
     };
+    // botão de aprovação: aparece só enquanto a proposta aguarda; aprovar já envia por e-mail
+    const mostrarAprovacao = (aguarda) => {
+      const b = $("#aprovar-proposta");
+      b.hidden = !aguarda;
+      if (aguarda) aviso("Esta proposta foi preparada pela Évora e aguarda a sua aprovação. Revise e salve com \"Atualizar proposta\", ou aprove e envie.");
+    };
     api(`gestao/shows/${s.id}/proposta`).then((p) => {
       escolher("formato", p.formato ?? FORMATOS[s.artista]);
       escolher("duracao", p.duracao || "2 horas");
@@ -1012,6 +1057,8 @@ a.item:active { transform: scale(.995); }
       validadeAtual = p.validade || "";
       outros(); mostrarValidade();
       if (p.token) mostrarLinks(p.token);
+      // proposta preparada pela Évora: só sai depois da sua aprovação, pelo botão próprio
+      mostrarAprovacao(p.situacao === "aguardando_aprovacao");
     });
     form.addEventListener("change", (ev) => {
       aviso(""); outros();
@@ -1029,6 +1076,24 @@ a.item:active { transform: scale(.995); }
         validadeAtual = r.validade; mostrarValidade();
         mostrarLinks(r.token);
         aviso(s.cache ? "Proposta pronta. O link mostra sempre os dados atuais do show." : "Proposta pronta, com o cachê a combinar.", "ok");
+      }).catch(() => { b.disabled = false; aviso("Sem conexão. Tente de novo.", "ruim"); });
+    });
+
+    // aprovar: salva a aprovação e manda a proposta por e-mail para a casa, depois de confirmar
+    $("#aprovar-proposta").addEventListener("click", () => {
+      if (sujo) return aviso("Salve o show antes de aprovar, para a proposta sair com os dados novos.", "ruim");
+      const c = contratante(s.contratante_id);
+      const destino = c && c.email ? c.email : "";
+      const pergunta = destino
+        ? `Aprovar esta proposta e enviar por e-mail para ${destino}?`
+        : "Aprovar esta proposta? A casa não tem e-mail cadastrado, então o link terá que ir pelo WhatsApp.";
+      if (!confirm(pergunta)) return;
+      const b = $("#aprovar-proposta"); b.disabled = true;
+      api(`gestao/shows/${s.id}/proposta/aprovar`, "POST", {}).then((r) => {
+        b.disabled = false;
+        if (!r.ok) return aviso(r.erro || "Não deu para aprovar. Tente de novo.", "ruim");
+        b.hidden = true;
+        aviso(r.enviada ? `Aprovada e enviada para ${r.para}.` : `Aprovada. ${r.motivo || ""}`, r.enviada ? "ok" : "");
       }).catch(() => { b.disabled = false; aviso("Sem conexão. Tente de novo.", "ruim"); });
     });
 

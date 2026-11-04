@@ -2,7 +2,7 @@
 // Tudo fica no D1 (binding DB). As rotas abaixo exigem login, exceto pedidoDoSite (formulário público) e propostaPublica.
 
 import { agora, auditoria, dataBR, dataOk, hojeSP, json, lerConfig, prepararBanco, txt } from "./banco.js";
-import { NOMES_ETAPA, NOMES_PERFIL, rotasContratantes } from "./contratantes.js";
+import { gravarUltimoCacheDoShow, NOMES_ETAPA, NOMES_PERFIL, rotasContratantes } from "./contratantes.js";
 import { rotasMensagens, rotasModelos } from "./mensagens.js";
 import { indicadores, rotasCampanhas } from "./campanhas.js";
 
@@ -63,7 +63,8 @@ export function contas(s, config) {
 
 /* ---------------- rotas com login ---------------- */
 
-export async function gestao(req, env, rota) {
+// quem = "equipe" (painel, com senha) ou "agente" (Évora, com token): o da Évora deixa a proposta aguardando aprovação
+export async function gestao(req, env, rota, quem = "equipe") {
   await prepararBanco(env);
   const metodo = req.method;
   const partes = rota.split("/"); // ex.: ["contratantes", "12", "notas"]
@@ -91,6 +92,14 @@ export async function gestao(req, env, rota) {
   if (partes[0] === "mensagens") return rotasMensagens(req, env, partes, corpo);
   if (partes[0] === "modelos") return rotasModelos(req, env, partes, corpo);
   if (partes[0] === "campanhas") return rotasCampanhas(req, env, partes, corpo);
+  // fila de mensagens: rascunhos prontos para abrir e abertas aguardando a confirmação de envio
+  if (rota === "fila" && metodo === "GET") {
+    const [rascunhos, abertas] = await Promise.all([
+      env.DB.prepare("SELECT m.id, m.texto, m.criado, c.id AS contratante_id, c.nome, c.cidade, c.contato FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'rascunho' ORDER BY m.criado DESC LIMIT 100").all(),
+      env.DB.prepare("SELECT m.id, m.texto, m.criado, m.tipo, c.id AS contratante_id, c.nome FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'aberta' ORDER BY m.criado DESC LIMIT 100").all(),
+    ]);
+    return json({ rascunhos: rascunhos.results, abertas: abertas.results });
+  }
   if (rota === "indicadores" && metodo === "GET") {
     const dias = [7, 30, 90].includes(Number(new URL(req.url).searchParams.get("dias"))) ? Number(new URL(req.url).searchParams.get("dias")) : 30;
     return json(await indicadores(env, dias));
@@ -107,6 +116,10 @@ export async function gestao(req, env, rota) {
   }
 
   if (partes[0] === "shows" && partes[2] === "proposta" && partes[3] === "email" && id && metodo === "POST") return enviarProposta(env, req, id, corpo);
+  // só a equipe aprova, pelo botão de aprovação: aprovar já envia a proposta por e-mail ao contratante
+  if (partes[0] === "shows" && partes[2] === "proposta" && partes[3] === "aprovar" && id && metodo === "POST") return aprovarProposta(env, req, id);
+  // proposta nova: a da Évora nasce aguardando; a da equipe nasce aprovada (como sempre foi)
+  const situacao = quem === "agente" ? "aguardando_aprovacao" : "aprovada";
 
   if (partes[0] === "shows" && partes[2] === "proposta" && id) {
     if (metodo === "GET") return json((await env.DB.prepare("SELECT * FROM propostas WHERE show_id = ?").bind(id).first()) || {});
@@ -124,10 +137,11 @@ export async function gestao(req, env, rota) {
       const t = agora();
       const token = hex(crypto.getRandomValues(new Uint8Array(12)));
       const linha = await env.DB.prepare(
-        `INSERT INTO propostas (show_id, token, formato, duracao, inclui, rider, condicoes, validade, criado, atualizado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `INSERT INTO propostas (show_id, token, formato, duracao, inclui, rider, condicoes, validade, situacao, criado, atualizado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(show_id) DO UPDATE SET formato = excluded.formato, duracao = excluded.duracao, inclui = excluded.inclui, rider = excluded.rider,
-         condicoes = excluded.condicoes, validade = excluded.validade, atualizado = excluded.atualizado RETURNING *`
-      ).bind(id, token, pr.formato, pr.duracao, pr.inclui, pr.rider, pr.condicoes, pr.validade, t, t).first();
+         condicoes = excluded.condicoes, validade = excluded.validade, atualizado = excluded.atualizado,
+         situacao = CASE WHEN excluded.situacao = 'aguardando_aprovacao' THEN 'aguardando_aprovacao' ELSE propostas.situacao END RETURNING *`
+      ).bind(id, token, pr.formato, pr.duracao, pr.inclui, pr.rider, pr.condicoes, pr.validade, situacao, t, t).first();
       return json(linha);
     }
   }
@@ -140,6 +154,7 @@ export async function gestao(req, env, rota) {
       const linha = await env.DB.prepare(
         `INSERT INTO shows (${CAMPOS_SHOW.join(", ")}, criado, atualizado) VALUES (${CAMPOS_SHOW.map(() => "?").join(", ")}, ?, ?) RETURNING *`
       ).bind(...CAMPOS_SHOW.map((k) => s[k]), t, t).first();
+      if (quem === "equipe") await gravarUltimoCacheDoShow(env, linha);
       return json(linha);
     }
     if (!id) return json({ erro: "Show não encontrado." }, 404);
@@ -149,6 +164,8 @@ export async function gestao(req, env, rota) {
       const linha = await env.DB.prepare(`UPDATE shows SET ${CAMPOS_SHOW.map((k) => k + " = ?").join(", ")}, atualizado = ? WHERE id = ? RETURNING *`)
         .bind(...CAMPOS_SHOW.map((k) => s[k]), agora(), id)
         .first();
+      // confirmar o show (feito pela equipe) grava o cachê como último cachê da casa
+      if (linha && quem === "equipe") await gravarUltimoCacheDoShow(env, linha);
       return linha ? json(linha) : json({ erro: "Show não encontrado." }, 404);
     }
     if (metodo === "DELETE") {
@@ -243,16 +260,35 @@ export function montarEmailProposta({ token, artista, slug, contato, data, hora,
   return { html, text };
 }
 
+// aprovação da equipe: marca a proposta como aprovada e, se a casa tem e-mail e o envio está ligado, manda na hora
+async function aprovarProposta(env, req, id) {
+  const atual = await env.DB.prepare(
+    "SELECT p.show_id, c.email AS email FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.show_id = ?"
+  ).bind(id).first();
+  if (!atual) return json({ erro: "Gere a proposta antes de aprovar." }, 404);
+  await env.DB.prepare("UPDATE propostas SET situacao = 'aprovada', atualizado = ? WHERE show_id = ?").bind(agora(), id).run();
+  if (!atual.email) {
+    return json({ ok: true, situacao: "aprovada", enviada: false, motivo: "A proposta está aprovada, mas a casa não tem e-mail cadastrado. Envie o link pelo WhatsApp." });
+  }
+  const r = await enviarProposta(env, req, id, { para: atual.email });
+  if (r.status !== 200) {
+    const dados = await r.json().catch(() => ({}));
+    return json({ ok: true, situacao: "aprovada", enviada: false, motivo: dados.erro || "Não deu para enviar o e-mail. Tente pelo botão de envio." });
+  }
+  return json({ ok: true, situacao: "aprovada", enviada: true, para: atual.email });
+}
+
 async function enviarProposta(env, req, id, corpo) {
   if (!env.RESEND_API_KEY) return json({ erro: "O envio por e-mail ainda não está ligado. Falta a chave do Resend na Cloudflare." }, 503);
   const para = txt(corpo?.para, 160).toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(para)) return json({ erro: "Confira o e-mail do contratante." }, 400);
   const mensagem = txt(corpo?.mensagem, 2000);
   const p = await env.DB.prepare(
-    `SELECT p.token, s.artista, s.artista_texto, s.data, s.hora, s.local, s.cidade, s.contratante_id, c.contato AS contato
+    `SELECT p.token, p.situacao, s.artista, s.artista_texto, s.data, s.hora, s.local, s.cidade, s.contratante_id, c.contato AS contato
      FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.show_id = ?`
   ).bind(id).first();
   if (!p) return json({ erro: "Gere a proposta antes de enviar." }, 404);
+  if (p.situacao !== "aprovada") return json({ erro: "Esta proposta ainda aguarda aprovação. Revise e salve no painel antes de enviar." }, 409);
   const artista = (await nomesArtistas(env, req))[p.artista] || p.artista_texto || p.artista;
   const { html, text } = montarEmailProposta({ token: p.token, artista, slug: p.artista, contato: p.contato, data: p.data, hora: p.hora, local: p.local, cidade: p.cidade, mensagem });
   let r;
@@ -400,7 +436,7 @@ export async function propostaPublica(req, env, token) {
   await prepararBanco(env);
   const p = await env.DB.prepare(
     `SELECT p.*, s.data, s.hora, s.artista, s.artista_texto, s.evento, s.local, s.cidade, s.cache, s.status, c.nome AS contratante, c.contato
-     FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.token = ?`
+     FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.token = ? AND p.situacao = 'aprovada'`
   ).bind(token).first();
   if (!p || p.status === "cancelado") return json({ erro: "Proposta não encontrada." }, 404);
   let conteudo = await env.CONTEUDO.get("conteudo", "json");

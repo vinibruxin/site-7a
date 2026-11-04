@@ -257,7 +257,28 @@ const RELACIONAMENTO = [
   `CREATE INDEX IF NOT EXISTS auditoria_entidade ON auditoria(entidade, entidade_id, quando)`,
 ];
 
+// v3: situação da proposta. As que já existem foram feitas pela equipe, então ficam aprovadas.
+// O agente cria com "aguardando_aprovacao" e só a equipe aprova (ao salvar a proposta no painel).
+const SITUACAO_PROPOSTA = async (env) => {
+  const { results } = await env.DB.prepare("PRAGMA table_info(propostas)").all();
+  if (!results.some((c) => c.name === "situacao")) {
+    await env.DB.prepare("ALTER TABLE propostas ADD COLUMN situacao TEXT NOT NULL DEFAULT 'aprovada'").run();
+  }
+};
+
 export const MIGRACOES = [
   { versao: 1, nome: "base", passos: BASE },
   { versao: 2, nome: "relacionamento pelo WhatsApp", passos: RELACIONAMENTO },
+  { versao: 3, nome: "situação da proposta", passos: [SITUACAO_PROPOSTA] },
+  { versao: 4, nome: "último cachê por casa", passos: [
+    // último cachê fechado com a casa para cada artista: o piso da negociação não cai abaixo dele
+    `CREATE TABLE IF NOT EXISTS ultimos_cache (
+      contratante_id INTEGER NOT NULL REFERENCES contratantes(id),
+      artista TEXT NOT NULL,
+      valor INTEGER NOT NULL,
+      origem TEXT NOT NULL DEFAULT '',
+      criado TEXT NOT NULL,
+      PRIMARY KEY (contratante_id, artista)
+    )`,
+  ] },
 ];

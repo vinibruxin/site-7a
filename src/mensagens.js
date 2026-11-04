@@ -20,7 +20,7 @@ export async function verificarEnvio(env, c, { tipo, simulada, ignorarIntervalo 
   const h = hojeSP();
   const intervalo = Number(config.intervalo_dias) || 3;
   if (!ignorarIntervalo) {
-    const ultima = await env.DB.prepare("SELECT criado FROM mensagens WHERE contratante_id = ? AND situacao <> 'desistiu' AND simulada = ? ORDER BY criado DESC LIMIT 1")
+    const ultima = await env.DB.prepare("SELECT criado FROM mensagens WHERE contratante_id = ? AND situacao NOT IN ('desistiu', 'rascunho') AND simulada = ? ORDER BY criado DESC LIMIT 1")
       .bind(c.id, simulada ? 1 : 0).first();
     if (ultima) {
       const dia = hojeSP(Date.parse(ultima.criado));
@@ -37,7 +37,7 @@ export async function verificarEnvio(env, c, { tipo, simulada, ignorarIntervalo 
 }
 
 export async function abordagensHoje(env, simulada = false) {
-  const r = await env.DB.prepare("SELECT COUNT(*) n FROM mensagens WHERE tipo = 'abordagem' AND situacao <> 'desistiu' AND simulada = ? AND criado >= ?")
+  const r = await env.DB.prepare("SELECT COUNT(*) n FROM mensagens WHERE tipo = 'abordagem' AND situacao NOT IN ('desistiu', 'rascunho') AND simulada = ? AND criado >= ?")
     .bind(simulada ? 1 : 0, inicioDoDia(hojeSP())).first();
   return r.n;
 }
@@ -54,6 +54,7 @@ async function tipoDaMensagem(env, c, modelo) {
 export async function rotasMensagens(req, env, partes, corpo) {
   const metodo = req.method;
   if (partes[1] === "previa" && metodo === "POST") return previa(env, corpo);
+  if (partes[1] === "rascunho" && metodo === "POST") return rascunho(env, corpo);
   if (partes.length === 1 && metodo === "POST") return registrar(env, req, corpo);
   const id = Number(partes[1]);
   if (!Number.isInteger(id) || id <= 0) return json({ erro: "Mensagem não encontrada." }, 404);
@@ -61,6 +62,8 @@ export async function rotasMensagens(req, env, partes, corpo) {
   if (!m) return json({ erro: "Mensagem não encontrada." }, 404);
   if (partes[2] === "confirmar" && metodo === "POST") return confirmar(env, req, m, corpo);
   if (partes[2] === "reabrir" && metodo === "POST") return reabrir(env, m);
+  if (partes[2] === "abrir" && metodo === "POST") return abrirRascunho(env, m);
+  if (partes[2] === "descartar" && metodo === "POST") return descartarRascunho(env, m);
   return json({ erro: "Rota não encontrada." }, 404);
 }
 
@@ -69,6 +72,48 @@ async function contratanteDe(env, id) {
 }
 async function modeloDe(env, id) {
   return Number.isInteger(Number(id)) && Number(id) > 0 ? env.DB.prepare("SELECT * FROM modelos WHERE id = ?").bind(Number(id)).first() : null;
+}
+
+// rascunho na fila: a Évora (ou a equipe) deixa a mensagem pronta; nada sai até uma pessoa abrir e confirmar
+async function rascunho(env, corpo) {
+  const c = await contratanteDe(env, corpo?.contratante_id);
+  if (!c) return json({ erro: "Contratante não encontrado." }, 404);
+  if (c.arquivado) return json({ erro: "Este contratante está arquivado." }, 409);
+  if (c.comunicacao === "bloqueado") return json({ erro: "Esta casa pediu para não receber mensagens.", codigo: "bloqueado" }, 409);
+  if (!c.telefone_norm) return json({ erro: "Este contratante não tem WhatsApp válido. Corrija o telefone na ficha." }, 400);
+  const texto = String(corpo?.texto ?? "").trim();
+  if (!texto) return json({ erro: "Escreva a mensagem." }, 400);
+  if (texto.length > 1000) return json({ erro: "Mensagem longa demais para o WhatsApp (máximo de 1000 caracteres)." }, 400);
+  const erros = validarModelo(texto);
+  if (erros.length) return json({ erro: erros[0] }, 400);
+  const t = agora();
+  const linha = await env.DB.prepare(
+    "INSERT INTO mensagens (chave, contratante_id, tipo, telefone, texto, situacao, simulada, criado, atualizado) VALUES (?, ?, 'avulsa', ?, ?, 'rascunho', 0, ?, ?) RETURNING *"
+  ).bind(crypto.randomUUID(), c.id, c.telefone_norm, texto, t, t).first();
+  return json({ mensagem: linha });
+}
+
+// a pessoa toca em abrir: confere as regras (intervalo, limite, bloqueio) e só então vira mensagem aberta, com o link do WhatsApp
+async function abrirRascunho(env, m) {
+  if (m.situacao !== "rascunho") return json({ erro: "Esta mensagem já foi aberta ou descartada." }, 409);
+  const c = await contratanteDe(env, m.contratante_id);
+  const config = await lerConfig(env);
+  const simulada = config.simulacao === "1";
+  const tipo = await tipoDaMensagem(env, c, null);
+  const regra = await verificarEnvio(env, c, { tipo, simulada }, config);
+  if (!regra.ok) return json({ erro: regra.erro, codigo: regra.codigo }, 409);
+  const link = montarLinkWhatsApp(c.telefone_norm, m.texto);
+  if (!link.ok) return json({ erro: link.erro }, 400);
+  const [linha] = await env.DB.batch([
+    env.DB.prepare("UPDATE mensagens SET situacao = 'aberta', tipo = ?, simulada = ?, atualizado = ? WHERE id = ? AND situacao = 'rascunho' RETURNING *").bind(tipo, simulada ? 1 : 0, agora(), m.id),
+  ]);
+  return json({ mensagem: linha.results[0], link: link.link, simulada });
+}
+
+async function descartarRascunho(env, m) {
+  if (m.situacao !== "rascunho") return json({ erro: "Só dá para descartar um rascunho." }, 409);
+  await env.DB.prepare("UPDATE mensagens SET situacao = 'desistiu', atualizado = ? WHERE id = ? AND situacao = 'rascunho'").bind(agora(), m.id).run();
+  return json({ ok: true });
 }
 
 // mostra a mensagem pronta e os avisos, sem registrar nada

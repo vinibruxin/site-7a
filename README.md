@@ -37,6 +37,33 @@ Custo zero: não usa a API paga da Meta, nem intermediários (Twilio, Z-API...),
 
 O código que monta o link fica isolado em `src/whatsapp.js`. As regras comerciais estão em `src/mensagens.js` e `src/campanhas.js`, e não dependem do link.
 
+## Agente comercial Évora (API)
+
+O agente conversa com o sistema pelo token `AGENTE_TOKEN` (secret do Worker, mínimo de 32 caracteres), enviado no cabeçalho `Authorization: Bearer <token>`. Não usa a senha do painel e não tem acesso a login, conteúdo do site, configurações nem senhas.
+
+Gerar e gravar o token (no computador, fora do repositório):
+
+```bash
+npx wrangler secret put AGENTE_TOKEN
+```
+
+**O que o agente pode**
+- Ler: `GET /api/agente/painel` (funil, vencidos, sem próxima ação, shows dos próximos 60 dias, limite do dia), `GET /api/gestao/dados`, `GET /api/gestao/contratantes[/id]`, notas, modelos, campanhas e o link da proposta de um show.
+- Rascunhar: `POST /api/gestao/mensagens/previa` monta o texto e mostra avisos (intervalo, limite, bloqueio) sem registrar nada.
+- Cadastrar contratante (`POST /api/gestao/contratantes`) e anotar (`POST /api/gestao/contratantes/:id/notas`).
+- Atualizar a ação: `POST /api/agente/contratantes/:id/acao` com `proxima_acao`, `proxima_data` (AAAA-MM-DD), `etapa` (contatar, contatado, negociando ou perdido) e `nota` opcional. A nota entra no histórico com o prefixo "Évora:".
+- Criar ou alterar consulta de show (`POST /api/gestao/shows`, `PUT /api/gestao/shows/:id`), sempre com status `consulta`. O cachê (em centavos) só entra acima do piso do artista (`PISOS` em `src/agente.js`). Recebido, repasse e despesas ficam de fora.
+- Montar ou atualizar a proposta (`PUT /api/gestao/shows/:id/proposta`), que devolve o token e o link `/proposta/<token>`. A proposta do agente fica com `situacao = aguardando_aprovacao`: a casa não abre o link e o envio não funciona até a equipe aprovar, o que acontece ao salvar a proposta no painel.
+
+**O que fica com a equipe** (o agente recebe 403 com o motivo)
+- Enviar proposta por e-mail, registrar toque no WhatsApp, iniciar ou alterar campanhas.
+- Marcar casa como fechada, confirmar, publicar, aprovar a proposta, ou lançar recebido, repasse e despesas de show.
+- Apagar, arquivar, bloquear ou desbloquear, exportar planilhas, mudar configurações, senha ou conteúdo do site.
+
+Quem envia continua sendo uma pessoa: o WhatsApp abre pelo link do painel e o e-mail sai pelo botão da Gestão.
+
+Testes: `test/agente.test.js` cobre a autenticação, o que é lido, o que é recusado e a atualização da ação.
+
 ## Banco de dados e migrações
 
 As tabelas ficam em `src/esquema.js` como migrações versionadas (`MIGRACOES`). O deploy automático da Cloudflare não roda comandos de migração, então o próprio worker aplica, na primeira chamada de cada instância, as versões que ainda não estão na tabela `esquema_versao` (`src/banco.js`).
