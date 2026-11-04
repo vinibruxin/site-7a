@@ -885,6 +885,7 @@ a.item:active { transform: scale(.995); }
         <a class="btn btn-sec" id="zap-proposta" target="_blank" rel="noopener">Enviar no WhatsApp</a>
         <button class="btn btn-sec" type="button" id="email-proposta">Enviar por e-mail</button>
         <button class="btn btn-sec" type="button" id="copiar-proposta">Copiar link</button>
+        <button class="btn" type="button" id="aprovar-proposta" hidden>Aprovar e enviar por e-mail</button>
       </div>
       <div class="ficha" id="caixa-email" hidden>
         <label class="c6">E-mail do contratante<input type="email" id="email-para" autocomplete="off" placeholder="contato@casa.com.br"></label>
@@ -1003,6 +1004,12 @@ a.item:active { transform: scale(.995); }
       $("#links-proposta").hidden = false;
       $("#gerar").textContent = "Atualizar proposta";
     };
+    // botão de aprovação: aparece só enquanto a proposta aguarda; aprovar já envia por e-mail
+    const mostrarAprovacao = (aguarda) => {
+      const b = $("#aprovar-proposta");
+      b.hidden = !aguarda;
+      if (aguarda) aviso("Esta proposta foi preparada pela Évora e aguarda a sua aprovação. Revise e salve com \"Atualizar proposta\", ou aprove e envie.");
+    };
     api(`gestao/shows/${s.id}/proposta`).then((p) => {
       escolher("formato", p.formato ?? FORMATOS[s.artista]);
       escolher("duracao", p.duracao || "2 horas");
@@ -1012,6 +1019,8 @@ a.item:active { transform: scale(.995); }
       validadeAtual = p.validade || "";
       outros(); mostrarValidade();
       if (p.token) mostrarLinks(p.token);
+      // proposta preparada pela Évora: só sai depois da sua aprovação, pelo botão próprio
+      mostrarAprovacao(p.situacao === "aguardando_aprovacao");
     });
     form.addEventListener("change", (ev) => {
       aviso(""); outros();
@@ -1029,6 +1038,24 @@ a.item:active { transform: scale(.995); }
         validadeAtual = r.validade; mostrarValidade();
         mostrarLinks(r.token);
         aviso(s.cache ? "Proposta pronta. O link mostra sempre os dados atuais do show." : "Proposta pronta, com o cachê a combinar.", "ok");
+      }).catch(() => { b.disabled = false; aviso("Sem conexão. Tente de novo.", "ruim"); });
+    });
+
+    // aprovar: salva a aprovação e manda a proposta por e-mail para a casa, depois de confirmar
+    $("#aprovar-proposta").addEventListener("click", () => {
+      if (sujo) return aviso("Salve o show antes de aprovar, para a proposta sair com os dados novos.", "ruim");
+      const c = contratante(s.contratante_id);
+      const destino = c && c.email ? c.email : "";
+      const pergunta = destino
+        ? `Aprovar esta proposta e enviar por e-mail para ${destino}?`
+        : "Aprovar esta proposta? A casa não tem e-mail cadastrado, então o link terá que ir pelo WhatsApp.";
+      if (!confirm(pergunta)) return;
+      const b = $("#aprovar-proposta"); b.disabled = true;
+      api(`gestao/shows/${s.id}/proposta/aprovar`, "POST", {}).then((r) => {
+        b.disabled = false;
+        if (!r.ok) return aviso(r.erro || "Não deu para aprovar. Tente de novo.", "ruim");
+        b.hidden = true;
+        aviso(r.enviada ? `Aprovada e enviada para ${r.para}.` : `Aprovada. ${r.motivo || ""}`, r.enviada ? "ok" : "");
       }).catch(() => { b.disabled = false; aviso("Sem conexão. Tente de novo.", "ruim"); });
     });
 

@@ -81,6 +81,7 @@ export async function rotasContratantes(req, env, partes, corpo, url) {
   if (acao === "respondeu" && metodo === "POST") return respondeu(env, req, c);
   if (acao === "parar" && metodo === "POST") return parar(env, req, c, corpo);
   if (acao === "desbloquear" && metodo === "POST") return desbloquear(env, req, c, corpo);
+  if (acao === "ultimo-cache" && metodo === "POST") return registrarUltimoCache(env, req, c, corpo);
   if (acao === "notas") {
     if (metodo === "GET") {
       const { results } = await env.DB.prepare("SELECT * FROM notas WHERE contratante_id = ? ORDER BY criado DESC").bind(id).all();
@@ -142,7 +143,35 @@ async function listar(env, url) {
   });
 }
 
+// último cachê fechado com esta casa para um artista (centavos). A Évora registra o que fecha; a equipe pode registrar ou corrigir.
+// Quem registra por último vale: é o número que a negociação seguinte não pode ficar abaixo.
+export async function registrarUltimoCache(env, req, c, corpo) {
+  const artista = txt(corpo?.artista, 60);
+  if (!/^[a-z0-9-]{1,60}$/.test(artista)) return json({ erro: "Escolha o artista." }, 400);
+  const valor = Math.round(Number(corpo?.valor));
+  if (!(valor > 0 && valor < 1e11)) return json({ erro: "O cachê precisa ser maior que zero (em centavos: 80000 = R$ 800,00)." }, 400);
+  const origem = txt(corpo?.origem, 200);
+  if (!origem) return json({ erro: "Diga de onde vem esse valor, por exemplo: show de 04/03/2025 no Topo do Mundo." }, 400);
+  const t = agora();
+  await env.DB.batch([
+    env.DB.prepare(
+      "INSERT INTO ultimos_cache (contratante_id, artista, valor, origem, criado) VALUES (?, ?, ?, ?, ?) ON CONFLICT(contratante_id, artista) DO UPDATE SET valor = excluded.valor, origem = excluded.origem, criado = excluded.criado"
+    ).bind(c.id, artista, valor, origem, t),
+    auditoria(env, req, "registrou último cachê", "contratante", c.id, `${artista}: ${valor} (${origem})`),
+  ]);
+  return json({ ok: true });
+}
+
+// show marcado como confirmado pela equipe: o cachê vira o último cachê da casa para aquele artista
+export async function gravarUltimoCacheDoShow(env, show) {
+  if (show.status !== "confirmado" || !show.contratante_id || !show.artista || !(show.cache > 0)) return;
+  await env.DB.prepare(
+    "INSERT INTO ultimos_cache (contratante_id, artista, valor, origem, criado) VALUES (?, ?, ?, ?, ?) ON CONFLICT(contratante_id, artista) DO UPDATE SET valor = excluded.valor, origem = excluded.origem, criado = excluded.criado"
+  ).bind(show.contratante_id, show.artista, show.cache, `Show confirmado em ${dataBR(show.data)}`, agora()).run();
+}
+
 async function ficha(env, c) {
+  const ultimos = await env.DB.prepare("SELECT artista, valor, origem, criado FROM ultimos_cache WHERE contratante_id = ? ORDER BY artista").bind(c.id).all();
   const [mensagens, eventos, consent, campanhas] = await env.DB.batch([
     env.DB.prepare("SELECT m.*, mo.nome AS modelo FROM mensagens m LEFT JOIN modelos mo ON mo.id = m.modelo_id WHERE m.contratante_id = ? ORDER BY m.criado DESC LIMIT 100").bind(c.id),
     env.DB.prepare("SELECT * FROM eventos WHERE contratante_id = ? ORDER BY criado DESC LIMIT 100").bind(c.id),
@@ -152,7 +181,7 @@ async function ficha(env, c) {
        WHERE d.contratante_id = ? ORDER BY ca.criado DESC`
     ).bind(c.id),
   ]);
-  return json({ contratante: c, mensagens: mensagens.results, eventos: eventos.results, consentimentos: consent.results, campanhas: campanhas.results });
+  return json({ contratante: c, ultimos_cache: ultimos.results, mensagens: mensagens.results, eventos: eventos.results, consentimentos: consent.results, campanhas: campanhas.results });
 }
 
 async function criar(env, req, corpo) {

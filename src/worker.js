@@ -4,6 +4,7 @@
 // O sistema de gestão (/admin/gestao.html) fica em src/gestao.js, com os dados no D1 DB.
 
 import { gestao, pedidoDoSite, propostaPublica, showsPublicos } from "./gestao.js";
+import { agenteAutorizado, motivoAgente, rotasAgente } from "./agente.js";
 
 const CHAVE = "conteudo";
 const SESSAO_DIAS = 7;
@@ -235,10 +236,22 @@ async function api(req, env, url) {
     return json({ ok: true }, 200, { "set-cookie": cookie("", 0) });
   }
 
-  if (!(await logado(req, env))) return json({ erro: "Entre com a senha para continuar." }, 401);
+  // o agente comercial entra com o token dele (cabeçalho Authorization), não com a senha do painel
+  const agente = agenteAutorizado(req, env);
+  if (rota.startsWith("agente/")) {
+    if (!agente) return json({ erro: "Token do agente inválido." }, 401);
+    return rotasAgente(req, env, rota.slice("agente/".length));
+  }
+  if (!agente && !(await logado(req, env))) return json({ erro: "Entre com a senha para continuar." }, 401);
+  if (agente) {
+    if (!rota.startsWith("gestao/")) return json({ erro: "Esta rota não está liberada para o agente." }, 403);
+    const corpo = metodo === "POST" || metodo === "PUT" ? await req.clone().json().catch(() => ({})) : null;
+    const motivo = await motivoAgente(env, metodo, rota.slice("gestao/".length), corpo);
+    if (motivo) return json({ erro: motivo }, 403);
+  }
 
   if (rota === "sessao" && metodo === "GET") return json({ ok: true });
-  if (rota.startsWith("gestao/")) return gestao(req, env, rota.slice("gestao/".length));
+  if (rota.startsWith("gestao/")) return gestao(req, env, rota.slice("gestao/".length), agente ? "agente" : "equipe");
   if (rota === "conteudo" && metodo === "PUT") {
     const novo = await req.json();
     const limpo = validar(novo);

@@ -21,6 +21,19 @@ export function cliente(cookie) {
   };
 }
 
+// chamadas do agente: sem cookie, com o token no cabeçalho Authorization
+export function clienteAgente(token = env.AGENTE_TOKEN) {
+  return async (rota, metodo = "GET", corpo) => {
+    const r = await SELF.fetch(BASE + "/api/" + rota, {
+      method: metodo,
+      headers: { ...(token ? { authorization: "Bearer " + token } : {}), ...(corpo ? { "content-type": "application/json" } : {}) },
+      body: corpo ? JSON.stringify(corpo) : undefined,
+    });
+    const j = await r.json().catch(() => null);
+    return Array.isArray(j) ? Object.assign(j, { status: r.status }) : { status: r.status, ...j };
+  };
+}
+
 // telefones únicos por teste: (31) 9xxxx-xxxx
 let n = Math.floor(Math.random() * 1e6);
 export const tel = () => `(31) 9${String(++n % 1e8).padStart(8, "0").replace(/^(\d{4})/, "$1-")}`;
