@@ -95,8 +95,8 @@ export async function gestao(req, env, rota, quem = "equipe") {
   // fila de mensagens: rascunhos prontos para abrir e abertas aguardando a confirmação de envio
   if (rota === "fila" && metodo === "GET") {
     const [rascunhos, abertas] = await Promise.all([
-      env.DB.prepare("SELECT m.id, m.texto, m.criado, c.id AS contratante_id, c.nome, c.cidade, c.contato FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'rascunho' ORDER BY m.criado DESC LIMIT 100").all(),
-      env.DB.prepare("SELECT m.id, m.texto, m.criado, m.tipo, c.id AS contratante_id, c.nome FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'aberta' ORDER BY m.criado DESC LIMIT 100").all(),
+      env.DB.prepare("SELECT m.id, m.texto, m.criado, m.telefone, c.id AS contratante_id, c.nome, c.cidade, c.contato FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'rascunho' ORDER BY m.criado DESC LIMIT 100").all(),
+      env.DB.prepare("SELECT m.id, m.texto, m.criado, m.tipo, m.telefone, c.id AS contratante_id, c.nome FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'aberta' ORDER BY m.criado DESC LIMIT 100").all(),
     ]);
     return json({ rascunhos: rascunhos.results, abertas: abertas.results });
   }

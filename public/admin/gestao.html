@@ -425,13 +425,15 @@ a.item:active { transform: scale(.995); }
     if (!box) return;
     api("gestao/fila").then((f) => {
       if (f.erro) { box.innerHTML = `<p class="vazio">${esc(f.erro)}</p>`; return; }
+      // número como aparece para a pessoa: (31) 99223-3295
+      const fone = (t) => { const d = String(t || "").replace(/^55/, ""); return d.replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3") || t; };
       const rascunhos = f.rascunhos.map((m) => `<li data-m="${m.id}">
-          <a class="item" href="#contratante/${m.contratante_id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Rascunho</span></span><span class="meta">${esc(m.texto)}</span></a>
-          <div class="acoes-rapidas"><button class="btn" type="button" data-fila="abrir" data-id="${m.id}">Abrir no WhatsApp</button><button class="texto-btn" type="button" data-fila="descartar" data-id="${m.id}">Descartar</button></div>
+          <a class="item" href="#contratante/${m.contratante_id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Pronta para enviar</span></span><span class="meta">Para ${esc(fone(m.telefone))}</span><span class="meta">${esc(m.texto)}</span></a>
+          <div class="acoes-rapidas"><button class="btn" type="button" data-fila="abrir" data-id="${m.id}">Enviar no WhatsApp</button><button class="texto-btn" type="button" data-fila="descartar" data-id="${m.id}">Descartar</button></div>
         </li>`).join("");
       const abertas = f.abertas.map((m) => `<li data-m="${m.id}">
-          <a class="item" href="#contratante/${m.contratante_id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Falta confirmar</span></span><span class="meta">${esc(m.texto)}</span></a>
-          <div class="acoes-rapidas"><button class="btn" type="button" data-fila="enviei" data-id="${m.id}">Enviei</button><button class="btn btn-sec" type="button" data-fila="nao" data-id="${m.id}">Não enviei</button></div>
+          <a class="item" href="#contratante/${m.contratante_id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Falta confirmar</span></span><span class="meta">Para ${esc(fone(m.telefone))}</span><span class="meta">${esc(m.texto)}</span></a>
+          <div class="acoes-rapidas"><button class="btn btn-sec" type="button" data-fila="reabrir" data-id="${m.id}">Abrir de novo</button><button class="btn" type="button" data-fila="enviei" data-id="${m.id}">Enviei</button><button class="texto-btn" type="button" data-fila="nao" data-id="${m.id}">Não enviei</button></div>
         </li>`).join("");
       box.innerHTML = !rascunhos && !abertas
         ? '<p class="vazio">Nenhuma mensagem na fila. Quando a Évora preparar um rascunho, ele aparece aqui.</p>'
@@ -444,6 +446,7 @@ a.item:active { transform: scale(.995); }
     if (!b) return;
     const id = b.dataset.id, acao = b.dataset.fila;
     if (acao === "abrir") abrirNoWhats(() => api(`gestao/mensagens/${id}/abrir`, "POST", {})).then((r) => { if (r.erro) alert(r.erro); carregarFila(); });
+    else if (acao === "reabrir") abrirNoWhats(() => api(`gestao/mensagens/${id}/reabrir`, "POST", {})).then((r) => { if (r.erro) alert(r.erro); carregarFila(); });
     else if (acao === "descartar") { if (confirm("Descartar este rascunho?")) api(`gestao/mensagens/${id}/descartar`, "POST", {}).then((r) => { if (r.erro) alert(r.erro); carregarFila(); }); }
     else api(`gestao/mensagens/${id}/confirmar`, "POST", { enviou: acao === "enviei" }).then((r) => { if (r.erro) alert(r.erro); carregarFila(); });
   });
