@@ -464,28 +464,41 @@ a.item:active { transform: scale(.995); }
   }
 
   // fila: rascunhos da Évora (abrir ou descartar) e mensagens abertas (confirmar se foram enviadas)
-  function carregarFila() {
+  // vista: "enviar" (rascunhos e mensagens aguardando confirmação) ou "enviadas"
+  function carregarFila(vista = "enviar") {
     const box = $("#fila-mensagens");
     if (!box) return;
     api("gestao/fila").then((f) => {
       if (f.erro) { box.innerHTML = `<p class="vazio">${esc(f.erro)}</p>`; return; }
+      const aEnviar = f.rascunhos.length + f.abertas.length;
+      const abas = `<div class="acoes-rapidas"><button class="${vista === "enviar" ? "btn" : "btn btn-sec"}" type="button" data-vista="enviar">A enviar (${aEnviar})</button><button class="${vista === "enviadas" ? "btn" : "btn btn-sec"}" type="button" data-vista="enviadas">Enviadas (${f.enviadas.length})</button></div>`;
+      if (vista === "enviadas") {
+        const fone0 = (t) => { const d = String(t || "").replace(/^55/, ""); return d.replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3") || t; };
+        const itens = f.enviadas.map((m) => `<li data-m="${m.id}">
+          <a class="item" href="#mensagem/${m.id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Enviada</span></span><span class="meta">Para ${esc(fone0(m.telefone))}</span><span class="meta">${esc(m.texto).replace(/\n/g, "<br>")}</span></a>
+        </li>`).join("");
+        box.innerHTML = abas + (itens ? `<ul class="lista">${itens}</ul>` : '<p class="vazio">Nenhuma mensagem enviada ainda.</p>');
+        return;
+      }
       // número como aparece para a pessoa: (31) 99223-3295
       const fone = (t) => { const d = String(t || "").replace(/^55/, ""); return d.replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3") || t; };
       const rascunhos = f.rascunhos.map((m) => `<li data-m="${m.id}">
-          <a class="item" href="#mensagem/${m.id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Pronta para enviar</span></span><span class="meta">Para ${esc(fone(m.telefone))}</span><span class="meta">${esc(m.texto)}</span></a>
+          <a class="item" href="#mensagem/${m.id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Pronta para enviar</span></span><span class="meta">Para ${esc(fone(m.telefone))}</span><span class="meta">${esc(m.texto).replace(/\n/g, "<br>")}</span></a>
           <div class="acoes-rapidas"><button class="btn" type="button" data-fila="abrir" data-id="${m.id}">Enviar no WhatsApp</button><button class="texto-btn" type="button" data-fila="descartar" data-id="${m.id}">Descartar</button></div>
         </li>`).join("");
       const abertas = f.abertas.map((m) => `<li data-m="${m.id}">
-          <a class="item" href="#mensagem/${m.id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Falta confirmar</span></span><span class="meta">Para ${esc(fone(m.telefone))}</span><span class="meta">${esc(m.texto)}</span></a>
+          <a class="item" href="#mensagem/${m.id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Falta confirmar</span></span><span class="meta">Para ${esc(fone(m.telefone))}</span><span class="meta">${esc(m.texto).replace(/\n/g, "<br>")}</span></a>
           <div class="acoes-rapidas"><button class="btn btn-sec" type="button" data-fila="reabrir" data-id="${m.id}">Abrir de novo</button><button class="btn" type="button" data-fila="enviei" data-id="${m.id}">Enviei</button><button class="texto-btn" type="button" data-fila="nao" data-id="${m.id}">Não enviei</button></div>
         </li>`).join("");
-      box.innerHTML = !rascunhos && !abertas
-        ? '<p class="vazio">Nenhuma mensagem na fila. Quando a Évora preparar um rascunho, ele aparece aqui.</p>'
-        : `${rascunhos ? `<ul class="lista">${rascunhos}</ul>` : ""}${abertas ? `<ul class="lista">${abertas}</ul>` : ""}`;
+      box.innerHTML = abas + (!rascunhos && !abertas
+        ? '<p class="vazio">Nenhuma mensagem para enviar. Quando a Évora preparar um rascunho, ele aparece aqui.</p>'
+        : `${rascunhos ? `<ul class="lista">${rascunhos}</ul>` : ""}${abertas ? `<ul class="lista">${abertas}</ul>` : ""}`);
     });
   }
   // delegação: os botões da fila são recriados a cada carga
   document.addEventListener("click", (ev) => {
+    const aba = ev.target.closest && ev.target.closest("[data-vista]");
+    if (aba) { carregarFila(aba.dataset.vista); return; }
     const b = ev.target.closest && ev.target.closest("[data-fila]");
     if (!b) return;
     const id = b.dataset.id, acao = b.dataset.fila;

@@ -94,11 +94,12 @@ export async function gestao(req, env, rota, quem = "equipe") {
   if (partes[0] === "campanhas") return rotasCampanhas(req, env, partes, corpo);
   // fila de mensagens: rascunhos prontos para abrir e abertas aguardando a confirmação de envio
   if (rota === "fila" && metodo === "GET") {
-    const [rascunhos, abertas] = await Promise.all([
+    const [rascunhos, abertas, enviadas] = await Promise.all([
       env.DB.prepare("SELECT m.id, m.texto, m.criado, m.telefone, c.id AS contratante_id, c.nome, c.cidade, c.contato FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'rascunho' ORDER BY m.criado DESC LIMIT 100").all(),
       env.DB.prepare("SELECT m.id, m.texto, m.criado, m.tipo, m.telefone, c.id AS contratante_id, c.nome FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'aberta' ORDER BY m.criado DESC LIMIT 100").all(),
+      env.DB.prepare("SELECT m.id, m.texto, m.atualizado, m.telefone, c.id AS contratante_id, c.nome FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'enviada' ORDER BY m.atualizado DESC LIMIT 50").all(),
     ]);
-    return json({ rascunhos: rascunhos.results, abertas: abertas.results });
+    return json({ rascunhos: rascunhos.results, abertas: abertas.results, enviadas: enviadas.results });
   }
   if (rota === "indicadores" && metodo === "GET") {
     const dias = [7, 30, 90].includes(Number(new URL(req.url).searchParams.get("dias"))) ? Number(new URL(req.url).searchParams.get("dias")) : 30;
