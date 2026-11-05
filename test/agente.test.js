@@ -144,6 +144,13 @@ describe("fila de mensagens", () => {
     const enviada = await api(`gestao/mensagens/${r.mensagem.id}/confirmar`, "POST", { enviou: true });
     expect(enviada.mensagem.situacao).toBe("enviada");
   });
+  it("a variável {{primeiro_nome}} é preenchida pelo cadastro da casa ao salvar o rascunho", async () => {
+    const casa = await api("gestao/contratantes", "POST", { nome: "Casa Variavel " + Math.random().toString(36).slice(2, 8), contato: "Maria Souza", cidade: "Betim", telefone: tel(), tipo: "casa" });
+    const r = await agente("gestao/mensagens/rascunho", "POST", { contratante_id: casa.id, texto: "Olá, {{primeiro_nome}}, tudo bem?" });
+    expect(r.mensagem.texto).toBe("Olá, Maria, tudo bem?");
+    const semNome = await api("gestao/contratantes", "POST", { nome: "Casa Sem Contato " + Math.random().toString(36).slice(2, 8), cidade: "Betim", telefone: tel(), tipo: "casa" });
+    expect((await agente("gestao/mensagens/rascunho", "POST", { contratante_id: semNome.id, texto: "Olá, {{primeiro_nome}}!" })).status).toBe(400);
+  });
   it("a equipe lê a mensagem por completo e ajusta o texto; a Évora não edita depois de enviada", async () => {
     const casa = await api("gestao/contratantes", "POST", { nome: "Casa Editar " + Math.random().toString(36).slice(2, 8), contato: "Joana", cidade: "Betim", telefone: tel(), tipo: "casa" });
     const r = await agente("gestao/mensagens/rascunho", "POST", { contratante_id: casa.id, texto: "Oi, Joana. Primeiro texto." });

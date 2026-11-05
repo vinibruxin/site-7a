@@ -86,11 +86,15 @@ async function rascunho(env, corpo) {
   if (c.arquivado) return json({ erro: "Este contratante está arquivado." }, 409);
   if (c.comunicacao === "bloqueado") return json({ erro: "Esta casa pediu para não receber mensagens.", codigo: "bloqueado" }, 409);
   if (!c.telefone_norm) return json({ erro: "Este contratante não tem WhatsApp válido. Corrija o telefone na ficha." }, 400);
-  const texto = String(corpo?.texto ?? "").trim();
+  let texto = String(corpo?.texto ?? "").trim();
   if (!texto) return json({ erro: "Escreva a mensagem." }, 400);
   if (texto.length > 1000) return json({ erro: "Mensagem longa demais para o WhatsApp (máximo de 1000 caracteres)." }, 400);
   const erros = validarModelo(texto);
   if (erros.length) return json({ erro: erros[0] }, 400);
+  // {{primeiro_nome}} e as demais variáveis vêm do cadastro da casa, na hora de salvar
+  const preenchido = preencher(texto, valoresDe(c));
+  if (preenchido.faltando.length) return json({ erro: descreverFalta(preenchido.faltando) }, 400);
+  texto = preenchido.texto;
   const t = agora();
   const linha = await env.DB.prepare(
     "INSERT INTO mensagens (chave, contratante_id, tipo, telefone, texto, situacao, simulada, criado, atualizado) VALUES (?, ?, 'avulsa', ?, ?, 'rascunho', 0, ?, ?) RETURNING *"
@@ -118,11 +122,15 @@ async function abrirRascunho(env, m) {
 // a equipe ajusta o texto antes de enviar; só enquanto a mensagem não foi confirmada como enviada
 async function editarTexto(env, m, corpo) {
   if (!["rascunho", "aberta"].includes(m.situacao)) return json({ erro: "Esta mensagem já foi enviada ou descartada e não pode mais ser editada." }, 409);
-  const texto = String(corpo?.texto ?? "").trim();
+  let texto = String(corpo?.texto ?? "").trim();
   if (!texto) return json({ erro: "Escreva a mensagem." }, 400);
   if (texto.length > 1000) return json({ erro: "Mensagem longa demais para o WhatsApp (máximo de 1000 caracteres)." }, 400);
   const erros = validarModelo(texto);
   if (erros.length) return json({ erro: erros[0] }, 400);
+  const c = await contratanteDe(env, m.contratante_id);
+  const preenchido = preencher(texto, valoresDe(c));
+  if (preenchido.faltando.length) return json({ erro: descreverFalta(preenchido.faltando) }, 400);
+  texto = preenchido.texto;
   const linha = await env.DB.prepare("UPDATE mensagens SET texto = ?, atualizado = ? WHERE id = ? RETURNING *").bind(texto, agora(), m.id).first();
   return json({ mensagem: linha });
 }
