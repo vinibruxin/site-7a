@@ -60,6 +60,11 @@ export async function rotasMensagens(req, env, partes, corpo) {
   if (!Number.isInteger(id) || id <= 0) return json({ erro: "Mensagem não encontrada." }, 404);
   const m = await env.DB.prepare("SELECT * FROM mensagens WHERE id = ?").bind(id).first();
   if (!m) return json({ erro: "Mensagem não encontrada." }, 404);
+  if (partes.length === 2 && metodo === "GET") {
+    const c = await contratanteDe(env, m.contratante_id);
+    return json({ mensagem: m, contratante: c ? { id: c.id, nome: c.nome } : null });
+  }
+  if (partes[2] === "texto" && metodo === "PUT") return editarTexto(env, m, corpo);
   if (partes[2] === "confirmar" && metodo === "POST") return confirmar(env, req, m, corpo);
   if (partes[2] === "reabrir" && metodo === "POST") return reabrir(env, m);
   if (partes[2] === "abrir" && metodo === "POST") return abrirRascunho(env, m);
@@ -108,6 +113,18 @@ async function abrirRascunho(env, m) {
     env.DB.prepare("UPDATE mensagens SET situacao = 'aberta', tipo = ?, simulada = ?, atualizado = ? WHERE id = ? AND situacao = 'rascunho' RETURNING *").bind(tipo, simulada ? 1 : 0, agora(), m.id),
   ]);
   return json({ mensagem: linha.results[0], link: link.link, simulada });
+}
+
+// a equipe ajusta o texto antes de enviar; só enquanto a mensagem não foi confirmada como enviada
+async function editarTexto(env, m, corpo) {
+  if (!["rascunho", "aberta"].includes(m.situacao)) return json({ erro: "Esta mensagem já foi enviada ou descartada e não pode mais ser editada." }, 409);
+  const texto = String(corpo?.texto ?? "").trim();
+  if (!texto) return json({ erro: "Escreva a mensagem." }, 400);
+  if (texto.length > 1000) return json({ erro: "Mensagem longa demais para o WhatsApp (máximo de 1000 caracteres)." }, 400);
+  const erros = validarModelo(texto);
+  if (erros.length) return json({ erro: erros[0] }, 400);
+  const linha = await env.DB.prepare("UPDATE mensagens SET texto = ?, atualizado = ? WHERE id = ? RETURNING *").bind(texto, agora(), m.id).first();
+  return json({ mensagem: linha });
 }
 
 async function descartarRascunho(env, m) {

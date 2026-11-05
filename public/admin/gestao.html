@@ -375,12 +375,12 @@ a.item:active { transform: scale(.995); }
     const h = location.hash || "#hoje";
     ultimo = h;
     const [nome, id] = h.slice(1).split("/");
-    const aba = { contratante: "contratantes", importar: "contratantes", show: "shows", campanha: "campanhas", modelos: "campanhas", modelo: "campanhas" }[nome] || nome;
+    const aba = { contratante: "contratantes", importar: "contratantes", show: "shows", campanha: "campanhas", modelos: "campanhas", modelo: "campanhas", mensagem: "whatsapp" }[nome] || nome;
     document.querySelectorAll("[data-aba]").forEach((a) => (a.dataset.aba === aba ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
     const telas = {
       hoje: telaHoje, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
       campanhas: telaCampanhas, campanha: () => fichaCampanha(id), modelos: telaModelos, modelo: () => fichaModelo(id),
-      shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp,
+      shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id),
     };
     (telas[nome] || telaHoje)();
     window.scrollTo(0, 0);
@@ -419,6 +419,50 @@ a.item:active { transform: scale(.995); }
     });
   }
 
+  /* ---------- mensagem: ler por completo, editar e enviar ---------- */
+  function telaMensagem(id) {
+    tela.innerHTML = '<a class="voltar" href="#whatsapp">Voltar para WhatsApp</a><p class="vazio">Carregando...</p>';
+    api(`gestao/mensagens/${Number(id)}`).then((r) => {
+      if (location.hash !== "#mensagem/" + id) return;
+      if (r.erro || !r.mensagem) { tela.innerHTML = '<a class="voltar" href="#whatsapp">Voltar para WhatsApp</a><p class="vazio">Mensagem não encontrada.</p>'; return; }
+      const m = r.mensagem, nome = r.contratante ? r.contratante.nome : "Contratante";
+      const fone = String(m.telefone || "").replace(/^55/, "").replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3");
+      const aberta = m.situacao === "aberta", rascunho = m.situacao === "rascunho", editavel = aberta || rascunho;
+      const situacao = rascunho ? "pronta para enviar" : aberta ? "aberta, falta confirmar o envio" : (SIT_MSG[m.situacao] || m.situacao);
+      tela.innerHTML = `<a class="voltar" href="#whatsapp">Voltar para WhatsApp</a>
+        <div class="cabeca"><h1 class="display">${esc(nome)}</h1></div>
+        <p class="ajuda">Para ${esc(fone)} · ${esc(situacao)}</p>
+        <div class="nova-nota" style="width:100%"><label>Mensagem<textarea id="msg-texto" rows="8" ${editavel ? "" : "disabled"}>${esc(m.texto)}</textarea></label></div>
+        <p class="estado" id="msg-estado" role="status"></p>
+        <div class="acoes-rapidas">
+          ${editavel ? '<button class="btn btn-sec" type="button" id="msg-salvar">Salvar texto</button>' : ""}
+          ${editavel ? `<button class="btn" type="button" id="msg-enviar">${aberta ? "Abrir de novo no WhatsApp" : "Enviar no WhatsApp"}</button>` : ""}
+          ${aberta ? '<button class="btn btn-sec" type="button" id="msg-enviei">Enviei</button><button class="texto-btn" type="button" id="msg-nao">Não enviei</button>' : ""}
+          ${rascunho ? '<button class="texto-btn perigo" type="button" id="msg-descartar">Descartar</button>' : ""}
+        </div>`;
+      const estado = (t, tipo) => { const e = $("#msg-estado"); e.textContent = t; e.className = "estado" + (tipo ? " " + tipo : ""); };
+      const salvar = () => {
+        const texto = $("#msg-texto").value.trim();
+        return api(`gestao/mensagens/${m.id}/texto`, "PUT", { texto }).then((x) => (x.erro ? (estado(x.erro, "ruim"), null) : x));
+      };
+      if ($("#msg-salvar")) $("#msg-salvar").addEventListener("click", () => salvar().then((x) => x && estado("Texto salvo.", "ok")));
+      if ($("#msg-enviar")) $("#msg-enviar").addEventListener("click", () => {
+        // se o texto mudou, salva antes de abrir: o WhatsApp abre com o que está na tela
+        const mudou = $("#msg-texto").value.trim() !== m.texto;
+        (mudou ? salvar() : Promise.resolve({ mensagem: m })).then((x) => {
+          if (!x) return;
+          abrirNoWhats(() => api(`gestao/mensagens/${m.id}/${aberta ? "reabrir" : "abrir"}`, "POST", {})).then((y) => {
+            if (y.erro) return estado(y.erro, "ruim");
+            telaMensagem(id); // recarrega já com os botões de confirmação
+          });
+        });
+      });
+      if ($("#msg-enviei")) $("#msg-enviei").addEventListener("click", () => api(`gestao/mensagens/${m.id}/confirmar`, "POST", { enviou: true }).then((x) => (x.erro ? estado(x.erro, "ruim") : (location.hash = "#whatsapp"))));
+      if ($("#msg-nao")) $("#msg-nao").addEventListener("click", () => api(`gestao/mensagens/${m.id}/confirmar`, "POST", { enviou: false }).then((x) => (x.erro ? estado(x.erro, "ruim") : (location.hash = "#whatsapp"))));
+      if ($("#msg-descartar")) $("#msg-descartar").addEventListener("click", () => { if (confirm("Descartar esta mensagem?")) api(`gestao/mensagens/${m.id}/descartar`, "POST", {}).then((x) => (x.erro ? estado(x.erro, "ruim") : (location.hash = "#whatsapp"))); });
+    });
+  }
+
   // fila: rascunhos da Évora (abrir ou descartar) e mensagens abertas (confirmar se foram enviadas)
   function carregarFila() {
     const box = $("#fila-mensagens");
@@ -428,11 +472,11 @@ a.item:active { transform: scale(.995); }
       // número como aparece para a pessoa: (31) 99223-3295
       const fone = (t) => { const d = String(t || "").replace(/^55/, ""); return d.replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3") || t; };
       const rascunhos = f.rascunhos.map((m) => `<li data-m="${m.id}">
-          <a class="item" href="#contratante/${m.contratante_id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Pronta para enviar</span></span><span class="meta">Para ${esc(fone(m.telefone))}</span><span class="meta">${esc(m.texto)}</span></a>
+          <a class="item" href="#mensagem/${m.id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Pronta para enviar</span></span><span class="meta">Para ${esc(fone(m.telefone))}</span><span class="meta">${esc(m.texto)}</span></a>
           <div class="acoes-rapidas"><button class="btn" type="button" data-fila="abrir" data-id="${m.id}">Enviar no WhatsApp</button><button class="texto-btn" type="button" data-fila="descartar" data-id="${m.id}">Descartar</button></div>
         </li>`).join("");
       const abertas = f.abertas.map((m) => `<li data-m="${m.id}">
-          <a class="item" href="#contratante/${m.contratante_id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Falta confirmar</span></span><span class="meta">Para ${esc(fone(m.telefone))}</span><span class="meta">${esc(m.texto)}</span></a>
+          <a class="item" href="#mensagem/${m.id}"><span class="nome">${esc(m.nome)}</span><span class="lado"><span class="etiqueta">Falta confirmar</span></span><span class="meta">Para ${esc(fone(m.telefone))}</span><span class="meta">${esc(m.texto)}</span></a>
           <div class="acoes-rapidas"><button class="btn btn-sec" type="button" data-fila="reabrir" data-id="${m.id}">Abrir de novo</button><button class="btn" type="button" data-fila="enviei" data-id="${m.id}">Enviei</button><button class="texto-btn" type="button" data-fila="nao" data-id="${m.id}">Não enviei</button></div>
         </li>`).join("");
       box.innerHTML = !rascunhos && !abertas

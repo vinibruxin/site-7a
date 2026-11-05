@@ -144,6 +144,17 @@ describe("fila de mensagens", () => {
     const enviada = await api(`gestao/mensagens/${r.mensagem.id}/confirmar`, "POST", { enviou: true });
     expect(enviada.mensagem.situacao).toBe("enviada");
   });
+  it("a equipe lê a mensagem por completo e ajusta o texto; a Évora não edita depois de enviada", async () => {
+    const casa = await api("gestao/contratantes", "POST", { nome: "Casa Editar " + Math.random().toString(36).slice(2, 8), contato: "Joana", cidade: "Betim", telefone: tel(), tipo: "casa" });
+    const r = await agente("gestao/mensagens/rascunho", "POST", { contratante_id: casa.id, texto: "Oi, Joana. Primeiro texto." });
+    const detalhe = await api(`gestao/mensagens/${r.mensagem.id}`);
+    expect(detalhe.mensagem.texto).toBe("Oi, Joana. Primeiro texto.");
+    expect(detalhe.contratante.nome).toBe(casa.nome);
+    const editada = await api(`gestao/mensagens/${r.mensagem.id}/texto`, "PUT", { texto: "Oi, Joana. Texto ajustado pela equipe." });
+    expect(editada.mensagem.texto).toBe("Oi, Joana. Texto ajustado pela equipe.");
+    expect((await agente(`gestao/mensagens/${r.mensagem.id}/texto`, "PUT", { texto: "outro" })).status).toBe(403);
+    expect((await api(`gestao/mensagens/${r.mensagem.id}/texto`, "PUT", { texto: "" })).status).toBe(400);
+  });
   it("rascunho para casa sem WhatsApp válido é recusado; descartar só vale para rascunho", async () => {
     const semFone = await api("gestao/contratantes", "POST", { nome: "Casa Sem Fone " + Math.random().toString(36).slice(2, 8), contato: "Ana", cidade: "Betim", tipo: "casa" });
     expect((await agente("gestao/mensagens/rascunho", "POST", { contratante_id: semFone.id, texto: "Oi" })).status).toBe(400);
