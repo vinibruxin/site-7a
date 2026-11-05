@@ -253,6 +253,7 @@ a.item:active { transform: scale(.995); }
     <nav class="abas" aria-label="Seções">
       <a href="#hoje" data-aba="hoje">Hoje</a>
       <a href="#contratantes" data-aba="contratantes">Contratantes</a>
+      <a href="#whatsapp" data-aba="whatsapp">WhatsApp</a>
       <a href="#campanhas" data-aba="campanhas">Campanhas</a>
       <a href="#shows" data-aba="shows">Shows</a>
       <a href="#ajustes" data-aba="ajustes">Ajustes</a>
@@ -379,7 +380,7 @@ a.item:active { transform: scale(.995); }
     const telas = {
       hoje: telaHoje, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
       campanhas: telaCampanhas, campanha: () => fichaCampanha(id), modelos: telaModelos, modelo: () => fichaModelo(id),
-      shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes,
+      shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp,
     };
     (telas[nome] || telaHoje)();
     window.scrollTo(0, 0);
@@ -391,6 +392,33 @@ a.item:active { transform: scale(.995); }
     // números e listas do dia sempre frescos
     api("gestao/dados").then((r) => { if (r.contratantes && (location.hash || "#hoje") === "#hoje") { D = r; desenharHoje(); } });
   }
+  /* ---------- whatsapp ---------- */
+  // menu próprio: o que está para enviar, o que falta confirmar e onde registrar a resposta de cada casa
+  function telaWhatsapp() {
+    tela.innerHTML = `<div class="cabeca"><h1 class="display">WhatsApp</h1></div>
+      <h2 class="display">Para enviar</h2>
+      <div id="fila-mensagens"><p class="vazio">Carregando a fila…</p></div>
+      <h2 class="display">Registrar resposta</h2>
+      <div class="nova-nota" style="width:100%">
+        <label>Casa<select id="zap-casa">${(D.contratantes || []).map((c) => `<option value="${c.id}">${esc(c.nome)}</option>`).join("")}</select></label>
+        <label>O que a casa respondeu<textarea id="zap-resposta" rows="3" placeholder="Cole aqui a mensagem que a casa mandou no WhatsApp"></textarea></label>
+        <button class="btn" type="button" id="zap-registrar">Registrar resposta</button>
+        <p class="estado" id="zap-estado" role="status"></p>
+      </div>`;
+    carregarFila();
+    $("#zap-registrar").addEventListener("click", () => {
+      const texto = $("#zap-resposta").value.trim();
+      const estado = $("#zap-estado");
+      if (!texto) { estado.textContent = "Cole a mensagem que a casa mandou."; estado.className = "estado ruim"; return; }
+      api(`gestao/contratantes/${$("#zap-casa").value}/resposta`, "POST", { texto }).then((r) => {
+        if (r.erro) { estado.textContent = r.erro; estado.className = "estado ruim"; return; }
+        $("#zap-resposta").value = "";
+        estado.textContent = "Resposta registrada. A casa passou para negociando.";
+        estado.className = "estado ok";
+      });
+    });
+  }
+
   // fila: rascunhos da Évora (abrir ou descartar) e mensagens abertas (confirmar se foram enviadas)
   function carregarFila() {
     const box = $("#fila-mensagens");
