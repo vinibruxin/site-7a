@@ -21,7 +21,7 @@ export const PISOS = {
 };
 
 // rotas da gestão que o agente pode usar (caminho depois de "gestao/")
-const LEITURA = [/^dados$/, /^fila$/, /^indicadores$/, /^contratantes$/, /^contratantes\/\d+$/, /^contratantes\/\d+\/notas$/, /^modelos$/, /^campanhas$/, /^shows\/\d+\/proposta$/];
+const LEITURA = [/^dados$/, /^fila$/, /^indicadores$/, /^contratantes\/\d+\/conversa$/, /^contratantes$/, /^contratantes\/\d+$/, /^contratantes\/\d+\/notas$/, /^modelos$/, /^campanhas$/, /^shows\/\d+\/proposta$/];
 
 function igual(a, b) {
   const x = new TextEncoder().encode(a);

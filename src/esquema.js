@@ -281,4 +281,15 @@ export const MIGRACOES = [
       PRIMARY KEY (contratante_id, artista)
     )`,
   ] },
+  { versao: 5, nome: "conversa por casa", passos: [
+    // respostas que a casa mandou (coladas pela equipe): entram na conversa, em ordem, junto com as mensagens enviadas
+    `CREATE TABLE IF NOT EXISTS conversa (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      contratante_id INTEGER NOT NULL REFERENCES contratantes(id),
+      quem TEXT NOT NULL,
+      texto TEXT NOT NULL,
+      criado TEXT NOT NULL
+    )`,
+    `CREATE INDEX IF NOT EXISTS conversa_contratante ON conversa(contratante_id, criado)`,
+  ] },
 ];

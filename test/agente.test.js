@@ -151,6 +151,16 @@ describe("fila de mensagens", () => {
     const semNome = await api("gestao/contratantes", "POST", { nome: "Casa Sem Contato " + Math.random().toString(36).slice(2, 8), cidade: "Betim", telefone: tel(), tipo: "casa" });
     expect((await agente("gestao/mensagens/rascunho", "POST", { contratante_id: semNome.id, texto: "Olá, {{primeiro_nome}}!" })).status).toBe(400);
   });
+  it("a conversa junta o que a casa respondeu, o que foi enviado e os rascunhos da Évora, em ordem", async () => {
+    const casa = await api("gestao/contratantes", "POST", { nome: "Casa Conversa " + Math.random().toString(36).slice(2, 8), contato: "Lia", cidade: "Betim", telefone: tel(), tipo: "casa" });
+    await api(`gestao/contratantes/${casa.id}/resposta`, "POST", { texto: "Pode ser, qual o cachê?" });
+    await agente("gestao/mensagens/rascunho", "POST", { contratante_id: casa.id, texto: "Oi, {{primeiro_nome}}. O cachê fica em R$ 900,00." });
+    const conv = await agente(`gestao/contratantes/${casa.id}/conversa`);
+    expect(conv.status).toBe(200);
+    expect(conv.itens.map((i) => i.quem)).toEqual(["casa", "evora"]);
+    expect(conv.itens[0].texto).toBe("Pode ser, qual o cachê?");
+    expect(conv.contratante.nome).toBe(casa.nome);
+  });
   it("a equipe lê a mensagem por completo e ajusta o texto; a Évora não edita depois de enviada", async () => {
     const casa = await api("gestao/contratantes", "POST", { nome: "Casa Editar " + Math.random().toString(36).slice(2, 8), contato: "Joana", cidade: "Betim", telefone: tel(), tipo: "casa" });
     const r = await agente("gestao/mensagens/rascunho", "POST", { contratante_id: casa.id, texto: "Oi, Joana. Primeiro texto." });

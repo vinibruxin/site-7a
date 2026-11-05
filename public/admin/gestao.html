@@ -230,6 +230,13 @@ a.item:active { transform: scale(.995); }
   .lista-contratantes .item .lado { grid-row: auto; grid-column: 1; justify-items: start; text-align: left; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  .conversa { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
+  .bolha { max-width: 82%; padding: 10px 12px; border-radius: 12px; font: 400 16px/1.5 var(--f-texto); white-space: pre-line; }
+  .bolha small { display: block; margin-top: 4px; font-size: 12px; opacity: .7; }
+  .bolha.casa { align-self: flex-start; background: #2a2a2a; color: #f2efea; }
+  .bolha.equipe { align-self: flex-end; background: #1f4a2e; color: #f2efea; }
+  .bolha.evora { align-self: flex-end; background: #3a2a10; color: #f2efea; border: 1px dashed #d9a441; }
+  .bolha .acoes-rapidas { margin-top: 8px; }
 </style>
 </head>
 <body>
@@ -375,12 +382,12 @@ a.item:active { transform: scale(.995); }
     const h = location.hash || "#hoje";
     ultimo = h;
     const [nome, id] = h.slice(1).split("/");
-    const aba = { contratante: "contratantes", importar: "contratantes", show: "shows", campanha: "campanhas", modelos: "campanhas", modelo: "campanhas", mensagem: "whatsapp" }[nome] || nome;
+    const aba = { contratante: "contratantes", importar: "contratantes", show: "shows", campanha: "campanhas", modelos: "campanhas", modelo: "campanhas", mensagem: "whatsapp", conversa: "contratantes" }[nome] || nome;
     document.querySelectorAll("[data-aba]").forEach((a) => (a.dataset.aba === aba ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
     const telas = {
       hoje: telaHoje, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
       campanhas: telaCampanhas, campanha: () => fichaCampanha(id), modelos: telaModelos, modelo: () => fichaModelo(id),
-      shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id),
+      shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id), conversa: () => telaConversa(id),
     };
     (telas[nome] || telaHoje)();
     window.scrollTo(0, 0);
@@ -415,6 +422,47 @@ a.item:active { transform: scale(.995); }
         $("#zap-resposta").value = "";
         estado.textContent = "Resposta registrada. A casa passou para negociando.";
         estado.className = "estado ok";
+      });
+    });
+  }
+
+  /* ---------- conversa da casa: o que ela respondeu, o que a equipe enviou e o rascunho da Évora ---------- */
+  function telaConversa(id) {
+    tela.innerHTML = '<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">Carregando...</p>';
+    api(`gestao/contratantes/${Number(id)}/conversa`).then((r) => {
+      if (location.hash !== "#conversa/" + id) return;
+      if (r.erro) { tela.innerHTML = `<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">${esc(r.erro)}</p>`; return; }
+      const c = r.contratante;
+      const fone = String(c.telefone || "").replace(/^55/, "").replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3");
+      const quando = (iso) => new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
+      const bolhas = r.itens.map((i) => {
+        if (i.quem === "casa") return `<div class="bolha casa">${esc(i.texto)}<small>${esc(c.nome)} · ${quando(i.criado)}</small></div>`;
+        if (i.quem === "evora") return `<div class="bolha evora">${esc(i.texto)}<small>Rascunho da Évora · ${quando(i.criado)}</small>
+            <div class="acoes-rapidas"><a class="btn btn-sec" href="#mensagem/${i.mensagemId}">Editar</a><button class="btn" type="button" data-conv="abrir" data-id="${i.mensagemId}">Enviar no WhatsApp</button><button class="texto-btn" type="button" data-conv="descartar" data-id="${i.mensagemId}">Descartar</button></div></div>`;
+        const etiqueta = i.situacao === "enviada" ? "Enviada" : "Falta confirmar";
+        const botoes = i.situacao === "aberta" ? `<div class="acoes-rapidas"><button class="btn btn-sec" type="button" data-conv="reabrir" data-id="${i.mensagemId}">Abrir de novo</button><button class="btn" type="button" data-conv="enviei" data-id="${i.mensagemId}">Enviei</button><button class="texto-btn" type="button" data-conv="nao" data-id="${i.mensagemId}">Não enviei</button></div>` : "";
+        return `<div class="bolha equipe">${esc(i.texto)}<small>${etiqueta} · ${quando(i.criado)}</small>${botoes}</div>`;
+      }).join("");
+      tela.innerHTML = `<a class="voltar" href="#contratantes">Voltar para contratantes</a>
+        <div class="cabeca"><h1 class="display">${esc(c.nome)}</h1><a class="btn btn-sec" href="#contratante/${c.id}">Ficha da casa</a></div>
+        <p class="ajuda">${fone ? "WhatsApp " + esc(fone) : "Sem WhatsApp cadastrado"}</p>
+        <div class="conversa" id="conversa">${bolhas || '<p class="vazio">Ainda não há conversa com esta casa.</p>'}</div>
+        <div class="nova-nota" style="width:100%"><label>Resposta da casa<textarea id="conv-texto" rows="3" placeholder="Cole aqui o que a casa mandou no WhatsApp"></textarea></label><button class="btn" type="button" id="conv-registrar">Registrar resposta</button><p class="estado" id="conv-estado" role="status"></p></div>`;
+      window.scrollTo(0, document.body.scrollHeight);
+      const recarregar = () => telaConversa(id);
+      $("#conv-registrar").addEventListener("click", () => {
+        const texto = $("#conv-texto").value.trim(), e = $("#conv-estado");
+        if (!texto) { e.textContent = "Cole a mensagem que a casa mandou."; e.className = "estado ruim"; return; }
+        api(`gestao/contratantes/${c.id}/resposta`, "POST", { texto }).then((x) => (x.erro ? (e.textContent = x.erro, e.className = "estado ruim") : recarregar()));
+      });
+      $("#conversa").addEventListener("click", (ev) => {
+        const b = ev.target.closest && ev.target.closest("[data-conv]");
+        if (!b) return;
+        const mid = b.dataset.id, acao = b.dataset.conv;
+        if (acao === "abrir") abrirNoWhats(() => api(`gestao/mensagens/${mid}/abrir`, "POST", {})).then((x) => (x.erro ? alert(x.erro) : recarregar()));
+        else if (acao === "reabrir") abrirNoWhats(() => api(`gestao/mensagens/${mid}/reabrir`, "POST", {})).then((x) => (x.erro ? alert(x.erro) : recarregar()));
+        else if (acao === "descartar") { if (confirm("Descartar este rascunho?")) api(`gestao/mensagens/${mid}/descartar`, "POST", {}).then((x) => (x.erro ? alert(x.erro) : recarregar())); }
+        else api(`gestao/mensagens/${mid}/confirmar`, "POST", { enviou: acao === "enviei" }).then((x) => (x.erro ? alert(x.erro) : recarregar()));
       });
     });
   }
@@ -558,7 +606,7 @@ a.item:active { transform: scale(.995); }
       : c.comunicacao === "bloqueado" ? '<span class="etiqueta e-bloqueado">Bloqueado</span>'
       : c.origem === "site" && c.etapa === "contatar" ? '<span class="etiqueta e-site">Pedido do site</span>'
       : `<span class="etiqueta e-${c.etapa}">${nomeDe(ETAPAS, c.etapa)}</span>`;
-    return `<li><a class="item" href="#contratante/${c.id}">
+    return `<li><a class="item" href="#conversa/${c.id}">
       <span class="nome">${esc(c.nome)}</span>
       <span class="lado">${etiqueta}${quando}</span>
       <span class="meta">${meta || "&nbsp;"}</span></a></li>`;

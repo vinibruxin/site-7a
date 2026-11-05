@@ -83,6 +83,7 @@ export async function rotasContratantes(req, env, partes, corpo, url) {
   if (acao === "desbloquear" && metodo === "POST") return desbloquear(env, req, c, corpo);
   if (acao === "ultimo-cache" && metodo === "POST") return registrarUltimoCache(env, req, c, corpo);
   if (acao === "resposta" && metodo === "POST") return colarResposta(env, req, c, corpo);
+  if (acao === "conversa" && metodo === "GET") return conversaDaCasa(env, c);
   if (acao === "notas") {
     if (metodo === "GET") {
       const { results } = await env.DB.prepare("SELECT * FROM notas WHERE contratante_id = ? ORDER BY criado DESC").bind(id).all();
@@ -268,8 +269,31 @@ async function colarResposta(env, req, c, corpo) {
   const texto = txt(corpo?.texto, 4000);
   if (!texto) return json({ erro: "Cole a mensagem que a casa mandou." }, 400);
   const r = await respondeu(env, req, c);
-  await env.DB.prepare("INSERT INTO notas (contratante_id, texto, criado) VALUES (?, ?, ?)").bind(c.id, "Resposta da casa: " + texto, agora()).run();
+  await env.DB.batch([
+    env.DB.prepare("INSERT INTO notas (contratante_id, texto, criado) VALUES (?, ?, ?)").bind(c.id, "Resposta da casa: " + texto, agora()),
+    env.DB.prepare("INSERT INTO conversa (contratante_id, quem, texto, criado) VALUES (?, 'casa', ?, ?)").bind(c.id, texto, agora()),
+  ]);
   return r;
+}
+
+// a conversa toda da casa, em ordem: o que a casa respondeu, o que a equipe enviou e os rascunhos da Évora
+async function conversaDaCasa(env, c) {
+  const [casa, mensagens] = await env.DB.batch([
+    env.DB.prepare("SELECT id, texto, criado FROM conversa WHERE contratante_id = ?").bind(c.id),
+    env.DB.prepare("SELECT id, texto, situacao, criado, atualizado FROM mensagens WHERE contratante_id = ? AND situacao <> 'desistiu'").bind(c.id),
+  ]);
+  const itens = [
+    ...casa.results.map((r) => ({ id: "c" + r.id, quem: "casa", texto: r.texto, criado: r.criado })),
+    ...mensagens.results.map((m) => ({
+      id: "m" + m.id,
+      mensagemId: m.id,
+      quem: m.situacao === "rascunho" ? "evora" : "equipe",
+      situacao: m.situacao,
+      texto: m.texto,
+      criado: m.situacao === "enviada" ? m.atualizado : m.criado,
+    })),
+  ].sort((a, b) => a.criado.localeCompare(b.criado));
+  return json({ contratante: { id: c.id, nome: c.nome, contato: c.contato, telefone: c.telefone_norm }, itens });
 }
 
 // pediu para parar: bloqueio imediato, sai de todas as campanhas
