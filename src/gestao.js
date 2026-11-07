@@ -140,11 +140,12 @@ export async function gestao(req, env, rota, quem = "equipe") {
   if (partes[0] === "shows" && partes[2] === "proposta" && id) {
     if (metodo === "GET") return json((await env.DB.prepare("SELECT * FROM propostas WHERE show_id = ?").bind(id).first()) || {});
     if (metodo === "PUT") {
-      const show = await env.DB.prepare("SELECT id FROM shows WHERE id = ?").bind(id).first();
+      const show = await env.DB.prepare("SELECT id, hora, hora_fim FROM shows WHERE id = ?").bind(id).first();
       if (!show) return json({ erro: "Salve o show antes de gerar a proposta." }, 404);
       const pr = {
         formato: txt(corpo?.formato, 160),
-        duracao: txt(corpo?.duracao, 160),
+        // com início e fim no show, a duração é sempre a conta; sem eles, vale o texto enviado
+        duracao: duracaoTexto(show.hora, show.hora_fim) || txt(corpo?.duracao, 160),
         inclui: txt(corpo?.inclui, 2000),
         rider: txt(corpo?.rider, 4000),
         condicoes: txt(corpo?.condicoes, 2000),

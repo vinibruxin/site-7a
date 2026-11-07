@@ -170,6 +170,7 @@ a.item:hover { background: var(--grafite-2); }
 .ficha .grupo-ficha { grid-column: 1 / -1; font: 400 18px/1 var(--f-display); text-transform: uppercase; margin: 14px 0 0; color: var(--cinza); }
 .duracao-calc { margin: -4px 0 0; font-size: 15px; color: var(--cinza); min-height: 1em; }
 .duracao-calc b { color: var(--offwhite); }
+.dica.falta { color: var(--offwhite); font-weight: 600; }
 .ficha .dica { display: block; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--cinza); }
 .acoes-rapidas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
 .salvar-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 10px 0 calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--preto); margin-top: 24px; z-index: 5; }
@@ -1454,9 +1455,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
       <p class="ajuda">Uma página com a marca da 7A, a carta do artista, data, local e cachê deste show. Você manda o link para o contratante, e ele abre no celular ou salva em PDF.</p>
       <form class="ficha" id="ficha-proposta" novalidate>
         <label>Formato<select name="formato">${opcoesLivres(PADRAO.formato)}</select></label>
-        ${duracaoTexto(s.hora, s.hora_fim) ? `<label>Duração<input name="duracao" value="${esc(duracaoTexto(s.hora, s.hora_fim))}" readonly><span class="dica">Calculada pelo início e fim do show (${esc(s.hora)} às ${esc(s.hora_fim)}).</span></label>` : `<label>Duração<select name="duracao">${opcoesLivres(PADRAO.duracao)}</select><span class="dica">Ou preencha início e fim do show para a conta sair sozinha.</span></label>`}
+        <label>Duração<input name="duracao" readonly placeholder="Falta o fim do show" tabindex="-1"><span class="dica" id="dur-dica"></span></label>
         <label class="c6 outro-texto" data-outro="formato" hidden>Escreva o formato<input name="formato_outro" autocomplete="off"></label>
-        <label class="c6 outro-texto" data-outro="duracao" hidden>Escreva a duração<input name="duracao_outro" autocomplete="off"></label>
         <fieldset class="c6 marcas"><legend>O que está incluso</legend>${PADRAO.inclui.map((t) => `<label class="marcar"><input type="checkbox" name="inclui" value="${esc(t)}"> ${esc(t)}</label>`).join("")}</fieldset>
         <label class="c6">Condições de pagamento<select name="condicoes">${opcoesLivres(PADRAO.condicoes)}</select></label>
         <label class="c6 outro-texto" data-outro="condicoes" hidden>Escreva as condições<input name="condicoes_outro" autocomplete="off"></label>
@@ -1509,6 +1509,13 @@ a.item:active { transform: translateX(3px) scale(.99); }
       const d = duracaoTexto(form.hora.value, form.hora_fim.value);
       const passa = d && form.hora_fim.value < form.hora.value;
       $("#duracao-calc").innerHTML = d ? `Duração: <b>${d}</b>${passa ? " (termina no dia seguinte)" : ""}` : form.hora.value && !form.hora_fim.value ? "Preencha a hora de fim para calcular a duração." : "";
+      // a duração da proposta é sempre a conta do início e fim, nunca digitada
+      const campo = $("#ficha-proposta [name=duracao]"), dica = $("#dur-dica");
+      if (campo) {
+        campo.value = d;
+        dica.textContent = d ? `Calculada pelo início e fim do show (${form.hora.value} às ${form.hora_fim.value}).` : form.hora.value ? "Preencha o Fim do show acima para calcular a duração." : "Preencha o Início e o Fim do show acima para calcular a duração.";
+        dica.classList.toggle("falta", !d);
+      }
     };
     mostrarDuracao();
     form.addEventListener("input", (ev) => {
@@ -1552,7 +1559,6 @@ a.item:active { transform: translateX(3px) scale(.99); }
   // opções padronizadas da proposta; "Outro" abre um campo para escrever
   const PADRAO = {
     formato: ["Banda completa", "Acústico", "Voz e violão", "Duo acústico", "Cabine de DJ"],
-    duracao: ["1 hora", "1h30", "2 horas", "2 sets de 1 hora", "3 horas", "3 sets de 1 hora", "4 horas", "5 horas"],
     inclui: ["Som e equipamento de palco do artista", "Transporte dos músicos", "Passagem de som antes do evento", "Divulgação do show nas redes da 7A"],
     condicoes: ["À vista, por Pix, até o dia do show", "50% na confirmação e 50% no dia do show, por Pix", "100% na confirmação, por Pix", "Pix no dia do show, antes da apresentação"],
     rider: ["Ponto de energia perto do palco", "Espaço coberto para a apresentação", "Alimentação e água para os músicos", "Local para descarregar o equipamento"],
@@ -1586,7 +1592,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const ler = () => {
       const valor = (campo) => (form[campo].value === OUTRO ? form[campo + "_outro"].value.trim() : form[campo].value.trim());
       const marcados = (campo) => [...form.querySelectorAll(`[name=${campo}]:checked`)].map((c) => c.value).join("\n");
-      return { formato: valor("formato"), duracao: valor("duracao"), condicoes: valor("condicoes"), inclui: marcados("inclui"), rider: marcados("rider"), validade: validade() };
+      return { formato: valor("formato"), duracao: form.duracao.value.trim(), condicoes: valor("condicoes"), inclui: marcados("inclui"), rider: marcados("rider"), validade: validade() };
     };
     let link = "";
     const mostrarLinks = (token) => {
@@ -1608,7 +1614,6 @@ a.item:active { transform: translateX(3px) scale(.99); }
     };
     api(`gestao/shows/${s.id}/proposta`).then((p) => {
       escolher("formato", p.formato ?? FORMATOS[s.artista]);
-      if (form.duracao.tagName === "SELECT") escolher("duracao", p.duracao || "2 horas");
       escolher("condicoes", p.condicoes || PADRAO.condicoes[0]);
       marcar("inclui", p.token ? p.inclui : PADRAO.inclui.slice(0, 2).join("\n"));
       marcar("rider", p.token ? p.rider : "Alimentação e água para os músicos");
@@ -1625,7 +1630,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
     $("#gerar").addEventListener("click", () => {
       if (sujo) return aviso("Salve o show antes, para a proposta sair com os dados novos.", "ruim");
       const dados = ler();
-      if (!dados.formato || !dados.duracao || !dados.condicoes) return aviso("Escreva o texto do campo marcado como Outro.", "ruim");
+      if (!dados.duracao) return aviso("Preencha o Início e o Fim do show acima e salve. A duração sai dessa conta.", "ruim");
+      if (!dados.formato || !dados.condicoes) return aviso("Escreva o texto do campo marcado como Outro.", "ruim");
       if (!s.cache) aviso("Atenção: o cachê está vazio, a proposta vai dizer \"a combinar\".");
       const b = $("#gerar"); b.disabled = true;
       api(`gestao/shows/${s.id}/proposta`, "PUT", dados).then((r) => {
