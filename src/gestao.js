@@ -10,7 +10,7 @@ export { prepararBanco };
 export const STATUS = ["consulta", "reservado", "confirmado", "realizado", "cancelado"];
 const NOMES_STATUS = { consulta: "Consulta", reservado: "Reservado", confirmado: "Confirmado", realizado: "Realizado", cancelado: "Cancelado" };
 
-const CAMPOS_SHOW = ["data", "hora", "artista", "artista_texto", "contratante_id", "evento", "local", "cidade", "status", "cache", "pct", "despesas", "recebido", "repassado", "publicar", "link", "obs"];
+const CAMPOS_SHOW = ["data", "hora", "hora_fim", "artista", "artista_texto", "contratante_id", "evento", "local", "cidade", "status", "cache", "pct", "despesas", "recebido", "repassado", "publicar", "link", "obs"];
 
 const horaOk = (s) => (/^\d{2}:\d{2}$/.test(s || "") ? s : "");
 const centavos = (v) => {
@@ -31,6 +31,7 @@ function limparShow(s) {
   const r = {
     data: dataOk(s?.data),
     hora: horaOk(s?.hora),
+    hora_fim: horaOk(s?.hora_fim),
     artista: /^[a-z0-9-]{0,60}$/.test(s?.artista || "") ? s.artista || "" : "",
     artista_texto: txt(s?.artista_texto, 120),
     contratante_id: Number.isInteger(Number(s?.contratante_id)) && Number(s.contratante_id) > 0 ? Number(s.contratante_id) : null,
@@ -49,6 +50,8 @@ function limparShow(s) {
   };
   if (!r.data && r.status !== "consulta") return { erro: "Só uma consulta pode ficar sem data. Preencha o dia do show." };
   if (!r.artista && !r.artista_texto) return { erro: "Escolha o artista do show." };
+  if (r.hora_fim && !r.hora) return { erro: "Preencha a hora de início antes da hora de fim." };
+  if (r.hora_fim && r.hora_fim === r.hora) return { erro: "A hora de fim precisa ser diferente da hora de início." };
   return r;
 }
 
@@ -59,6 +62,18 @@ export function contas(s, config) {
   const comissao = pct == null ? null : Math.round((base * pct) / 100);
   const repasse = comissao == null ? null : s.cache - s.despesas - comissao;
   return { pct, comissao, repasse, falta_receber: s.cache - s.recebido, falta_repassar: repasse == null ? null : repasse - s.repassado };
+}
+
+// duração entre início e fim (passando da meia-noite conta como o dia seguinte): "3 horas", "2h30", "45 min"
+export function duracaoTexto(inicio, fim) {
+  if (!/^\d{2}:\d{2}$/.test(inicio || "") || !/^\d{2}:\d{2}$/.test(fim || "")) return "";
+  const min = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3));
+  const total = (min(fim) - min(inicio) + 1440) % 1440;
+  if (!total) return "";
+  const h = Math.floor(total / 60), m = total % 60;
+  if (!h) return `${m} min`;
+  if (!m) return h === 1 ? "1 hora" : `${h} horas`;
+  return `${h}h${String(m).padStart(2, "0")}`;
 }
 
 /* ---------------- rotas com login ---------------- */
@@ -352,10 +367,10 @@ async function exportar(env, req, qual) {
       nomesArtistas(env, req),
     ]);
     const nomes = Object.fromEntries(cs.results.map((c) => [c.id, c.nome]));
-    linhas = [["Data", "Hora", "Artista", "Contratante", "Evento", "Local", "Cidade", "Status", "Cachê", "% 7A", "Despesas", "Comissão 7A", "Repasse ao artista", "Recebido", "Repassado", "Falta receber", "Falta repassar", "Observações"]];
+    linhas = [["Data", "Início", "Fim", "Duração", "Artista", "Contratante", "Evento", "Local", "Cidade", "Status", "Cachê", "% 7A", "Despesas", "Comissão 7A", "Repasse ao artista", "Recebido", "Repassado", "Falta receber", "Falta repassar", "Observações"]];
     for (const s of results) {
       const k = contas(s, config);
-      linhas.push([s.data, s.hora, art[s.artista] || s.artista_texto || s.artista, nomes[s.contratante_id] || "", s.evento, s.local, s.cidade, NOMES_STATUS[s.status] || s.status, reais(s.cache), k.pct == null ? "" : String(k.pct).replace(".", ","), reais(s.despesas), reais(k.comissao), reais(k.repasse), reais(s.recebido), reais(s.repassado), reais(k.falta_receber), reais(k.falta_repassar), s.obs]);
+      linhas.push([s.data, s.hora, s.hora_fim || "", duracaoTexto(s.hora, s.hora_fim), art[s.artista] || s.artista_texto || s.artista, nomes[s.contratante_id] || "", s.evento, s.local, s.cidade, NOMES_STATUS[s.status] || s.status, reais(s.cache), k.pct == null ? "" : String(k.pct).replace(".", ","), reais(s.despesas), reais(k.comissao), reais(k.repasse), reais(s.recebido), reais(s.repassado), reais(k.falta_receber), reais(k.falta_repassar), s.obs]);
     }
   } else return json({ erro: "Planilha não encontrada." }, 404);
 
@@ -436,7 +451,7 @@ export async function propostaPublica(req, env, token) {
   if (!/^[a-f0-9]{24}$/.test(token)) return json({ erro: "Proposta não encontrada." }, 404);
   await prepararBanco(env);
   const p = await env.DB.prepare(
-    `SELECT p.*, s.data, s.hora, s.artista, s.artista_texto, s.evento, s.local, s.cidade, s.cache, s.status, c.nome AS contratante, c.contato
+    `SELECT p.*, s.data, s.hora, s.hora_fim, s.artista, s.artista_texto, s.evento, s.local, s.cidade, s.cache, s.status, c.nome AS contratante, c.contato
      FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.token = ? AND p.situacao = 'aprovada'`
   ).bind(token).first();
   if (!p || p.status === "cancelado") return json({ erro: "Proposta não encontrada." }, 404);
@@ -465,8 +480,9 @@ export async function propostaPublica(req, env, token) {
       destaques: (a.destaques || []).slice(0, 4),
       formacao: (a.formacao || []).filter((f) => f.nome),
     },
-    data: p.data, hora: p.hora, evento: p.evento, local: p.local, cidade: p.cidade, cache: p.cache,
-    formato: p.formato, duracao: p.duracao, inclui: p.inclui, rider: p.rider, condicoes: p.condicoes, validade: p.validade,
+    data: p.data, hora: p.hora, hora_fim: p.hora_fim || "", evento: p.evento, local: p.local, cidade: p.cidade, cache: p.cache,
+    // com início e fim no show, a duração da proposta é sempre a conta entre os dois
+    formato: p.formato, duracao: duracaoTexto(p.hora, p.hora_fim) || p.duracao, inclui: p.inclui, rider: p.rider, condicoes: p.condicoes, validade: p.validade,
   });
 }
 

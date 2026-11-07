@@ -168,6 +168,8 @@ a.item:hover { background: var(--grafite-2); }
 .ficha .c4 { grid-column: span 4; }
 .ficha .c6 { grid-column: 1 / -1; }
 .ficha .grupo-ficha { grid-column: 1 / -1; font: 400 18px/1 var(--f-display); text-transform: uppercase; margin: 14px 0 0; color: var(--cinza); }
+.duracao-calc { margin: -4px 0 0; font-size: 15px; color: var(--cinza); min-height: 1em; }
+.duracao-calc b { color: var(--offwhite); }
 .ficha .dica { display: block; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--cinza); }
 .acoes-rapidas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
 .salvar-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 10px 0 calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--preto); margin-top: 24px; z-index: 5; }
@@ -209,6 +211,38 @@ h3.sub:first-child { margin-top: 0; }
 .funil-faixa span { background: var(--grafite); padding: 14px 16px; display: grid; gap: 6px; font-weight: 600; font-size: 14px; color: var(--cinza); transition: background-color .15s; }
 .funil-faixa:hover span { background: var(--grafite-2); }
 .funil-faixa b { font: 400 36px/1 var(--f-display); color: var(--offwhite); }
+
+/* agenda: mês e financeiro */
+.mes-nav { display: grid; grid-template-columns: auto auto auto 1fr; align-items: center; gap: 10px 14px; margin: 0 0 14px; }
+.mes-nav h2.display { margin: 0; min-width: 7.5em; text-align: center; }
+.mes-nav p { margin: 0; color: var(--cinza); font-weight: 600; font-size: 14px; justify-self: end; }
+.mes-nav .btn { min-width: 44px; font-size: 20px; padding: 6px 12px; }
+.calendario { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.sem-dia { font-weight: 700; font-size: 12px; color: var(--cinza); padding: 0 6px 4px; text-transform: capitalize; }
+.dia-cal { background: #151515; min-height: 92px; padding: 6px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.dia-cal.fora { background: transparent; }
+.dia-cal.cheio { background: var(--grafite); }
+.dia-cal > .num { font-weight: 700; font-size: 13px; color: var(--cinza); }
+.dia-cal.hoje > .num { color: var(--offwhite); background: var(--vermelho); align-self: flex-start; padding: 2px 6px; }
+.chip { display: block; font: 700 12px/1.25 var(--f-texto); padding: 4px 6px; background: var(--grafite-2); color: var(--offwhite); text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: transform var(--t-press) var(--ease-out), filter var(--t-hover) ease; }
+.chip.e-reservado { background: var(--cinza); color: var(--preto); }
+.chip.e-confirmado { background: var(--vermelho); }
+.chip.e-realizado { background: var(--offwhite); color: var(--preto); }
+.chip.e-site { background: var(--ouro); color: var(--preto); }
+a.chip:hover { filter: brightness(1.15); }
+a.chip:active { transform: scale(.96); }
+.item-site .texto-btn { padding: 0; font-size: 14px; color: var(--offwhite); }
+.tabela-rola { overflow-x: auto; margin: 0 calc(var(--m) * -1); padding: 0 var(--m); }
+.tabela { width: 100%; border-collapse: collapse; min-width: 640px; font-size: 15px; }
+.tabela th, .tabela td { padding: 11px 12px; text-align: right; white-space: nowrap; }
+.tabela th:first-child { text-align: left; }
+.tabela thead th { font-size: 13px; color: var(--cinza); font-weight: 600; }
+.tabela tbody tr:nth-child(odd) { background: var(--grafite); }
+.tabela tbody tr:nth-child(even) { background: #222; }
+.tabela tbody th { font-weight: 700; }
+.tabela tfoot th, .tabela tfoot td { font: 400 20px/1 var(--f-display); text-transform: uppercase; padding-top: 14px; }
+.tabela .forte { font-weight: 700; }
+.tabela .alerta { color: #FF8A8F; font-weight: 700; }
 
 /* sub-abas */
 .subabas { display: flex; gap: 6px; flex-wrap: wrap; margin: -12px 0 20px; }
@@ -255,6 +289,12 @@ main.largo { max-width: none; }
   .abas a[aria-current="page"] { color: var(--offwhite); }
   .abas a[aria-current="page"]::before { content: ""; position: absolute; left: 22%; right: 22%; top: 0; height: 4px; background: var(--vermelho); }
   main { padding-bottom: 120px; }
+  .mes-nav { grid-template-columns: auto 1fr auto; }
+  .mes-nav p { grid-column: 1 / -1; justify-self: start; }
+  .mes-nav h2.display { min-width: 0; }
+  .dia-cal { min-height: 52px; padding: 4px; }
+  .dia-cal .chip { font-size: 0; padding: 0; height: 6px; }
+  .sem-dia { padding: 0 2px 4px; font-size: 11px; }
   .kanban { grid-template-columns: repeat(var(--cols), 84vw); scroll-snap-type: x mandatory; margin: 0 calc(var(--m) * -1); padding: 0 var(--m) 8px; scroll-padding: 0 var(--m); }
   .coluna { scroll-snap-align: start; }
   .mover select { min-height: 40px; font-size: 16px; }
@@ -333,7 +373,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     <nav class="abas" aria-label="Seções">
       <a href="#hoje" data-aba="hoje">Hoje</a>
       <a href="#funil" data-aba="funil">Funil</a>
-      <a href="#shows" data-aba="shows">Shows</a>
+      <a href="#shows" data-aba="agenda">Agenda</a>
       <a href="#whatsapp" data-aba="mensagens">Mensagens</a>
       <a href="#ajustes" data-aba="ajustes">Ajustes</a>
     </nav>
@@ -349,6 +389,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
   const tela = $("#tela");
   let D = null;          // { contratantes, shows, config }
   let artistas = {};     // slug -> nome, vindo do conteúdo do site
+  let agendaSite = [];   // shows cadastrados só na aba Agenda do "Editar o site"
   let sujo = false;      // ficha com mudança não salva
   const filtro = { etapa: "", busca: "", status: "", passados: false, perfil: "", bloqueados: false, arquivados: false, pagina: 1 };
   let modelos = null;    // modelos de mensagem, carregados quando precisa
@@ -406,6 +447,17 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const comissao = pct == null ? null : Math.round((base * pct) / 100);
     const repasse = comissao == null ? null : s.cache - s.despesas - comissao;
     return { pct, comissao, repasse, falta_receber: s.cache - s.recebido, falta_repassar: repasse == null ? null : repasse - s.repassado };
+  }
+  // mesma conta do servidor (src/gestao.js, duracaoTexto)
+  function duracaoTexto(inicio, fim) {
+    if (!/^\d{2}:\d{2}$/.test(inicio || "") || !/^\d{2}:\d{2}$/.test(fim || "")) return "";
+    const min = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3));
+    const total = (min(fim) - min(inicio) + 1440) % 1440;
+    if (!total) return "";
+    const h = Math.floor(total / 60), m = total % 60;
+    if (!h) return `${m} min`;
+    if (!m) return h === 1 ? "1 hora" : `${h} horas`;
+    return `${h}h${String(m).padStart(2, "0")}`;
   }
   const contratante = (id) => D.contratantes.find((c) => c.id === id);
   const nomeArtista = (s) => artistas[s.artista] || s.artista_texto || s.artista || "Artista";
@@ -487,6 +539,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       D = dados;
       artistas = {};
       for (const [s, a] of Object.entries(conteudo.artistas || {})) artistas[s] = a.nome;
+      agendaSite = Array.isArray(conteudo.agenda) ? conteudo.agenda.filter((d) => d && d.data) : [];
       $("#tela-entrada").hidden = true; $("#tela-app").hidden = false;
       rota();
     });
@@ -505,12 +558,12 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const h = location.hash || "#hoje";
     ultimo = h;
     const [nome, id] = h.slice(1).split("/");
-    const aba = { contratantes: "funil", contratante: "funil", importar: "funil", conversa: "funil", show: "shows", whatsapp: "mensagens", campanhas: "mensagens", campanha: "mensagens", modelos: "mensagens", modelo: "mensagens", mensagem: "mensagens" }[nome] || nome;
+    const aba = { contratantes: "funil", contratante: "funil", importar: "funil", conversa: "funil", show: "agenda", shows: "agenda", calendario: "agenda", financeiro: "agenda", whatsapp: "mensagens", campanhas: "mensagens", campanha: "mensagens", modelos: "mensagens", modelo: "mensagens", mensagem: "mensagens" }[nome] || nome;
     document.querySelectorAll("[data-aba]").forEach((a) => (a.dataset.aba === aba ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
     const telas = {
       hoje: telaHoje, funil: telaFunil, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
       campanhas: telaCampanhas, campanha: () => fichaCampanha(id), modelos: telaModelos, modelo: () => fichaModelo(id),
-      shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id), conversa: () => telaConversa(id),
+      shows: telaShows, calendario: telaCalendario, financeiro: telaFinanceiro, show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id), conversa: () => telaConversa(id),
     };
     tela.classList.toggle("largo", nome === "funil");
     (telas[nome] || telaHoje)();
@@ -1214,25 +1267,135 @@ a.item:active { transform: translateX(3px) scale(.99); }
       <span class="meta">${onde || "&nbsp;"}</span></a></li>`;
   }
 
+  /* ---------- agenda: lista, mês e financeiro ---------- */
+  const SUB_AGENDA = [["shows", "Lista"], ["calendario", "Mês"], ["financeiro", "Financeiro"]];
+  // shows que ainda estão só na aba Agenda do "Editar o site" (antes da Gestão): aparecem aqui para tudo ficar num lugar
+  const chaveSite = (d) => [d.data, d.hora, d.artista, d.artista_texto, d.evento, d.local, d.cidade].join("|");
+  function itemSite(d) {
+    const quando = `<span class="dia num">${d.data.slice(8)}</span><span class="mes">${MESES[Number(d.data.slice(5, 7)) - 1].slice(0, 3)}</span>`;
+    const onde = [d.evento, d.local, d.cidade].filter(Boolean).map(esc).join(" · ");
+    return `<li><div class="item show-item item-site">
+      <span class="quando">${quando}</span>
+      <span class="nome">${esc(artistas[d.artista] || d.artista_texto || d.artista || "Artista")}</span>
+      <span class="lado"><span class="etiqueta e-site">Só no site</span></span>
+      <span class="meta">${onde || "&nbsp;"} · <button class="texto-btn" type="button" data-trazer="${esc(chaveSite(d))}">Trazer para a Gestão</button></span></div></li>`;
+  }
+  function trazerDoSite(chave, botao) {
+    if (!confirm("Trazer este show para a Gestão? Ele entra como confirmado e continua na agenda do site, agora com cachê, contratante e proposta.")) return;
+    botao.disabled = true;
+    api("conteudo").then((c) => {
+      const lista = Array.isArray(c.agenda) ? c.agenda : [];
+      const d = lista.find((x) => chaveSite(x) === chave);
+      if (!d) { agendaSite = lista; telaShows(); return; }
+      return api("gestao/shows", "POST", { ...d, status: "confirmado", publicar: true, obs: "Trazido da agenda do site." }).then((s) => {
+        if (s.erro) { alert(s.erro); botao.disabled = false; return; }
+        const resto = lista.filter((x) => x !== d);
+        delete c._status;
+        return api("conteudo", "PUT", { ...c, agenda: resto }).then((r) => {
+          if (r.erro) alert("O show entrou na Gestão, mas não saiu da aba do site: " + r.erro + " Apague lá em Editar o site para não aparecer duas vezes.");
+          agendaSite = r.erro ? lista : resto;
+          D.shows.push(s);
+          location.hash = "#show/" + s.id;
+        });
+      });
+    });
+  }
+
+  let mesVisto = null;
+  function telaCalendario() {
+    const h = hoje();
+    mesVisto = mesVisto || h.slice(0, 7);
+    const [a, m] = mesVisto.split("-").map(Number);
+    const primeiro = new Date(Date.UTC(a, m - 1, 1)), dias = new Date(Date.UTC(a, m, 0)).getUTCDate();
+    const doMes = D.shows.filter((s) => s.data && s.data.startsWith(mesVisto) && s.status !== "cancelado").sort((x, y) => (x.data + x.hora).localeCompare(y.data + y.hora));
+    const site = agendaSite.filter((d) => d.data && d.data.startsWith(mesVisto));
+    const porDia = {};
+    doMes.forEach((s) => (porDia[s.data] = porDia[s.data] || []).push(`<a class="chip e-${s.status}" href="#show/${s.id}">${esc(nomeArtista(s))}</a>`));
+    site.forEach((d) => (porDia[d.data] = porDia[d.data] || []).push(`<span class="chip e-site">${esc(artistas[d.artista] || d.artista_texto || "Artista")}</span>`));
+    let celulas = "";
+    for (let i = 0; i < primeiro.getUTCDay(); i++) celulas += '<div class="dia-cal fora"></div>';
+    for (let x = 1; x <= dias; x++) {
+      const iso = `${mesVisto}-${String(x).padStart(2, "0")}`;
+      const tem = porDia[iso] || [];
+      celulas += `<div class="dia-cal${iso === h ? " hoje" : ""}${tem.length ? " cheio" : ""}"><span class="num">${x}</span>${tem.join("")}</div>`;
+    }
+    const mover = (n) => { const d = new Date(Date.UTC(a, m - 1 + n, 1)); mesVisto = d.toISOString().slice(0, 7); telaCalendario(); };
+    const cache = doMes.filter((s) => s.status === "confirmado" || s.status === "realizado").reduce((t, s) => t + s.cache, 0);
+    tela.innerHTML = `
+      <div class="cabeca"><h1 class="display">Agenda</h1><a class="btn" href="#show/novo">Novo show</a></div>
+      ${subabas(SUB_AGENDA, "calendario")}
+      <div class="mes-nav"><button class="btn btn-sec" type="button" id="mes-ant" aria-label="Mês anterior">‹</button><h2 class="display">${MESES[m - 1]} ${a}</h2><button class="btn btn-sec" type="button" id="mes-prox" aria-label="Próximo mês">›</button>
+        <p>${doMes.length + site.length ? `${doMes.length + site.length} ${doMes.length + site.length === 1 ? "data" : "datas"}${cache ? " · " + reais(cache) + " em cachês fechados" : ""}` : "Nenhuma data neste mês"}</p></div>
+      <div class="calendario" role="grid" aria-label="${MESES[m - 1]} de ${a}">${DIAS.map((d) => `<div class="sem-dia">${d.slice(0, 3)}</div>`).join("")}${celulas}</div>
+      ${doMes.length + site.length ? `<h2 class="display">Datas do mês</h2><ul class="lista">${[...doMes, ...site.map((d) => ({ ...d, _site: true }))].sort((x, y) => (x.data + (x.hora || "")).localeCompare(y.data + (y.hora || ""))).map((x) => (x._site ? itemSite(x) : itemShow(x))).join("")}</ul>` : ""}`;
+    $("#mes-ant").addEventListener("click", () => mover(-1));
+    $("#mes-prox").addEventListener("click", () => mover(1));
+  }
+
+  let anoVisto = null;
+  function telaFinanceiro() {
+    const h = hoje();
+    anoVisto = anoVisto || h.slice(0, 4);
+    const anos = [...new Set([h.slice(0, 4), ...D.shows.filter((s) => s.data).map((s) => s.data.slice(0, 4))])].sort();
+    const fechados = D.shows.filter((s) => s.data && s.data.startsWith(anoVisto) && (s.status === "confirmado" || s.status === "realizado"));
+    const soma = (lista) => lista.reduce((t, s) => {
+      const k = contas(s);
+      t.n++; t.cache += s.cache; t.comissao += k.comissao || 0; t.recebido += s.recebido; t.receber += Math.max(0, s.cache - s.recebido);
+      t.repasse += k.repasse || 0; t.repassado += s.repassado; t.repassar += Math.max(0, k.falta_repassar || 0); t.semPct = t.semPct || k.pct == null;
+      return t;
+    }, { n: 0, cache: 0, comissao: 0, recebido: 0, receber: 0, repasse: 0, repassado: 0, repassar: 0, semPct: false });
+    const tot = soma(fechados);
+    const meses = MESES.map((nome, i) => [nome[0].toUpperCase() + nome.slice(1), soma(fechados.filter((s) => Number(s.data.slice(5, 7)) === i + 1))]).filter(([, t]) => t.n);
+    const porArtista = {};
+    fechados.forEach((s) => (porArtista[nomeArtista(s)] = porArtista[nomeArtista(s)] || []).push(s));
+    const artistasOrd = Object.entries(porArtista).map(([n, l]) => [n, soma(l)]).sort((x, y) => y[1].cache - x[1].cache);
+    const pendentes = fechados.filter((s) => s.data < h && (s.cache > s.recebido || (contas(s).falta_repassar || 0) > 0)).sort((x, y) => x.data.localeCompare(y.data));
+    const pct = (t) => (t.semPct ? "—" : reais(t.comissao));
+    const linha = (rotulo, t) => `<tr><th scope="row">${rotulo}</th><td class="num">${t.n}</td><td class="num">${reais(t.cache)}</td><td class="num forte">${pct(t)}</td><td class="num">${reais(t.recebido)}</td><td class="num${t.receber ? " alerta" : ""}">${reais(t.receber)}</td><td class="num${t.repassar ? " alerta" : ""}">${t.semPct ? "—" : reais(t.repassar)}</td></tr>`;
+    tela.innerHTML = `
+      <div class="cabeca"><h1 class="display">Agenda</h1><a class="btn btn-sec" href="/api/gestao/exportar/shows.csv">Baixar planilha</a></div>
+      ${subabas(SUB_AGENDA, "financeiro")}
+      <div class="filtros" role="group" aria-label="Ano">${anos.map((x) => `<button type="button" data-ano="${x}" aria-pressed="${x === anoVisto}">${x}</button>`).join("")}</div>
+      ${tot.semPct ? '<p class="aviso">Algum show está sem o % da 7A. Defina o padrão em <a href="#ajustes">Ajustes</a> para a comissão e o repasse aparecerem.</p>' : ""}
+      <dl class="numeros">
+        <div><dt>Comissão 7A em ${anoVisto}</dt><dd class="num">${pct(tot)}</dd><small>${tot.n} ${tot.n === 1 ? "show fechado" : "shows fechados"} · ${reais(tot.cache)} em cachês</small></div>
+        <div><dt>Falta receber</dt><dd class="num">${reais(tot.receber)}</dd><small>Dos contratantes</small></div>
+        <div><dt>Falta repassar</dt><dd class="num">${tot.semPct ? "—" : reais(tot.repassar)}</dd><small>Aos artistas</small></div>
+      </dl>
+      <h2 class="display">Mês a mês</h2>
+      ${meses.length ? `<div class="tabela-rola"><table class="tabela"><thead><tr><th scope="col">Mês</th><th scope="col">Shows</th><th scope="col">Cachês</th><th scope="col">Comissão 7A</th><th scope="col">Recebido</th><th scope="col">Falta receber</th><th scope="col">Falta repassar</th></tr></thead>
+        <tbody>${meses.map(([n, t]) => linha(n, t)).join("")}</tbody><tfoot>${linha("Total", tot)}</tfoot></table></div>` : `<p class="vazio">Nenhum show confirmado ou realizado em ${anoVisto}. Shows em consulta ou reservados não entram na conta até serem confirmados.</p>`}
+      ${artistasOrd.length ? `<h2 class="display">Por artista</h2><div class="tabela-rola"><table class="tabela"><thead><tr><th scope="col">Artista</th><th scope="col">Shows</th><th scope="col">Cachês</th><th scope="col">Comissão 7A</th><th scope="col">Cachê médio</th></tr></thead>
+        <tbody>${artistasOrd.map(([n, t]) => `<tr><th scope="row">${esc(n)}</th><td class="num">${t.n}</td><td class="num">${reais(t.cache)}</td><td class="num forte">${pct(t)}</td><td class="num">${reais(Math.round(t.cache / t.n))}</td></tr>`).join("")}</tbody></table></div>` : ""}
+      <h2 class="display">Para acertar</h2>
+      ${pendentes.length ? `<ul class="lista">${pendentes.map((s) => { const k = contas(s); const falta = [s.cache > s.recebido ? "receber " + reais(s.cache - s.recebido) : "", (k.falta_repassar || 0) > 0 ? "repassar " + reais(k.falta_repassar) : ""].filter(Boolean).join(" · "); return itemShow(s) + `<li class="pendencia">Falta ${esc(falta)}</li>`; }).join("")}</ul>` : '<p class="vazio">Nenhum show que já passou com dinheiro pendente.</p>'}`;
+    tela.querySelectorAll("[data-ano]").forEach((b) => b.addEventListener("click", () => { anoVisto = b.dataset.ano; telaFinanceiro(); }));
+    tela.querySelectorAll(".numeros dd").forEach(contarAte);
+  }
+
   function telaShows() {
     const h = hoje();
     const conta = (st) => D.shows.filter((s) => (!st || s.status === st) && (filtro.passados || !s.data || s.data >= h)).length;
     const lista = D.shows
       .filter((s) => (!filtro.status || s.status === filtro.status) && (filtro.passados || !s.data || s.data >= h))
       .sort((a, b) => filtro.passados ? (b.data || "9").localeCompare(a.data || "9") : (a.data || "9").localeCompare(b.data || "9"));
+    const doSite = agendaSite.filter((d) => (!filtro.status || filtro.status === "confirmado") && (filtro.passados || d.data >= h)).map((d) => ({ ...d, _site: true }));
+    const todos = [...lista, ...doSite].sort((a, b) => filtro.passados ? (b.data || "9").localeCompare(a.data || "9") : (a.data || "9").localeCompare(b.data || "9"));
     let html = "", mesAtual = null;
-    for (const s of lista) {
+    for (const s of todos) {
       const m = s.data ? s.data.slice(0, 7) : "sem";
       if (m !== mesAtual) {
         if (mesAtual !== null) html += "</ul>";
         html += `<h2 class="mes-titulo">${m === "sem" ? "Sem data" : MESES[Number(m.slice(5)) - 1] + (m.slice(0, 4) !== h.slice(0, 4) ? " " + m.slice(0, 4) : "")}</h2><ul class="lista">`;
         mesAtual = m;
       }
-      html += itemShow(s);
+      html += s._site ? itemSite(s) : itemShow(s);
     }
     if (mesAtual !== null) html += "</ul>";
     tela.innerHTML = `
-      <div class="cabeca"><h1 class="display">Shows</h1><a class="btn" href="#show/novo">Novo show</a></div>
+      <div class="cabeca"><h1 class="display">Agenda</h1><a class="btn" href="#show/novo">Novo show</a></div>
+      ${subabas(SUB_AGENDA, "shows")}
+      ${agendaSite.length ? `<p class="aviso">${agendaSite.length === 1 ? "1 show está" : agendaSite.length + " shows estão"} só na agenda do site, sem cachê nem contratante. Toque em "Trazer para a Gestão" para ter tudo num lugar.</p>` : ""}
       <div class="filtros" role="group" aria-label="Status do show">
         <button type="button" data-status="" aria-pressed="${!filtro.status}">Todos<span class="conta">${conta("")}</span></button>
         ${STATUS.map(([k, n]) => `<button type="button" data-status="${k}" aria-pressed="${filtro.status === k}">${n}<span class="conta">${conta(k)}</span></button>`).join("")}
@@ -1241,6 +1404,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       ${html || `<p class="vazio">${D.shows.length ? "Nenhum show com esse filtro." : "Nenhum show ainda. Cadastre cada pedido de data como consulta e vá mudando o status até realizado."}</p>`}`;
     tela.querySelectorAll("[data-status]").forEach((x) => x.addEventListener("click", () => { filtro.status = x.dataset.status; telaShows(); }));
     $("#passados").addEventListener("change", (ev) => { filtro.passados = ev.target.checked; telaShows(); });
+    tela.querySelectorAll("[data-trazer]").forEach((b) => b.addEventListener("click", () => trazerDoSite(b.dataset.trazer, b)));
   }
 
   function fichaShow(id) {
@@ -1249,21 +1413,23 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const doContratante = novo ? Number(new URLSearchParams(query || "").get("c")) || null : null;
     const base = contratante(doContratante);
     const s = novo
-      ? { data: "", hora: "", artista: Object.keys(artistas)[0] || "", artista_texto: "", contratante_id: doContratante, evento: "", local: base ? base.nome : "", cidade: base ? base.cidade : "", status: "consulta", cache: 0, pct: D.config.pct_padrao === "" ? null : Number(D.config.pct_padrao), despesas: 0, recebido: 0, repassado: 0, publicar: 1, link: "", obs: "" }
+      ? { data: "", hora: "", hora_fim: "", artista: Object.keys(artistas)[0] || "", artista_texto: "", contratante_id: doContratante, evento: "", local: base ? base.nome : "", cidade: base ? base.cidade : "", status: "consulta", cache: 0, pct: D.config.pct_padrao === "" ? null : Number(D.config.pct_padrao), despesas: 0, recebido: 0, repassado: 0, publicar: 1, link: "", obs: "" }
       : D.shows.find((x) => x.id === Number(chave));
-    if (!s) { tela.innerHTML = '<a class="voltar" href="#shows">Voltar para shows</a><p class="vazio">Show não encontrado.</p>'; return; }
+    if (!s) { tela.innerHTML = '<a class="voltar" href="#shows">Voltar para a agenda</a><p class="vazio">Show não encontrado.</p>'; return; }
     const listaArt = [...Object.entries(artistas), ["", "Outro artista"]];
     const listaCont = [["", "Sem contratante"], ...D.contratantes.slice().sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")).map((c) => [String(c.id), c.nome])];
     const voltar = doContratante ? `#contratante/${doContratante}` : "#shows";
     tela.innerHTML = `
-      <a class="voltar" href="${voltar}">${doContratante ? "Voltar para " + esc(base ? base.nome : "o contratante") : "Voltar para shows"}</a>
+      <a class="voltar" href="${voltar}">${doContratante ? "Voltar para " + esc(base ? base.nome : "o contratante") : "Voltar para a agenda"}</a>
       <div class="cabeca"><h1 class="display">${novo ? "Novo show" : esc(nomeArtista(s))}</h1></div>
       <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
         <label>Artista<select name="artista">${opcoes(listaArt, s.artista)}</select></label>
         <label id="outro"${s.artista ? " hidden" : ""}>Nome do artista<input name="artista_texto" value="${esc(s.artista_texto)}" autocomplete="off"></label>
         <label>Status<select name="status">${opcoes(STATUS, s.status)}</select></label>
-        <label class="meia">Data<input name="data" type="date" value="${esc(s.data)}"></label>
-        <label class="meia">Hora<input name="hora" type="time" value="${esc(s.hora)}"></label>
+        <label class="c2">Data<input name="data" type="date" value="${esc(s.data)}"></label>
+        <label class="c2 meia">Início<input name="hora" type="time" value="${esc(s.hora)}"></label>
+        <label class="c2 meia">Fim<input name="hora_fim" type="time" value="${esc(s.hora_fim || "")}"></label>
+        <p class="c6 duracao-calc" id="duracao-calc" aria-live="polite"></p>
         <label class="c6">Contratante<select name="contratante_id">${opcoes(listaCont, s.contratante_id ? String(s.contratante_id) : "")}</select></label>
         <label class="c2">Nome do evento<input name="evento" value="${esc(s.evento)}" placeholder="Opcional" autocomplete="off"></label>
         <label class="c2">Local<input name="local" value="${esc(s.local)}" autocomplete="off"></label>
@@ -1288,7 +1454,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       <p class="ajuda">Uma página com a marca da 7A, a carta do artista, data, local e cachê deste show. Você manda o link para o contratante, e ele abre no celular ou salva em PDF.</p>
       <form class="ficha" id="ficha-proposta" novalidate>
         <label>Formato<select name="formato">${opcoesLivres(PADRAO.formato)}</select></label>
-        <label>Duração<select name="duracao">${opcoesLivres(PADRAO.duracao)}</select></label>
+        ${duracaoTexto(s.hora, s.hora_fim) ? `<label>Duração<input name="duracao" value="${esc(duracaoTexto(s.hora, s.hora_fim))}" readonly><span class="dica">Calculada pelo início e fim do show (${esc(s.hora)} às ${esc(s.hora_fim)}).</span></label>` : `<label>Duração<select name="duracao">${opcoesLivres(PADRAO.duracao)}</select><span class="dica">Ou preencha início e fim do show para a conta sair sozinha.</span></label>`}
         <label class="c6 outro-texto" data-outro="formato" hidden>Escreva o formato<input name="formato_outro" autocomplete="off"></label>
         <label class="c6 outro-texto" data-outro="duracao" hidden>Escreva a duração<input name="duracao_outro" autocomplete="off"></label>
         <fieldset class="c6 marcas"><legend>O que está incluso</legend>${PADRAO.inclui.map((t) => `<label class="marcar"><input type="checkbox" name="inclui" value="${esc(t)}"> ${esc(t)}</label>`).join("")}</fieldset>
@@ -1339,7 +1505,14 @@ a.item:active { transform: translateX(3px) scale(.99); }
         <p>A comissão é calculada sobre ${D.config.base === "liquido" ? "o cachê menos as despesas" : "o cachê bruto"}. Dá para mudar em <a href="#ajustes">Ajustes</a>.</p>`;
     };
     desenharConta();
+    const mostrarDuracao = () => {
+      const d = duracaoTexto(form.hora.value, form.hora_fim.value);
+      const passa = d && form.hora_fim.value < form.hora.value;
+      $("#duracao-calc").innerHTML = d ? `Duração: <b>${d}</b>${passa ? " (termina no dia seguinte)" : ""}` : form.hora.value && !form.hora_fim.value ? "Preencha a hora de fim para calcular a duração." : "";
+    };
+    mostrarDuracao();
     form.addEventListener("input", (ev) => {
+      if (ev.target.name === "hora" || ev.target.name === "hora_fim") mostrarDuracao();
       sujo = true; estado("");
       if (ev.target.name === "artista") $("#outro").hidden = !!ev.target.value;
       desenharConta();
@@ -1356,6 +1529,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       if (dados.pct != null && !(dados.pct >= 0 && dados.pct <= 100)) { estado("O % da 7A precisa ficar entre 0 e 100.", "ruim"); form.pct.focus(); return; }
       if (!dados.data && dados.status !== "consulta") { estado("Preencha a data. Só uma consulta pode ficar sem data.", "ruim"); form.data.focus(); return; }
       if (!dados.artista && !dados.artista_texto.trim()) { estado("Escreva o nome do artista.", "ruim"); form.artista_texto.focus(); return; }
+      if (dados.hora_fim && !dados.hora) { estado("Preencha a hora de início.", "ruim"); form.hora.focus(); return; }
       salvar(novo ? "gestao/shows" : "gestao/shows/" + s.id, novo ? "POST" : "PUT", dados, (r) => {
         if (novo) D.shows.push(r); else Object.assign(s, r);
         sujo = false;
@@ -1410,7 +1584,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       form.querySelectorAll(`[name=${campo}]`).forEach((c) => { c.checked = itens.includes(c.value); });
     };
     const ler = () => {
-      const valor = (campo) => (form[campo].value === OUTRO ? form[campo + "_outro"].value.trim() : form[campo].value);
+      const valor = (campo) => (form[campo].value === OUTRO ? form[campo + "_outro"].value.trim() : form[campo].value.trim());
       const marcados = (campo) => [...form.querySelectorAll(`[name=${campo}]:checked`)].map((c) => c.value).join("\n");
       return { formato: valor("formato"), duracao: valor("duracao"), condicoes: valor("condicoes"), inclui: marcados("inclui"), rider: marcados("rider"), validade: validade() };
     };
@@ -1434,7 +1608,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     };
     api(`gestao/shows/${s.id}/proposta`).then((p) => {
       escolher("formato", p.formato ?? FORMATOS[s.artista]);
-      escolher("duracao", p.duracao || "2 horas");
+      if (form.duracao.tagName === "SELECT") escolher("duracao", p.duracao || "2 horas");
       escolher("condicoes", p.condicoes || PADRAO.condicoes[0]);
       marcar("inclui", p.token ? p.inclui : PADRAO.inclui.slice(0, 2).join("\n"));
       marcar("rider", p.token ? p.rider : "Alimentação e água para os músicos");

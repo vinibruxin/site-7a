@@ -292,4 +292,6 @@ export const MIGRACOES = [
     )`,
     `CREATE INDEX IF NOT EXISTS conversa_contratante ON conversa(contratante_id, criado)`,
   ] },
+  // hora de fim do show: a duração sai da conta entre início e fim, em vez de ser escrita à mão
+  { versao: 6, nome: "hora de fim do show", passos: [coluna("shows", "hora_fim", "TEXT NOT NULL DEFAULT ''")] },
 ];

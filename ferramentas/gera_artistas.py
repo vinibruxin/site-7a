@@ -251,7 +251,7 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
 
 <footer class="rodape margem">
   <a class="prox" href="{prox["slug"]}.html"><span>Próximo artista</span><b class="display">{e(prox["nome"])}</b></a>
-  <p>7A Produtora · Betim, MG · <a href="https://wa.me/5531992233295">(31) 99223-3295</a> · <a href="mailto:7a.produtora@gmail.com">7a.produtora@gmail.com</a> · <a href="https://instagram.com/7a_produtora">@7a_produtora</a></p>
+  <p>7A Produtora · Betim, MG · <a href="https://wa.me/5531992233295">(31) 99223-3295</a> · <a href="mailto:contato@7aprodutora.com.br">contato@7aprodutora.com.br</a> · <a href="https://instagram.com/7a_produtora">@7a_produtora</a></p>
 </footer>
 
 <script>
