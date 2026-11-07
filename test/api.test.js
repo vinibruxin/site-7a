@@ -433,3 +433,23 @@ describe("campanhas", () => {
     expect((await api(`gestao/campanhas/${ca.id}`, "PUT", { nome: "Outro" })).status).toBe(409);
   });
 });
+
+describe("agenda do site", () => {
+  it("show publicado da Gestão aparece na home com a miniatura da carta do artista, e some ao tirar do site ou excluir", async () => {
+    const data = somarDias(hojeSP(), 40);
+    const s = await api("gestao/shows", "POST", { data, hora: "21:00", artista: "athos-tibaes", local: "Casa Teste Miniatura", cidade: "Betim", status: "confirmado", publicar: 1 });
+    let html = await (await SELF.fetch(BASE + "/")).text();
+    expect(html).toContain("Casa Teste Miniatura");
+    expect(html).toMatch(/class="data-show com-carta"[\s\S]*?class="mini-carta"[^>]*href="athos-tibaes\.html"[\s\S]*?src="\/img\/athos\.jpg"/);
+
+    await api("gestao/shows/" + s.id, "PUT", { ...s, publicar: 0 });
+    html = await (await SELF.fetch(BASE + "/")).text();
+    expect(html).not.toContain("Casa Teste Miniatura");
+
+    await api("gestao/shows/" + s.id, "PUT", { ...s, publicar: 1 });
+    expect((await api("gestao/shows/" + s.id, "DELETE")).ok).toBe(true);
+    html = await (await SELF.fetch(BASE + "/")).text();
+    expect(html).not.toContain("Casa Teste Miniatura");
+    expect((await api("gestao/dados")).shows.some((x) => x.id === s.id)).toBe(false);
+  });
+});

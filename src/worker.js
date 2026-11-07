@@ -3,7 +3,7 @@
 // Sem nada salvo no KV, o site mostra o que está em public/ (gerado por ferramentas/gera_artistas.py).
 // O sistema de gestão (/admin/gestao.html) fica em src/gestao.js, com os dados no D1 DB.
 
-import { gestao, pedidoDoSite, propostaPublica, showsPublicos } from "./gestao.js";
+import { CASTING, gestao, pedidoDoSite, propostaPublica, showsPublicos } from "./gestao.js";
 import { agenteAutorizado, motivoAgente, rotasAgente } from "./agente.js";
 
 const CHAVE = "conteudo";
@@ -106,11 +106,24 @@ function itemAgenda(d, conteudo, mostrarArtista) {
       : `<span class="quem">${esc(nome)}</span>`
     : "";
   const onde = [d.local, d.cidade].filter(Boolean).map(esc).join(", ");
-  return `<li class="data-show">
+  const carta = mostrarArtista ? miniCarta(d.artista, nome) : "";
+  return `<li class="data-show${carta ? " com-carta" : ""}">
+        ${carta}
         <p class="quando"><span class="dia">${String(dia).padStart(2, "0")}</span><span class="mes">${MESES[m - 1]}</span></p>
         <div class="o-que">${quem}${d.evento ? `<span class="evento">${esc(d.evento)}</span>` : ""}<span class="onde">${onde}</span><span class="hora">${esc(semana)}${d.hora ? ", " + esc(d.hora) : ""}</span></div>
         ${ingresso ? `<a class="ingresso" href="${esc(ingresso)}" target="_blank" rel="noopener">Ingressos</a>` : ""}
       </li>`;
+}
+
+// miniatura da carta do casting (5:7, filete ouro, índice 7A, faixa grafite com a abinha vermelha)
+function miniCarta(slug, nome) {
+  const k = CASTING[slug];
+  const arte = k
+    ? `<img src="${esc(k.foto)}" alt="" loading="lazy" style="object-position:${esc(k.foco)}">`
+    : `<span class="inicial">${esc((nome || "7A").trim().charAt(0))}</span>`;
+  const tag = k ? "a" : "span";
+  const extra = k ? ` href="${esc(slug)}.html" tabindex="-1"` : "";
+  return `<${tag} class="mini-carta${k && k.claro ? " clara" : ""}"${extra} aria-hidden="true"><span class="ind">7A<i></i></span><span class="arte">${arte}</span><span class="faixa"></span></${tag}>`;
 }
 
 function reescreverInicio(resp, conteudo) {

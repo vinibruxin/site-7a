@@ -74,6 +74,29 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
 .linha-show .local { grid-column: 1 / 3; }
 .linha-show .tirar { grid-column: 4; justify-self: end; }
 .passou { opacity: .55; }
+
+/* todos os eventos: aba Agenda + shows da Gestão */
+.todos { margin: 24px 0 64px; }
+.todos h2, .editar-aba h2 { font-size: 32px; margin: 0 0 6px; }
+.evento-linha { display: grid; grid-template-columns: 112px minmax(0, 1fr) auto; gap: 6px 20px; align-items: center; padding: 16px; background: var(--grafite); margin-bottom: 6px; }
+.evento-linha .q { font: 400 26px/1 var(--f-display); text-transform: uppercase; }
+.evento-linha .q small { display: block; margin-top: 6px; font: 600 13px/1.2 var(--f-texto); text-transform: none; color: var(--cinza); }
+.evento-linha .nome { font-weight: 700; font-size: 17px; }
+.evento-linha .onde { font-size: 15px; }
+.evento-linha .selos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.selo { font-size: 13px; font-weight: 600; padding: 4px 8px; background: var(--preto); color: var(--cinza); }
+.selo.no-site { background: var(--vermelho); color: var(--offwhite); }
+.evento-linha .acoes { display: flex; flex-wrap: wrap; gap: 4px 16px; justify-content: flex-end; }
+.evento-linha .acoes a { color: var(--offwhite); font-weight: 600; font-size: 14px; padding: 10px 0; text-underline-offset: 3px; }
+.excluir { background: none; border: 0; color: #FF8A8F; font-weight: 700; font-size: 14px; cursor: pointer; padding: 10px 0; text-decoration: underline; text-underline-offset: 3px; }
+.excluir:hover { color: var(--offwhite); }
+.todos details { margin-top: 20px; }
+.todos summary { cursor: pointer; font-weight: 700; font-size: 16px; padding: 10px 0; }
+.todos .aviso { margin: 0 0 12px; font-weight: 600; }
+@media (max-width: 640px) {
+  .evento-linha { grid-template-columns: 84px minmax(0, 1fr); }
+  .evento-linha .acoes { grid-column: 1 / -1; justify-content: flex-start; }
+}
 .vazio { margin: 0 0 16px; padding: 28px; background: var(--grafite); font-size: 17px; }
 
 .escolha { display: flex; gap: 12px; align-items: end; flex-wrap: wrap; margin-bottom: 24px; }
@@ -134,9 +157,18 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
     </div>
 
     <section data-painel="agenda">
-      <p class="ajuda">Cada linha é um show. Shows com data passada somem do site sozinhos. O link de ingressos é opcional.</p>
-      <div id="lista-shows"></div>
-      <button class="btn btn-sec" type="button" id="novo-show">Adicionar show</button>
+      <div class="todos">
+        <h2 class="display">Todos os eventos</h2>
+        <p class="ajuda" style="margin-bottom:20px">Os shows desta aba e os da Gestão, juntos e por data. Os marcados "No site" aparecem na agenda pública. Excluir apaga de vez.</p>
+        <p class="aviso" id="aviso-eventos" role="status" hidden></p>
+        <div id="todos-eventos"><p class="vazio">Carregando os eventos...</p></div>
+      </div>
+      <div class="editar-aba">
+        <h2 class="display">Shows cadastrados aqui</h2>
+        <p class="ajuda">Cada linha é um show. Shows com data passada somem do site sozinhos. O link de ingressos é opcional.</p>
+        <div id="lista-shows"></div>
+        <button class="btn btn-sec" type="button" id="novo-show">Adicionar show</button>
+      </div>
     </section>
 
     <section data-painel="artistas" hidden>
@@ -196,7 +228,7 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
     api("conteudo").then(function (c) {
       dados = c; dados.agenda = dados.agenda || []; dados.artistas = dados.artistas || {};
       $("#tela-entrada").hidden = true; $("#tela-editor").hidden = false;
-      desenharAgenda(); montarArtistas();
+      desenharAgenda(); montarArtistas(); carregarGestao();
     });
   }
 
@@ -220,6 +252,7 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
   function esc(s) { return String(s == null ? "" : s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
   function desenharAgenda() {
+    desenharTodos();
     var lista = $("#lista-shows");
     dados.agenda.sort(function (a, b) { return (a.data + (a.hora || "")).localeCompare(b.data + (b.hora || "")); });
     if (!dados.agenda.length) { lista.innerHTML = '<p class="vazio">Nenhum show cadastrado. Enquanto a lista estiver vazia, o site diz que as próximas datas aparecem em breve.</p>'; return; }
@@ -255,6 +288,72 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
     desenharAgenda(); marcar();
     var linhas = document.querySelectorAll(".linha-show"); var ult = linhas[linhas.length - 1];
     if (ult) { ult.scrollIntoView({ block: "center" }); $("input", ult).focus(); }
+  });
+
+  // ---------- todos os eventos (aba Agenda + Gestão) ----------
+  var showsGestao = null;
+  var MESES = ["jan", "fev", "mar", "abr", "mai", "jun", "jul", "ago", "set", "out", "nov", "dez"];
+  var STATUS = { consulta: "Consulta", reservado: "Reservado", confirmado: "Confirmado", realizado: "Realizado", cancelado: "Cancelado" };
+  function carregarGestao() {
+    api("gestao/dados").then(function (r) {
+      showsGestao = r._status === 200 && Array.isArray(r.shows) ? r.shows : [];
+      if (r._status !== 200) avisoEventos("Não deu para ler os shows da Gestão agora. Os desta aba estão abaixo.");
+      desenharTodos();
+    }).catch(function () { showsGestao = []; avisoEventos("Sem conexão com a Gestão. Os shows desta aba estão abaixo."); desenharTodos(); });
+  }
+  function avisoEventos(t) { var a = $("#aviso-eventos"); a.textContent = t || ""; a.hidden = !t; }
+  function nomeArtista(d) { var a = dados.artistas[d.artista]; return a ? a.nome : (d.artista_texto || "Sem artista"); }
+  function linhaEvento(e, h) {
+    var d = e.d, quando = "Sem data";
+    if (d.data) { var p = d.data.split("-"); quando = p[2] + " " + MESES[+p[1] - 1] + '<small>' + p[0] + (d.hora ? " · " + esc(d.hora) : "") + "</small>"; }
+    var noSite = e.origem === "aba" ? true : (d.publicar && (d.status === "confirmado" || d.status === "realizado"));
+    var selos = '<span class="selo">' + (e.origem === "aba" ? "Aba Agenda" : "Gestão · " + (STATUS[d.status] || d.status)) + "</span>" +
+      (noSite && d.data && d.data >= h ? '<span class="selo no-site">No site</span>' : "");
+    var acoes = e.origem === "gestao"
+      ? '<a href="/admin/gestao.html#show/' + d.id + '">Abrir na Gestão</a>' + (d.publicar ? '<button class="tirar" type="button" data-sair-site="' + d.id + '">Tirar do site</button>' : "") + '<button class="excluir" type="button" data-excluir-g="' + d.id + '">Excluir</button>'
+      : '<button class="excluir" type="button" data-excluir-a="' + e.i + '">Excluir</button>';
+    return '<div class="evento-linha' + (d.data && d.data < h ? " passou" : "") + '"><p class="q" style="margin:0">' + quando + "</p>" +
+      '<div><div class="nome">' + esc(nomeArtista(d)) + (d.evento ? " · " + esc(d.evento) : "") + '</div><div class="onde">' + esc([d.local, d.cidade].filter(Boolean).join(", ") || "Local a definir") + '</div><div class="selos">' + selos + "</div></div>" +
+      '<div class="acoes">' + acoes + "</div></div>";
+  }
+  function desenharTodos() {
+    var caixa = $("#todos-eventos");
+    if (!caixa || !dados) return;
+    var h = hoje();
+    var lista = dados.agenda.map(function (d, i) { return { origem: "aba", d: d, i: i }; })
+      .concat((showsGestao || []).map(function (d) { return { origem: "gestao", d: d }; }));
+    lista.sort(function (a, b) { return ((a.d.data || "9999") + (a.d.hora || "")).localeCompare((b.d.data || "9999") + (b.d.hora || "")); });
+    var vindo = lista.filter(function (e) { return !e.d.data || e.d.data >= h; });
+    var foi = lista.filter(function (e) { return e.d.data && e.d.data < h; }).reverse();
+    if (!lista.length) { caixa.innerHTML = '<p class="vazio">' + (showsGestao ? "Nenhum evento cadastrado." : "Carregando os eventos...") + "</p>"; return; }
+    caixa.innerHTML = (vindo.length ? vindo.map(function (e) { return linhaEvento(e, h); }).join("") : '<p class="vazio">Nenhum evento daqui para a frente.</p>') +
+      (foi.length ? "<details><summary>Já passaram (" + foi.length + ")</summary>" + foi.map(function (e) { return linhaEvento(e, h); }).join("") + "</details>" : "");
+  }
+  $("#todos-eventos").addEventListener("click", function (ev) {
+    var b = ev.target.closest("button");
+    if (!b) return;
+    var idG = b.getAttribute("data-excluir-g"), idSai = b.getAttribute("data-sair-site"), iA = b.getAttribute("data-excluir-a");
+    if (idG) {
+      var sg = showsGestao.find(function (x) { return String(x.id) === idG; });
+      if (!confirm("Excluir de vez o show de " + nomeArtista(sg) + (sg.data ? " em " + sg.data.split("-").reverse().join("/") : "") + "?\n\nSai do site e da Gestão, com cachê, repasse e proposta. Não dá para desfazer.")) return;
+      b.disabled = true;
+      api("gestao/shows/" + idG, "DELETE").then(function (r) {
+        if (r.ok) { showsGestao = showsGestao.filter(function (x) { return String(x.id) !== idG; }); desenharTodos(); avisoEventos("Show excluído."); }
+        else { b.disabled = false; avisoEventos(r.erro || "Não deu para excluir. Tente de novo."); }
+      });
+    } else if (idSai) {
+      var ss = showsGestao.find(function (x) { return String(x.id) === idSai; });
+      b.disabled = true;
+      api("gestao/shows/" + idSai, "PUT", Object.assign({}, ss, { publicar: 0 })).then(function (r) {
+        if (r.id) { Object.assign(ss, r); desenharTodos(); avisoEventos("Tirado do site. O show continua na Gestão."); }
+        else { b.disabled = false; avisoEventos(r.erro || "Não deu para tirar do site. Tente de novo."); }
+      });
+    } else if (iA != null) {
+      var da = dados.agenda[+iA];
+      if (!confirm("Excluir o show de " + nomeArtista(da) + (da.data ? " em " + da.data.split("-").reverse().join("/") : "") + "?\n\nSai do site na hora.")) return;
+      dados.agenda.splice(+iA, 1); desenharAgenda();
+      salvar(function (ok) { avisoEventos(ok ? "Show excluído e o site atualizado." : "Excluído aqui, mas não salvou. Toque em Salvar e publicar."); });
+    }
   });
 
   // ---------- artistas ----------
@@ -308,17 +407,19 @@ textarea { resize: vertical; min-height: 96px; line-height: 1.5; }
   });
 
   // ---------- salvar ----------
-  $("#salvar").addEventListener("click", function () {
+  $("#salvar").addEventListener("click", function () { salvar(); });
+  function salvar(depois) {
+    depois = depois || function () {};
     var semData = dados.agenda.some(function (d) { return !d.data; });
-    if (semData) { estado("Preencha a data de todos os shows antes de salvar.", "ruim"); return; }
-    var b = this; b.disabled = true; estado("Salvando...");
+    if (semData) { estado("Preencha a data de todos os shows antes de salvar.", "ruim"); depois(false); return; }
+    var b = $("#salvar"); b.disabled = true; estado("Salvando...");
     api("conteudo", "PUT", dados).then(function (r) {
-      b.disabled = false;
-      if (r.ok) { mudou = false; api("conteudo").then(function (c) { dados = c; if (!$("[data-painel=artistas]").hidden) desenharArtista(); }); estado("Salvo. O site já mostra as mudanças (pode levar até um minuto).", "ok"); }
+      b.disabled = false; depois(!!r.ok);
+      if (r.ok) { mudou = false; api("conteudo").then(function (c) { dados = c; dados.agenda = dados.agenda || []; dados.artistas = dados.artistas || {}; desenharAgenda(); if (!$("[data-painel=artistas]").hidden) desenharArtista(); }); estado("Salvo. O site já mostra as mudanças (pode levar até um minuto).", "ok"); }
       else if (r._status === 401) { estado("A sessão expirou. Entre de novo; suas mudanças continuam aqui.", "ruim"); $("#tela-entrada").hidden = false; }
       else estado(r.erro || "Não deu para salvar. Tente de novo.", "ruim");
-    }).catch(function () { b.disabled = false; estado("Sem conexão. Tente de novo.", "ruim"); });
-  });
+    }).catch(function () { b.disabled = false; depois(false); estado("Sem conexão. Tente de novo.", "ruim"); });
+  }
 
   // depois de entrar de novo com a sessão expirada, volta ao editor sem perder nada
   var entrarOriginal = abrirEditor;
