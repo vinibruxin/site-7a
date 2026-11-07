@@ -92,7 +92,7 @@ p { margin: 0; }
 
 /* fecho */
 .fecho { padding: 64px var(--m) 56px; display: grid; gap: 36px; }
-.fecho .lema { font-size: clamp(44px, 7vw, 68px); }
+.fecho .lema { font-size: clamp(44px, 7vw, 68px); line-height: 1.12; }
 .acoes { display: flex; flex-wrap: wrap; gap: 10px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 16px 24px; font: 700 16px/1 var(--f-texto); background: var(--vermelho); color: var(--offwhite); border: 0; text-decoration: none; cursor: pointer; transition: transform .15s, background-color .2s; }
 .btn:hover { background: #9A0F17; }
@@ -179,7 +179,7 @@ p { margin: 0; }
     const inclui = lista(p.inclui || "");
     const fatos = [
       ["Data", p.data ? dataLonga(p.data) : "A combinar", true],
-      ["Horário", p.hora ? p.hora.replace(":", "h") : "A combinar"],
+      ["Horário", p.hora ? p.hora.replace(":", "h") + (p.hora_fim ? " às " + p.hora_fim.replace(":", "h") : "") : "A combinar"],
       ["Formato", p.formato || "A combinar"],
       ["Local", [p.local, p.evento && p.evento !== p.local ? p.evento : ""].filter(Boolean).join(" · ") || "A combinar"],
       ["Cidade", p.cidade || "A combinar"],
@@ -240,7 +240,7 @@ p { margin: 0; }
         </div>
         <div class="contato">
           <a href="https://wa.me/5531992233295" target="_blank" rel="noopener">(31) 99223-3295</a>
-          <a href="mailto:7a.produtora@gmail.com">7a.produtora@gmail.com</a>
+          <a href="mailto:contato@7aprodutora.com.br">contato@7aprodutora.com.br</a>
           <a href="https://instagram.com/7a_produtora" target="_blank" rel="noopener">@7a_produtora</a>
           <a href="https://7aprodutora.com.br/${a.slug ? esc(a.slug) + ".html" : ""}" target="_blank" rel="noopener">7aprodutora.com.br</a>
         </div>

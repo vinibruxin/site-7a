@@ -168,6 +168,8 @@ a.item:hover { background: var(--grafite-2); }
 .ficha .c4 { grid-column: span 4; }
 .ficha .c6 { grid-column: 1 / -1; }
 .ficha .grupo-ficha { grid-column: 1 / -1; font: 400 18px/1 var(--f-display); text-transform: uppercase; margin: 14px 0 0; color: var(--cinza); }
+.duracao-calc { margin: -4px 0 0; font-size: 15px; color: var(--cinza); min-height: 1em; }
+.duracao-calc b { color: var(--offwhite); }
 .ficha .dica { display: block; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--cinza); }
 .acoes-rapidas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
 .salvar-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 10px 0 calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--preto); margin-top: 24px; z-index: 5; }
@@ -445,6 +447,17 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const comissao = pct == null ? null : Math.round((base * pct) / 100);
     const repasse = comissao == null ? null : s.cache - s.despesas - comissao;
     return { pct, comissao, repasse, falta_receber: s.cache - s.recebido, falta_repassar: repasse == null ? null : repasse - s.repassado };
+  }
+  // mesma conta do servidor (src/gestao.js, duracaoTexto)
+  function duracaoTexto(inicio, fim) {
+    if (!/^\d{2}:\d{2}$/.test(inicio || "") || !/^\d{2}:\d{2}$/.test(fim || "")) return "";
+    const min = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3));
+    const total = (min(fim) - min(inicio) + 1440) % 1440;
+    if (!total) return "";
+    const h = Math.floor(total / 60), m = total % 60;
+    if (!h) return `${m} min`;
+    if (!m) return h === 1 ? "1 hora" : `${h} horas`;
+    return `${h}h${String(m).padStart(2, "0")}`;
   }
   const contratante = (id) => D.contratantes.find((c) => c.id === id);
   const nomeArtista = (s) => artistas[s.artista] || s.artista_texto || s.artista || "Artista";
@@ -1400,7 +1413,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const doContratante = novo ? Number(new URLSearchParams(query || "").get("c")) || null : null;
     const base = contratante(doContratante);
     const s = novo
-      ? { data: "", hora: "", artista: Object.keys(artistas)[0] || "", artista_texto: "", contratante_id: doContratante, evento: "", local: base ? base.nome : "", cidade: base ? base.cidade : "", status: "consulta", cache: 0, pct: D.config.pct_padrao === "" ? null : Number(D.config.pct_padrao), despesas: 0, recebido: 0, repassado: 0, publicar: 1, link: "", obs: "" }
+      ? { data: "", hora: "", hora_fim: "", artista: Object.keys(artistas)[0] || "", artista_texto: "", contratante_id: doContratante, evento: "", local: base ? base.nome : "", cidade: base ? base.cidade : "", status: "consulta", cache: 0, pct: D.config.pct_padrao === "" ? null : Number(D.config.pct_padrao), despesas: 0, recebido: 0, repassado: 0, publicar: 1, link: "", obs: "" }
       : D.shows.find((x) => x.id === Number(chave));
     if (!s) { tela.innerHTML = '<a class="voltar" href="#shows">Voltar para a agenda</a><p class="vazio">Show não encontrado.</p>'; return; }
     const listaArt = [...Object.entries(artistas), ["", "Outro artista"]];
@@ -1413,8 +1426,10 @@ a.item:active { transform: translateX(3px) scale(.99); }
         <label>Artista<select name="artista">${opcoes(listaArt, s.artista)}</select></label>
         <label id="outro"${s.artista ? " hidden" : ""}>Nome do artista<input name="artista_texto" value="${esc(s.artista_texto)}" autocomplete="off"></label>
         <label>Status<select name="status">${opcoes(STATUS, s.status)}</select></label>
-        <label class="meia">Data<input name="data" type="date" value="${esc(s.data)}"></label>
-        <label class="meia">Hora<input name="hora" type="time" value="${esc(s.hora)}"></label>
+        <label class="c2">Data<input name="data" type="date" value="${esc(s.data)}"></label>
+        <label class="c2 meia">Início<input name="hora" type="time" value="${esc(s.hora)}"></label>
+        <label class="c2 meia">Fim<input name="hora_fim" type="time" value="${esc(s.hora_fim || "")}"></label>
+        <p class="c6 duracao-calc" id="duracao-calc" aria-live="polite"></p>
         <label class="c6">Contratante<select name="contratante_id">${opcoes(listaCont, s.contratante_id ? String(s.contratante_id) : "")}</select></label>
         <label class="c2">Nome do evento<input name="evento" value="${esc(s.evento)}" placeholder="Opcional" autocomplete="off"></label>
         <label class="c2">Local<input name="local" value="${esc(s.local)}" autocomplete="off"></label>
@@ -1439,7 +1454,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       <p class="ajuda">Uma página com a marca da 7A, a carta do artista, data, local e cachê deste show. Você manda o link para o contratante, e ele abre no celular ou salva em PDF.</p>
       <form class="ficha" id="ficha-proposta" novalidate>
         <label>Formato<select name="formato">${opcoesLivres(PADRAO.formato)}</select></label>
-        <label>Duração<select name="duracao">${opcoesLivres(PADRAO.duracao)}</select></label>
+        ${duracaoTexto(s.hora, s.hora_fim) ? `<label>Duração<input name="duracao" value="${esc(duracaoTexto(s.hora, s.hora_fim))}" readonly><span class="dica">Calculada pelo início e fim do show (${esc(s.hora)} às ${esc(s.hora_fim)}).</span></label>` : `<label>Duração<select name="duracao">${opcoesLivres(PADRAO.duracao)}</select><span class="dica">Ou preencha início e fim do show para a conta sair sozinha.</span></label>`}
         <label class="c6 outro-texto" data-outro="formato" hidden>Escreva o formato<input name="formato_outro" autocomplete="off"></label>
         <label class="c6 outro-texto" data-outro="duracao" hidden>Escreva a duração<input name="duracao_outro" autocomplete="off"></label>
         <fieldset class="c6 marcas"><legend>O que está incluso</legend>${PADRAO.inclui.map((t) => `<label class="marcar"><input type="checkbox" name="inclui" value="${esc(t)}"> ${esc(t)}</label>`).join("")}</fieldset>
@@ -1490,7 +1505,14 @@ a.item:active { transform: translateX(3px) scale(.99); }
         <p>A comissão é calculada sobre ${D.config.base === "liquido" ? "o cachê menos as despesas" : "o cachê bruto"}. Dá para mudar em <a href="#ajustes">Ajustes</a>.</p>`;
     };
     desenharConta();
+    const mostrarDuracao = () => {
+      const d = duracaoTexto(form.hora.value, form.hora_fim.value);
+      const passa = d && form.hora_fim.value < form.hora.value;
+      $("#duracao-calc").innerHTML = d ? `Duração: <b>${d}</b>${passa ? " (termina no dia seguinte)" : ""}` : form.hora.value && !form.hora_fim.value ? "Preencha a hora de fim para calcular a duração." : "";
+    };
+    mostrarDuracao();
     form.addEventListener("input", (ev) => {
+      if (ev.target.name === "hora" || ev.target.name === "hora_fim") mostrarDuracao();
       sujo = true; estado("");
       if (ev.target.name === "artista") $("#outro").hidden = !!ev.target.value;
       desenharConta();
@@ -1507,6 +1529,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       if (dados.pct != null && !(dados.pct >= 0 && dados.pct <= 100)) { estado("O % da 7A precisa ficar entre 0 e 100.", "ruim"); form.pct.focus(); return; }
       if (!dados.data && dados.status !== "consulta") { estado("Preencha a data. Só uma consulta pode ficar sem data.", "ruim"); form.data.focus(); return; }
       if (!dados.artista && !dados.artista_texto.trim()) { estado("Escreva o nome do artista.", "ruim"); form.artista_texto.focus(); return; }
+      if (dados.hora_fim && !dados.hora) { estado("Preencha a hora de início.", "ruim"); form.hora.focus(); return; }
       salvar(novo ? "gestao/shows" : "gestao/shows/" + s.id, novo ? "POST" : "PUT", dados, (r) => {
         if (novo) D.shows.push(r); else Object.assign(s, r);
         sujo = false;
@@ -1561,7 +1584,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       form.querySelectorAll(`[name=${campo}]`).forEach((c) => { c.checked = itens.includes(c.value); });
     };
     const ler = () => {
-      const valor = (campo) => (form[campo].value === OUTRO ? form[campo + "_outro"].value.trim() : form[campo].value);
+      const valor = (campo) => (form[campo].value === OUTRO ? form[campo + "_outro"].value.trim() : form[campo].value.trim());
       const marcados = (campo) => [...form.querySelectorAll(`[name=${campo}]:checked`)].map((c) => c.value).join("\n");
       return { formato: valor("formato"), duracao: valor("duracao"), condicoes: valor("condicoes"), inclui: marcados("inclui"), rider: marcados("rider"), validade: validade() };
     };
@@ -1585,7 +1608,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     };
     api(`gestao/shows/${s.id}/proposta`).then((p) => {
       escolher("formato", p.formato ?? FORMATOS[s.artista]);
-      escolher("duracao", p.duracao || "2 horas");
+      if (form.duracao.tagName === "SELECT") escolher("duracao", p.duracao || "2 horas");
       escolher("condicoes", p.condicoes || PADRAO.condicoes[0]);
       marcar("inclui", p.token ? p.inclui : PADRAO.inclui.slice(0, 2).join("\n"));
       marcar("rider", p.token ? p.rider : "Alimentação e água para os músicos");

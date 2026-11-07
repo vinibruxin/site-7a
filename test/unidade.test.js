@@ -87,3 +87,16 @@ describe("datas", () => {
     expect(inicioDoDia("2026-10-28")).toBe("2026-10-28T03:00:00.000Z");
   });
 });
+
+describe("duração do show", async () => {
+  const { duracaoTexto } = await import("../src/gestao.js");
+  it("calcula pelo início e fim, inclusive passando da meia-noite", () => {
+    expect(duracaoTexto("17:00", "20:00")).toBe("3 horas");
+    expect(duracaoTexto("21:00", "22:00")).toBe("1 hora");
+    expect(duracaoTexto("20:30", "23:00")).toBe("2h30");
+    expect(duracaoTexto("23:00", "01:30")).toBe("2h30");
+    expect(duracaoTexto("22:00", "22:45")).toBe("45 min");
+    expect(duracaoTexto("20:00", "")).toBe("");
+    expect(duracaoTexto("20:00", "20:00")).toBe("");
+  });
+});

@@ -472,3 +472,19 @@ describe("funil em colunas", () => {
     expect(notas.filter((n) => n.texto.startsWith("Etapa:")).length).toBe(0);
   });
 });
+
+describe("início e fim do show", () => {
+  it("guarda a hora de fim e a proposta pública mostra a duração calculada", async () => {
+    const s = await api("gestao/shows", "POST", { data: "2030-05-10", hora: "17:00", hora_fim: "20:00", artista: "athos-tibaes", status: "consulta", cache: 30000 });
+    expect(s.hora_fim).toBe("20:00");
+    const p = await api(`gestao/shows/${s.id}/proposta`, "PUT", { formato: "Voz e violão", duracao: "2 horas", condicoes: "Pix" });
+    const r = await SELF.fetch(BASE + "/api/proposta/" + p.token);
+    const pub = await r.json();
+    expect(pub.hora_fim).toBe("20:00");
+    expect(pub.duracao).toBe("3 horas");
+  });
+  it("recusa hora de fim sem hora de início", async () => {
+    const r = await api("gestao/shows", "POST", { data: "2030-05-11", hora_fim: "20:00", artista: "athos-tibaes", status: "consulta" });
+    expect(r.status).toBe(400);
+  });
+});
