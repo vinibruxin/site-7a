@@ -115,7 +115,10 @@ function itemAgenda(d, conteudo, mostrarArtista) {
       </li>`;
 }
 
-// miniatura da carta do casting (5:7, filete ouro, índice 7A, faixa grafite com a abinha vermelha)
+// miniatura da carta do casting: foto na carta toda (5:7), filete ouro e o índice 7A com naipe nos dois cantos, como baralho
+// fotos com o canto de cima claro: ali o índice 7A fica em preto para ser lido
+const TOPO_CLARO = new Set(["ordem-mor", "aenima", "dj-ivan-lennon"]);
+
 function miniCarta(slug, nome) {
   const k = CASTING[slug];
   const arte = k
@@ -123,7 +126,7 @@ function miniCarta(slug, nome) {
     : `<span class="inicial">${esc((nome || "7A").trim().charAt(0))}</span>`;
   const tag = k ? "a" : "span";
   const extra = k ? ` href="${esc(slug)}.html" tabindex="-1"` : "";
-  return `<${tag} class="mini-carta${k && k.claro ? " clara" : ""}"${extra} aria-hidden="true"><span class="ind">7A<i></i></span><span class="arte">${arte}</span><span class="faixa"></span></${tag}>`;
+  return `<${tag} class="mini-carta${k && TOPO_CLARO.has(slug) ? " clara" : ""}"${extra} aria-hidden="true"><span class="arte">${arte}</span><span class="ind">7A<i></i></span><span class="ind inf">7A<i></i></span></${tag}>`;
 }
 
 function reescreverInicio(resp, conteudo) {
