@@ -221,6 +221,7 @@ p { margin: 0; }
           ${inclui.length ? `<div><h3>O que está incluso</h3><ul>${inclui.map((l) => `<li>${esc(l)}</li>`).join("")}</ul></div>` : ""}
           ${p.condicoes ? `<div><h3>Condições de pagamento</h3><p>${esc(p.condicoes)}</p></div>` : ""}
           ${!inclui.length && !p.condicoes ? "<div><p>Condições de pagamento a combinar com a 7A.</p></div>" : ""}
+          <div><h3>Responsabilidades</h3><p>O show acontece no local indicado, que é um estabelecimento privado. A casa é responsável pelas licenças do estabelecimento (alvará, AVCB, lotação) e pelo controle do volume ambiente, incluindo os limites de ruído da legislação municipal. A 7A responde pela técnica e pela passagem de som dos equipamentos que leva.</p></div>
         </div>
       </section>
 
