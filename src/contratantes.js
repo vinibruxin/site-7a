@@ -84,6 +84,7 @@ export async function rotasContratantes(req, env, partes, corpo, url) {
   if (acao === "ultimo-cache" && metodo === "POST") return registrarUltimoCache(env, req, c, corpo);
   if (acao === "resposta" && metodo === "POST") return colarResposta(env, req, c, corpo);
   if (acao === "conversa" && metodo === "GET") return conversaDaCasa(env, c);
+  if (acao === "etapa" && metodo === "POST") return mudarEtapa(env, req, c, corpo);
   if (acao === "notas") {
     if (metodo === "GET") {
       const { results } = await env.DB.prepare("SELECT * FROM notas WHERE contratante_id = ? ORDER BY criado DESC").bind(id).all();
@@ -220,6 +221,21 @@ async function atualizar(env, req, c, corpo) {
     if (ehUnico(e)) return json({ erro: "Este telefone já está cadastrado em outro contratante." }, 409);
     throw e;
   }
+}
+
+// funil em colunas: muda só a etapa, sem reenviar a ficha inteira, e deixa a mudança no histórico
+async function mudarEtapa(env, req, c, corpo) {
+  const etapa = corpo?.etapa;
+  if (!ETAPAS.includes(etapa)) return json({ erro: "Etapa desconhecida." }, 400);
+  if (c.arquivado) return json({ erro: "Restaure o contratante antes de mover." }, 409);
+  if (c.etapa === etapa) return json(c);
+  const t = agora();
+  const [linha] = await env.DB.batch([
+    env.DB.prepare("UPDATE contratantes SET etapa = ?, atualizado = ? WHERE id = ? RETURNING *").bind(etapa, t, c.id),
+    env.DB.prepare("INSERT INTO notas (contratante_id, texto, criado) VALUES (?, ?, ?)").bind(c.id, `Etapa: ${NOMES_ETAPA[c.etapa] || c.etapa} → ${NOMES_ETAPA[etapa]}.`, t),
+    auditoria(env, req, "mudou etapa", "contratante", c.id, `${c.etapa} -> ${etapa}`),
+  ]);
+  return json(linha.results[0]);
 }
 
 // "apagar" arquiva: some das listas e campanhas, mas o histórico fica guardado

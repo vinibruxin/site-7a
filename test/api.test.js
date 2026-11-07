@@ -453,3 +453,22 @@ describe("agenda do site", () => {
     expect((await api("gestao/dados")).shows.some((x) => x.id === s.id)).toBe(false);
   });
 });
+
+describe("funil em colunas", () => {
+  it("muda só a etapa e deixa a mudança no histórico", async () => {
+    const c = await novo({ etapa: "contatado", proxima_acao: "Cobrar resposta" });
+    const r = await api(`gestao/contratantes/${c.id}/etapa`, "POST", { etapa: "negociando" });
+    expect(r.status).toBe(200);
+    expect(r.etapa).toBe("negociando");
+    expect(r.proxima_acao).toBe("Cobrar resposta");
+    const notas = await api(`gestao/contratantes/${c.id}/notas`);
+    expect(notas.some((n) => n.texto === "Etapa: Contatado → Negociando.")).toBe(true);
+  });
+  it("recusa etapa desconhecida e não duplica a nota quando a etapa é a mesma", async () => {
+    const c = await novo({ etapa: "contatar" });
+    expect((await api(`gestao/contratantes/${c.id}/etapa`, "POST", { etapa: "xpto" })).status).toBe(400);
+    await api(`gestao/contratantes/${c.id}/etapa`, "POST", { etapa: "contatar" });
+    const notas = await api(`gestao/contratantes/${c.id}/notas`);
+    expect(notas.filter((n) => n.texto.startsWith("Etapa:")).length).toBe(0);
+  });
+});

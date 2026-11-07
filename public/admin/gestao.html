@@ -97,7 +97,6 @@ h2.display { font-size: clamp(22px, 2.2vw, 28px); margin: 40px 0 12px; }
 .lista { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 16px; align-items: center; padding: 11px 14px; background: var(--grafite); text-decoration: none; transition: background-color .15s; }
 a.item:hover { background: var(--grafite-2); }
-a.item:active { transform: scale(.995); }
 .item .nome { font-weight: 700; font-size: 16px; line-height: 1.25; overflow-wrap: anywhere; }
 .item .meta { grid-column: 1; color: var(--cinza); font-size: 14px; overflow-wrap: anywhere; }
 .item .lado { grid-row: 1 / span 2; grid-column: 2; display: grid; justify-items: end; gap: 6px; text-align: right; }
@@ -168,6 +167,7 @@ a.item:active { transform: scale(.995); }
 .ficha .c3 { grid-column: span 3; }
 .ficha .c4 { grid-column: span 4; }
 .ficha .c6 { grid-column: 1 / -1; }
+.ficha .grupo-ficha { grid-column: 1 / -1; font: 400 18px/1 var(--f-display); text-transform: uppercase; margin: 14px 0 0; color: var(--cinza); }
 .ficha .dica { display: block; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--cinza); }
 .acoes-rapidas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
 .salvar-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 10px 0 calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--preto); margin-top: 24px; z-index: 5; }
@@ -198,6 +198,47 @@ a.item:active { transform: scale(.995); }
 .ajustes { display: grid; gap: 20px; max-width: 560px; }
 .radios { display: grid; gap: 12px; }
 
+
+/* hoje */
+.resumo-dia { margin: -12px 0 8px; font-size: 17px; font-weight: 600; }
+.resumo-dia a { color: var(--offwhite); text-underline-offset: 3px; }
+h3.sub { font: 700 14px/1 var(--f-texto); color: var(--cinza); margin: 18px 0 8px; }
+h3.sub:first-child { margin-top: 0; }
+.pendencia { margin: -8px 0 0; padding: 0 14px 12px 94px; background: var(--grafite); color: #FF8A8F; font-weight: 600; font-size: 14px; }
+.funil-faixa { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; text-decoration: none; }
+.funil-faixa span { background: var(--grafite); padding: 14px 16px; display: grid; gap: 6px; font-weight: 600; font-size: 14px; color: var(--cinza); transition: background-color .15s; }
+.funil-faixa:hover span { background: var(--grafite-2); }
+.funil-faixa b { font: 400 36px/1 var(--f-display); color: var(--offwhite); }
+
+/* sub-abas */
+.subabas { display: flex; gap: 6px; flex-wrap: wrap; margin: -12px 0 20px; }
+.subabas a { font-weight: 600; font-size: 14px; padding: 9px 14px; background: var(--grafite); text-decoration: none; transition: background-color .15s; }
+.subabas a:hover { background: var(--grafite-2); }
+.subabas a[aria-current="page"] { background: var(--offwhite); color: var(--preto); }
+
+/* funil em colunas */
+main.largo { max-width: none; }
+.kanban { display: grid; grid-template-columns: repeat(var(--cols), minmax(250px, 1fr)); gap: 8px; align-items: start; overflow-x: auto; padding-bottom: 8px; }
+.coluna { background: #151515; padding: 10px; min-height: 240px; transition: background-color .15s; }
+.coluna.alvo { background: var(--grafite-2); }
+.coluna-topo { display: flex; justify-content: space-between; align-items: baseline; font: 400 22px/1 var(--f-display); text-transform: uppercase; margin: 4px 4px 12px; }
+.coluna-topo .conta { font: 700 15px/1 var(--f-texto); color: var(--cinza); }
+.coluna[data-etapa="negociando"] { box-shadow: inset 0 4px 0 var(--vermelho); }
+.cartoes { display: grid; gap: 8px; }
+.coluna-vazia { margin: 0; padding: 14px 4px; color: var(--cinza); font-size: 14px; }
+.cartao { background: var(--grafite); padding: 12px 12px 10px; display: grid; gap: 6px; cursor: grab; transition: background-color .15s, transform .15s; }
+.cartao:hover { background: var(--grafite-2); }
+.cartao.arrastando { opacity: .45; }
+.cartao-nome { font-weight: 700; font-size: 16px; line-height: 1.25; text-decoration: none; overflow-wrap: anywhere; }
+.cartao-nome:hover { text-decoration: underline; text-underline-offset: 3px; }
+.cartao-meta { color: var(--cinza); font-size: 13px; }
+.cartao-acao { display: flex; flex-wrap: wrap; gap: 4px 8px; font-size: 14px; }
+.cartao-acao > span:first-child { font-weight: 700; }
+.cartao-acao.sem { color: var(--cinza); font-style: italic; }
+.cartao .etiqueta { justify-self: start; }
+.mover { grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 8px; font-size: 12px; margin-top: 2px; }
+.mover select { min-height: 32px; padding: 4px 8px; font-size: 13px; background: var(--grafite-2); }
+
 @media (max-width: 860px) {
   .numeros { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .numeros > div:first-child { grid-column: 1 / -1; }
@@ -214,6 +255,14 @@ a.item:active { transform: scale(.995); }
   .abas a[aria-current="page"] { color: var(--offwhite); }
   .abas a[aria-current="page"]::before { content: ""; position: absolute; left: 22%; right: 22%; top: 0; height: 4px; background: var(--vermelho); }
   main { padding-bottom: 120px; }
+  .kanban { grid-template-columns: repeat(var(--cols), 84vw); scroll-snap-type: x mandatory; margin: 0 calc(var(--m) * -1); padding: 0 var(--m) 8px; scroll-padding: 0 var(--m); }
+  .coluna { scroll-snap-align: start; }
+  .mover select { min-height: 40px; font-size: 16px; }
+  .funil-faixa { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pendencia { padding-left: 82px; }
+  .resumo-dia { font-size: 16px; }
+  .subabas { flex-wrap: nowrap; overflow-x: auto; margin-right: calc(var(--m) * -1); scrollbar-width: none; }
+  .subabas a { flex: none; }
   .entrada { grid-template-columns: minmax(0, 1fr); }
   .entrada .lado { min-height: 36svh; }
   .ficha { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
@@ -229,7 +278,31 @@ a.item:active { transform: scale(.995); }
   .lista-contratantes .item { grid-template-columns: minmax(0, 1fr); }
   .lista-contratantes .item .lado { grid-row: auto; grid-column: 1; justify-items: start; text-align: left; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* movimento: entradas curtas em sequência, resposta ao toque e números que sobem uma vez */
+:root { --ease-out: cubic-bezier(0.22, 1, 0.36, 1); --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1); --t-press: 140ms; --t-hover: 180ms; --t-ui: 240ms; }
+@media (prefers-reduced-motion: no-preference) {
+  .surge { animation: surge 460ms var(--ease-out) both; animation-delay: calc(var(--i, 0) * 34ms); }
+  .surge.lado-a-lado { animation-name: surge-lado; }
+  @keyframes surge { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes surge-lado { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+  .cartao.chegou { animation: chegou 620ms var(--ease-out) both; }
+  @keyframes chegou { 0% { opacity: 0; transform: scale(.94); background: var(--vermelho); } 45% { opacity: 1; transform: scale(1.02); background: var(--vermelho); } 100% { transform: none; background: var(--grafite); } }
+  .abas a[aria-current="page"]::before { animation: risco var(--t-ui) var(--ease-out) both; transform-origin: center; }
+  @keyframes risco { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .estado:not(:empty) { animation: surge var(--t-ui) var(--ease-out) both; }
+}
+.btn, .subabas a, .filtros button, .funil-faixa span, .item, .cartao { transition: background-color var(--t-hover) ease, color var(--t-hover) ease, transform var(--t-press) var(--ease-out), opacity var(--t-hover) ease; }
+.btn:active, .subabas a:active, .filtros button:active { transform: scale(.96); }
+a.item:hover { transform: translateX(3px); }
+a.item:active { transform: translateX(3px) scale(.99); }
+.cartao:hover { transform: translateY(-2px); }
+.cartao.arrastando { transform: rotate(-1.5deg) scale(1.02); }
+.coluna { transition: background-color var(--t-ui) var(--ease-out), transform var(--t-ui) var(--ease-out); }
+.coluna.alvo { transform: translateY(-3px); }
+.funil-faixa:hover span { transform: translateY(-2px); }
+.abas a { transition: color var(--t-hover) ease; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
   .conversa { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
   .bolha { max-width: 82%; padding: 10px 12px; border-radius: 12px; font: 400 16px/1.5 var(--f-texto); white-space: pre-line; }
   .bolha small { display: block; margin-top: 4px; font-size: 12px; opacity: .7; }
@@ -259,10 +332,9 @@ a.item:active { transform: scale(.995); }
     <a class="marca" href="#hoje"><img src="/img/logo-7a.png" alt="" width="34" height="40"><span>7A Gestão</span></a>
     <nav class="abas" aria-label="Seções">
       <a href="#hoje" data-aba="hoje">Hoje</a>
-      <a href="#contratantes" data-aba="contratantes">Contratantes</a>
-      <a href="#whatsapp" data-aba="whatsapp">WhatsApp</a>
-      <a href="#campanhas" data-aba="campanhas">Campanhas</a>
+      <a href="#funil" data-aba="funil">Funil</a>
       <a href="#shows" data-aba="shows">Shows</a>
+      <a href="#whatsapp" data-aba="mensagens">Mensagens</a>
       <a href="#ajustes" data-aba="ajustes">Ajustes</a>
     </nav>
     <a class="sec" href="/admin/">Editar o site</a>
@@ -345,6 +417,57 @@ a.item:active { transform: scale(.995); }
     return "https://wa.me/" + d;
   }
 
+
+  /* ---------- movimento ---------- */
+  // tudo que entra na tela chega em sequência curta, na ordem de leitura; sem JS ou com movimento reduzido, aparece direto
+  const calmo = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ALVOS = ".cabeca, .subabas, .resumo-dia, .aviso, h2.display, h3.sub, .lista > li, .numeros > div, .funil-faixa > span, .vazio, .coluna, .cartao, .ficha > *, .salvar-barra, .acoes-rapidas, .conversa > *, .notas > li, .nova-nota, .busca, .filtros, .linha-marcas, .kanban + .ajuda, .fila, .caixa-zap:not([hidden])";
+  let fila = [], agendado = false;
+  function marcar(el) {
+    if (!(el instanceof Element)) return;
+    if (el.matches(ALVOS) && !el.closest(".surge-feito")) fila.push(el);
+    el.querySelectorAll(ALVOS).forEach((x) => fila.push(x));
+  }
+  if (!calmo) new MutationObserver((mudancas) => {
+    for (const m of mudancas) m.addedNodes.forEach(marcar);
+    if (agendado || !fila.length) return;
+    agendado = true;
+    requestAnimationFrame(() => {
+      const vistos = new Set();
+      let i = 0;
+      for (const el of fila) {
+        if (vistos.has(el) || !el.isConnected) continue;
+        vistos.add(el);
+        el.classList.remove("surge");
+        el.style.setProperty("--i", Math.min(i++, 16));
+        if (el.matches(".lista > li, .notas > li")) el.classList.add("lado-a-lado");
+        void el.offsetWidth;
+        el.classList.add("surge");
+        el.addEventListener("animationend", () => { el.classList.remove("surge", "lado-a-lado"); el.style.removeProperty("--i"); }, { once: true });
+      }
+      fila = []; agendado = false;
+    });
+  }).observe(tela, { childList: true, subtree: true });
+
+  // números grandes sobem do zero uma vez, para o olho pegar o valor
+  function contarAte(el) {
+    if (calmo) return;
+    const texto = el.textContent.trim();
+    const dinheiro = texto.includes("R$");
+    const m = texto.match(/^(R\$\s?)?([\d.]+)(,\d{2})?/);
+    if (!m) return;
+    const alvo = dinheiro ? Number(m[2].replace(/\./g, "") + (m[3] || ",00").replace(",", ".")) : Number(m[2].replace(/\./g, ""));
+    if (!(alvo > 0)) return;
+    const resto = texto.slice(m[0].length);
+    const inicio = performance.now(), dur = 700;
+    const passo = (t) => {
+      const p = Math.min(1, (t - inicio) / dur), v = alvo * (1 - Math.pow(1 - p, 3));
+      el.textContent = (dinheiro ? moeda.format(p < 1 ? Math.round(v) : alvo) : String(p < 1 ? Math.round(v) : alvo)) + resto;
+      if (p < 1) requestAnimationFrame(passo);
+    };
+    requestAnimationFrame(passo);
+  }
+
   /* ---------- entrada ---------- */
   function mostrarEntrada() { $("#tela-entrada").hidden = false; $("#tela-app").hidden = true; $("#senha").focus(); }
   $("#form-entrar").addEventListener("submit", (ev) => {
@@ -382,13 +505,14 @@ a.item:active { transform: scale(.995); }
     const h = location.hash || "#hoje";
     ultimo = h;
     const [nome, id] = h.slice(1).split("/");
-    const aba = { contratante: "contratantes", importar: "contratantes", show: "shows", campanha: "campanhas", modelos: "campanhas", modelo: "campanhas", mensagem: "whatsapp", conversa: "contratantes" }[nome] || nome;
+    const aba = { contratantes: "funil", contratante: "funil", importar: "funil", conversa: "funil", show: "shows", whatsapp: "mensagens", campanhas: "mensagens", campanha: "mensagens", modelos: "mensagens", modelo: "mensagens", mensagem: "mensagens" }[nome] || nome;
     document.querySelectorAll("[data-aba]").forEach((a) => (a.dataset.aba === aba ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
     const telas = {
-      hoje: telaHoje, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
+      hoje: telaHoje, funil: telaFunil, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
       campanhas: telaCampanhas, campanha: () => fichaCampanha(id), modelos: telaModelos, modelo: () => fichaModelo(id),
       shows: telaShows, show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id), conversa: () => telaConversa(id),
     };
+    tela.classList.toggle("largo", nome === "funil");
     (telas[nome] || telaHoje)();
     window.scrollTo(0, 0);
   }
@@ -397,12 +521,27 @@ a.item:active { transform: scale(.995); }
   function telaHoje() {
     desenharHoje();
     // números e listas do dia sempre frescos
-    api("gestao/dados").then((r) => { if (r.contratantes && (location.hash || "#hoje") === "#hoje") { D = r; desenharHoje(); } });
+    // só redesenha se algo mudou, para a tela não piscar nem repetir a entrada
+    const assinatura = (x) => JSON.stringify(x, (k, v) => (k === "_status" ? undefined : v));
+    const antes = assinatura(D);
+    api("gestao/dados").then((r) => { if (!r.contratantes) return; const mudou = assinatura(r) !== antes; D = r; if (mudou && (location.hash || "#hoje") === "#hoje") desenharHoje(); });
   }
+  // sub-abas: o funil (colunas ou lista) e as mensagens (fila, campanhas, modelos) ficam cada um num lugar só
+  const subabas = (lista, atual) => `<nav class="subabas" aria-label="Ver">${lista.map(([h, n]) => `<a href="#${h}"${h === atual ? ' aria-current="page"' : ""}>${n}</a>`).join("")}</nav>`;
+  const SUB_FUNIL = [["funil", "Colunas"], ["contratantes", "Lista e busca"], ["importar", "Importar planilha"]];
+  const SUB_MSG = [["whatsapp", "Fila do WhatsApp"], ["campanhas", "Campanhas"], ["modelos", "Modelos"]];
+
   /* ---------- whatsapp ---------- */
   // menu próprio: o que está para enviar, o que falta confirmar e onde registrar a resposta de cada casa
   function telaWhatsapp() {
-    tela.innerHTML = `<div class="cabeca"><h1 class="display">WhatsApp</h1></div>
+    const ind = D.indicadores || { hoje: { abordagens: 0, limite: 20 }, sem_confirmar: 0 };
+    tela.innerHTML = `<div class="cabeca"><h1 class="display">Mensagens</h1></div>
+      ${subabas(SUB_MSG, "whatsapp")}
+      <dl class="numeros numeros-zap">
+        <div><dt>Novas abordagens hoje</dt><dd class="num">${ind.hoje.abordagens} de ${ind.hoje.limite}</dd><small>Limite diário, para proteger o número</small></div>
+        <div><dt>Abertas sem confirmar</dt><dd class="num">${ind.sem_confirmar}</dd><small>Marque se enviou ou não</small></div>
+        <div><dt>Respostas em 30 dias</dt><dd class="num">${ind.respostas ?? 0}</dd><small>${ind.taxa_resposta != null ? ind.taxa_resposta + "% das enviadas" : "Nenhuma enviada ainda"}</small></div>
+      </dl>
       <h2 class="display">Para enviar</h2>
       <div id="fila-mensagens"><p class="vazio">Carregando a fila…</p></div>
       <h2 class="display">Registrar resposta</h2>
@@ -428,10 +567,10 @@ a.item:active { transform: scale(.995); }
 
   /* ---------- conversa da casa: o que ela respondeu, o que a equipe enviou e o rascunho da Évora ---------- */
   function telaConversa(id) {
-    tela.innerHTML = '<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">Carregando...</p>';
+    tela.innerHTML = '<a class="voltar" href="#funil">Voltar para o funil</a><p class="vazio">Carregando...</p>';
     api(`gestao/contratantes/${Number(id)}/conversa`).then((r) => {
       if (location.hash !== "#conversa/" + id) return;
-      if (r.erro) { tela.innerHTML = `<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">${esc(r.erro)}</p>`; return; }
+      if (r.erro) { tela.innerHTML = `<a class="voltar" href="#funil">Voltar para o funil</a><p class="vazio">${esc(r.erro)}</p>`; return; }
       const c = r.contratante;
       const fone = String(c.telefone || "").replace(/^55/, "").replace(/^(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3");
       const quando = (iso) => new Date(iso).toLocaleString("pt-BR", { timeZone: "America/Sao_Paulo", day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
@@ -443,7 +582,7 @@ a.item:active { transform: scale(.995); }
         const botoes = i.situacao === "aberta" ? `<div class="acoes-rapidas"><button class="btn btn-sec" type="button" data-conv="reabrir" data-id="${i.mensagemId}">Abrir de novo</button><button class="btn" type="button" data-conv="enviei" data-id="${i.mensagemId}">Enviei</button><button class="texto-btn" type="button" data-conv="nao" data-id="${i.mensagemId}">Não enviei</button></div>` : "";
         return `<div class="bolha equipe">${esc(i.texto)}<small>${etiqueta} · ${quando(i.criado)}</small>${botoes}</div>`;
       }).join("");
-      tela.innerHTML = `<a class="voltar" href="#contratantes">Voltar para contratantes</a>
+      tela.innerHTML = `<a class="voltar" href="#funil">Voltar para o funil</a>
         <div class="cabeca"><h1 class="display">${esc(c.nome)}</h1><a class="btn btn-sec" href="#contratante/${c.id}">Ficha da casa</a></div>
         <p class="ajuda">${fone ? "WhatsApp " + esc(fone) : "Sem WhatsApp cadastrado"}</p>
         <div class="conversa" id="conversa">${bolhas || '<p class="vazio">Ainda não há conversa com esta casa.</p>'}</div>
@@ -557,7 +696,6 @@ a.item:active { transform: scale(.995); }
   });
 
   function desenharHoje() {
-    setTimeout(carregarFila, 0);
     const h = hoje(), d = dia(h);
     const ativos = D.shows.filter((s) => s.status === "confirmado" || s.status === "realizado");
     const aReceber = ativos.reduce((t, s) => t + Math.max(0, s.cache - s.recebido), 0);
@@ -567,33 +705,128 @@ a.item:active { transform: scale(.995); }
     const comissaoMes = doMes.reduce((t, s) => t + (contas(s).comissao || 0), 0);
     const semPct = D.config.pct_padrao === "" && doMes.some((s) => s.pct == null);
     const fazer = D.fazer || [];
-    const proximos = D.shows.filter((s) => s.data && s.data >= h && s.status !== "cancelado" && diasEntre(h, s.data) <= 60);
-    const ind = D.indicadores || { hoje: { abordagens: 0, limite: 20 }, sem_confirmar: 0 };
-    const camp = D.campanhas || [];
+    const atrasadas = fazer.filter((c) => c.proxima_data < h);
+    const deHoje = fazer.filter((c) => c.proxima_data === h);
+    const vivos = D.shows.filter((s) => s.data && s.data >= h && s.status !== "cancelado");
+    const semana = vivos.filter((s) => diasEntre(h, s.data) <= 7);
+    const depois = vivos.filter((s) => diasEntre(h, s.data) > 7 && diasEntre(h, s.data) <= 60);
+    // o que falta em cada show da semana, para nada chegar no dia sem estar resolvido
+    const pendencias = (s) => [s.status !== "confirmado" && s.status !== "realizado" ? "falta confirmar" : "", s.cache > s.recebido ? "falta receber " + reais(s.cache - s.recebido) : "", !s.hora ? "sem horário" : ""].filter(Boolean);
+    const contagem = Object.fromEntries(ETAPAS.map(([k]) => [k, 0]));
+    D.contratantes.forEach((c) => { contagem[c.etapa] = (contagem[c.etapa] || 0) + 1; });
+    const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
 
     tela.innerHTML = `
       <div class="cabeca"><div><h1 class="display">Hoje</h1><p>${DIAS[d.getUTCDay()]}, ${d.getUTCDate()} de ${MESES[d.getUTCMonth()]}</p></div>
-        <a class="btn" href="#contratante/novo">Novo contratante</a></div>
+        <div class="acoes-rapidas" style="margin:0"><a class="btn btn-sec" href="#contratante/novo">Nova casa</a><a class="btn" href="#show/novo">Novo show</a></div></div>
       ${D.config.simulacao === "1" ? '<p class="aviso">Modo simulação ligado: as mensagens são registradas como teste e o WhatsApp não abre. Desligue em <a href="#ajustes">Ajustes</a>.</p>' : ""}
+      <p class="resumo-dia">${fazer.length ? `${plural(fazer.length, "casa pede", "casas pedem")} ação${atrasadas.length ? `, ${plural(atrasadas.length, "atrasada", "atrasadas")}` : ""}` : "Nenhuma casa esperando ação"} · ${semana.length ? plural(semana.length, "show nesta semana", "shows nesta semana") : "nenhum show nesta semana"}<span id="resumo-fila"></span></p>
+
+      <h2 class="display">Para fazer</h2>
+      ${fazer.length ? `
+        ${atrasadas.length ? `<h3 class="sub">Atrasadas</h3><ul class="lista lista-contratantes">${atrasadas.map((c) => itemContratante(c, true)).join("")}</ul>` : ""}
+        ${deHoje.length ? `<h3 class="sub">Para hoje</h3><ul class="lista lista-contratantes">${deHoje.map((c) => itemContratante(c, true)).join("")}</ul>` : ""}`
+        : `<p class="vazio">${D.contratantes.length ? 'Nada marcado para hoje. Abra o <a href="#funil">funil</a>, escolha as casas em negociação e marque a próxima ação com data.' : "Ainda não há casas no funil. Cadastre as casas, festivais e eventos que a 7A quer abordar, com a próxima ação e a data."}${D.contratantes.length ? "" : '<br><a class="btn" href="#contratante/novo">Cadastrar a primeira</a>'}</p>`}
+
+      <h2 class="display">Shows desta semana</h2>
+      ${semana.length ? `<ul class="lista">${semana.map((s) => { const p = pendencias(s); return itemShow(s) + (p.length ? `<li class="pendencia">${esc(p.join(" · "))}</li>` : ""); }).join("")}</ul>` : '<p class="vazio">Nenhum show nos próximos 7 dias.</p>'}
+
+      <h2 class="display">Funil</h2>
+      <a class="funil-faixa" href="#funil">${ETAPAS.filter(([k]) => k !== "perdido").map(([k, n]) => `<span><b class="num">${contagem[k] || 0}</b>${n}</span>`).join("")}</a>
+
+      <h2 class="display">Dinheiro</h2>
       <dl class="numeros">
         <div><dt>A receber dos contratantes</dt><dd class="num">${reais(aReceber)}</dd><small>Shows confirmados e realizados</small></div>
         <div><dt>A repassar aos artistas</dt><dd class="num">${D.config.pct_padrao === "" && aRepassar === 0 && ativos.length ? "—" : reais(aRepassar)}</dd></div>
         <div><dt>Comissão 7A em ${MESES[d.getUTCMonth()]}</dt><dd class="num">${semPct ? "—" : reais(comissaoMes)}</dd>${semPct ? '<small>Defina o % da 7A em <a href="#ajustes">Ajustes</a></small>' : ""}</div>
       </dl>
-      <h2 class="display">WhatsApp</h2>
-      <dl class="numeros numeros-zap">
-        <div><dt>Novas abordagens hoje</dt><dd class="num">${ind.hoje.abordagens} de ${ind.hoje.limite}</dd><small>Limite diário, para proteger o número</small></div>
-        <div><dt>Abertas sem confirmar</dt><dd class="num">${ind.sem_confirmar}</dd><small>Marque se enviou ou não</small></div>
-        <div><dt>Respostas em 30 dias</dt><dd class="num">${ind.respostas ?? 0}</dd><small>${ind.taxa_resposta != null ? ind.taxa_resposta + "% das enviadas" : "Nenhuma enviada ainda"}</small></div>
-      </dl>
-      ${camp.length ? `<ul class="lista" style="margin-top:8px">${camp.map((c) => `<li><a class="item" href="#campanha/${c.id}"><span class="nome">${esc(c.nome)}</span><span class="lado"><span class="etiqueta e-andamento">${c.na_vez ? c.na_vez + " na vez" : "Em dia"}</span></span><span class="meta">Campanha em andamento${c.simulada ? " (simulação)" : ""}</span></a></li>`).join("")}</ul>` : ""}
-      <h2 class="display">Fila de mensagens</h2>
-      <div id="fila-mensagens"><p class="vazio">Carregando a fila…</p></div>
-      <h2 class="display">Para fazer hoje</h2>
-      ${fazer.length ? `<ul class="lista lista-contratantes">${fazer.map((c) => itemContratante(c, true)).join("")}</ul>`
-        : `<p class="vazio">${D.contratantes.length ? "Nenhuma ação marcada para hoje. Abra um contratante e marque a próxima ação com data." : "Ainda não há contratantes. Comece pelas casas, festivais e eventos que a 7A quer abordar, um por um, com a próxima ação e a data."}${D.contratantes.length ? "" : '<br><a class="btn" href="#contratante/novo">Cadastrar o primeiro</a>'}</p>`}
+
       <h2 class="display">Próximos shows</h2>
-      ${proximos.length ? `<ul class="lista">${proximos.map(itemShow).join("")}</ul>` : '<p class="vazio">Nenhum show nos próximos 60 dias. Quando uma data for pedida, cadastre como consulta em <a href="#show/novo">Novo show</a>.</p>'}`;
+      ${depois.length ? `<ul class="lista">${depois.map(itemShow).join("")}</ul>` : '<p class="vazio">Nada marcado entre 8 e 60 dias. Quando uma data for pedida, cadastre como consulta em <a href="#show/novo">Novo show</a>.</p>'}`;
+
+    tela.querySelectorAll(".numeros dd, .funil-faixa b").forEach(contarAte);
+    // mensagens prontas para enviar: só um aviso aqui, o trabalho fica em Mensagens
+    api("gestao/fila").then((f) => {
+      const n = (f.rascunhos || []).length + (f.abertas || []).length;
+      const alvo = $("#resumo-fila");
+      if (alvo && n) alvo.innerHTML = ` · <a href="#whatsapp">${plural(n, "mensagem esperando você", "mensagens esperando você")}</a>`;
+    });
+  }
+
+  /* ---------- funil em colunas ---------- */
+  let verPerdidos = false;
+  function telaFunil() {
+    const colunas = ETAPAS.filter(([k]) => verPerdidos || k !== "perdido");
+    tela.innerHTML = `
+      <div class="cabeca"><h1 class="display">Funil</h1><a class="btn" href="#contratante/novo">Nova casa</a></div>
+      ${subabas(SUB_FUNIL, "funil")}
+      <div class="busca"><input type="search" id="f-busca" placeholder="Filtrar por nome ou cidade" aria-label="Filtrar casas"><label class="marcar" style="flex:none;font-size:15px"><input type="checkbox" id="f-perdidos"${verPerdidos ? " checked" : ""}> Perdidas</label></div>
+      <p class="estado" id="funil-estado" role="status"></p>
+      <div class="kanban" id="kanban" style="--cols:${colunas.length}">${colunas.map(([k, n]) => `
+        <section class="coluna" data-etapa="${k}" aria-label="${n}"><h2 class="coluna-topo"><span>${n}</span><span class="num conta" data-conta="${k}">…</span></h2><div class="cartoes" data-lista="${k}"></div></section>`).join("")}</div>
+      <p class="ajuda" style="margin-top:16px">No computador, arraste a casa para outra coluna. No celular, use "Mover para" no cartão. Toda mudança fica no histórico da casa.</p>`;
+
+    const cartao = (c) => {
+      const h = hoje();
+      const atraso = c.proxima_data && c.proxima_data < h;
+      const quando = !c.proxima_data ? "" : atraso ? `<span class="atrasado">${dataCurta(c.proxima_data)}</span>` : c.proxima_data === h ? "<span>Hoje</span>" : `<span>${dataCurta(c.proxima_data)}</span>`;
+      return `<article class="cartao" draggable="true" data-id="${c.id}" data-busca="${esc((c.nome + " " + c.cidade).toLowerCase())}">
+        <a class="cartao-nome" href="#contratante/${c.id}">${esc(c.nome)}</a>
+        <span class="cartao-meta">${[c.cidade, nomeDe(TIPOS, c.tipo)].filter(Boolean).map(esc).join(" · ")}</span>
+        ${c.proxima_acao || quando ? `<span class="cartao-acao">${quando}${c.proxima_acao ? `<span>${esc(c.proxima_acao)}</span>` : ""}</span>` : !["fechado", "perdido"].includes(c.etapa) ? '<span class="cartao-acao sem">Sem próxima ação</span>' : ""}
+        ${c.comunicacao === "bloqueado" ? '<span class="etiqueta e-bloqueado">Bloqueado</span>' : c.origem === "site" && c.etapa === "contatar" ? '<span class="etiqueta e-site">Pedido do site</span>' : ""}
+        <label class="mover">Mover para<select data-mover="${c.id}">${ETAPAS.map(([k, n]) => `<option value="${k}"${k === c.etapa ? " selected" : ""}>${n}</option>`).join("")}</select></label>
+      </article>`;
+    };
+
+    const dados = {};
+    const desenharColuna = (k) => {
+      const caixa = $(`[data-lista="${k}"]`);
+      if (!caixa) return;
+      const itens = dados[k] || [];
+      caixa.innerHTML = itens.length ? itens.map(cartao).join("") : '<p class="coluna-vazia">Nenhuma casa aqui.</p>';
+      $(`[data-conta="${k}"]`).textContent = itens.length;
+      filtrar();
+    };
+    const filtrar = () => {
+      const q = ($("#f-busca") ? $("#f-busca").value : "").trim().toLowerCase();
+      document.querySelectorAll(".cartao").forEach((el) => { el.hidden = !!q && !el.dataset.busca.includes(q); });
+    };
+    colunas.forEach(([k]) => api("gestao/contratantes?" + new URLSearchParams({ etapa: k, por: 100 })).then((r) => {
+      dados[k] = r.itens || [];
+      desenharColuna(k);
+      if (r.total > 100) $("#funil-estado").textContent = `A coluna ${nomeDe(ETAPAS, k)} mostra as 100 primeiras. Use "Lista e busca" para ver todas.`;
+    }));
+
+    const mover = (id, para) => {
+      const de = Object.keys(dados).find((k) => dados[k].some((c) => c.id === id));
+      if (!de || de === para) return;
+      const c = dados[de].find((x) => x.id === id);
+      const estado = $("#funil-estado");
+      api(`gestao/contratantes/${id}/etapa`, "POST", { etapa: para }).then((r) => {
+        if (r.erro) { estado.textContent = r.erro; estado.className = "estado ruim"; desenharColuna(de); return; }
+        dados[de] = dados[de].filter((x) => x.id !== id);
+        if (dados[para]) dados[para].unshift({ ...c, ...r });
+        desenharColuna(de); desenharColuna(para);
+        const novo = $(`.cartao[data-id="${id}"]`);
+        if (novo) { novo.classList.add("chegou"); novo.addEventListener("animationend", () => novo.classList.remove("chegou"), { once: true }); }
+        const leve = D.contratantes.find((x) => x.id === id);
+        if (leve) leve.etapa = para;
+        estado.className = "estado ok";
+        estado.innerHTML = para === "fechado"
+          ? `${esc(c.nome)} fechou. <a href="#show/novo?c=${id}">Cadastrar o show</a>`
+          : `${esc(c.nome)} foi para ${nomeDe(ETAPAS, para)}.`;
+      });
+    };
+
+    const k = $("#kanban");
+    k.addEventListener("change", (ev) => { const s = ev.target.closest("[data-mover]"); if (s) mover(Number(s.dataset.mover), s.value); });
+    k.addEventListener("dragstart", (ev) => { const el = ev.target.closest(".cartao"); if (!el) return; ev.dataTransfer.setData("text/plain", el.dataset.id); ev.dataTransfer.effectAllowed = "move"; el.classList.add("arrastando"); });
+    k.addEventListener("dragend", (ev) => { const el = ev.target.closest(".cartao"); if (el) el.classList.remove("arrastando"); document.querySelectorAll(".coluna.alvo").forEach((x) => x.classList.remove("alvo")); });
+    k.addEventListener("dragover", (ev) => { const col = ev.target.closest(".coluna"); if (!col) return; ev.preventDefault(); document.querySelectorAll(".coluna.alvo").forEach((x) => x !== col && x.classList.remove("alvo")); col.classList.add("alvo"); });
+    k.addEventListener("drop", (ev) => { const col = ev.target.closest(".coluna"); if (!col) return; ev.preventDefault(); col.classList.remove("alvo"); mover(Number(ev.dataTransfer.getData("text/plain")), col.dataset.etapa); });
+    $("#f-busca").addEventListener("input", filtrar);
+    $("#f-perdidos").addEventListener("change", (ev) => { verPerdidos = ev.target.checked; telaFunil(); });
   }
 
   /* ---------- contratantes ---------- */
@@ -606,7 +839,7 @@ a.item:active { transform: scale(.995); }
       : c.comunicacao === "bloqueado" ? '<span class="etiqueta e-bloqueado">Bloqueado</span>'
       : c.origem === "site" && c.etapa === "contatar" ? '<span class="etiqueta e-site">Pedido do site</span>'
       : `<span class="etiqueta e-${c.etapa}">${nomeDe(ETAPAS, c.etapa)}</span>`;
-    return `<li><a class="item" href="#conversa/${c.id}">
+    return `<li><a class="item" href="#contratante/${c.id}">
       <span class="nome">${esc(c.nome)}</span>
       <span class="lado">${etiqueta}${quando}</span>
       <span class="meta">${meta || "&nbsp;"}</span></a></li>`;
@@ -615,7 +848,8 @@ a.item:active { transform: scale(.995); }
   let buscaSeq = 0;
   function telaContratantes() {
     tela.innerHTML = `
-      <div class="cabeca"><h1 class="display">Contratantes</h1><div class="acoes-rapidas" style="margin:0"><a class="btn btn-sec" href="#importar">Importar planilha</a><a class="btn" href="#contratante/novo">Novo contratante</a></div></div>
+      <div class="cabeca"><h1 class="display">Funil</h1><a class="btn" href="#contratante/novo">Nova casa</a></div>
+      ${subabas(SUB_FUNIL, "contratantes")}
       <div class="filtros" id="etapas" role="group" aria-label="Etapa do funil"></div>
       <div class="busca"><input type="search" id="busca" placeholder="Buscar por nome, cidade, contato, e-mail ou telefone" value="${esc(filtro.busca)}" aria-label="Buscar contratante">
         <select id="f-perfil" aria-label="Perfil musical" style="max-width:200px"><option value="">Todos os perfis</option>${PERFIS.slice(1).map(([k, n]) => `<option value="${k}"${filtro.perfil === k ? " selected" : ""}>${n}</option>`).join("")}<option value="nenhum"${filtro.perfil === "nenhum" ? " selected" : ""}>Perfil não definido</option></select></div>
@@ -659,10 +893,10 @@ a.item:active { transform: scale(.995); }
 
   function fichaContratante(id) {
     if (id === "novo") return desenharFicha(null);
-    tela.innerHTML = '<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">Carregando...</p>';
+    tela.innerHTML = '<a class="voltar" href="#funil">Voltar para o funil</a><p class="vazio">Carregando...</p>';
     api("gestao/contratantes/" + Number(id)).then((f) => {
       if (location.hash !== "#contratante/" + id) return;
-      if (!f.contratante) { tela.innerHTML = '<a class="voltar" href="#contratantes">Voltar para contratantes</a><p class="vazio">Contratante não encontrado.</p>'; return; }
+      if (!f.contratante) { tela.innerHTML = '<a class="voltar" href="#funil">Voltar para o funil</a><p class="vazio">Contratante não encontrado.</p>'; return; }
       desenharFicha(f);
     });
   }
@@ -674,25 +908,35 @@ a.item:active { transform: scale(.995); }
     const seus = novo ? [] : D.shows.filter((s) => s.contratante_id === c.id).sort((a, b) => (b.data || "").localeCompare(a.data || ""));
     const ultimaAut = !novo && f.consentimentos[0];
     tela.innerHTML = `
-      <a class="voltar" href="#contratantes">Voltar para contratantes</a>
-      <div class="cabeca"><h1 class="display">${novo ? "Novo contratante" : esc(c.nome)}</h1></div>
+      <a class="voltar" href="#funil">Voltar para o funil</a>
+      <div class="cabeca"><h1 class="display">${novo ? "Nova casa" : esc(c.nome)}</h1>${novo ? "" : `<span class="etiqueta e-${c.etapa}">${nomeDe(ETAPAS, c.etapa)}</span>`}</div>
       ${c.arquivado ? `<p class="aviso">Arquivado em ${dataCurta(c.arquivado)}. Não aparece nas listas nem nas campanhas. <button class="texto-btn" type="button" id="restaurar">Restaurar</button></p>` : ""}
       ${bloqueado ? `<p class="aviso aviso-forte">Pediu para não receber mensagens (${dataCurta(c.bloqueado_em.slice(0, 10))}). Nenhuma mensagem pode ser aberta para esta casa. <button class="texto-btn" type="button" id="desbloquear">Desbloquear</button></p>` : ""}
       ${novo || c.arquivado ? "" : `<div class="acoes-rapidas">
         ${!bloqueado && c.telefone_norm ? '<button class="btn" type="button" id="zap">Mensagem no WhatsApp</button>' : ""}
         ${!bloqueado && c.telefone && !c.telefone_norm ? '<span class="etiqueta e-bloqueado" style="align-self:center">Telefone fora do formato: corrija para usar o WhatsApp</span>' : ""}
         ${!bloqueado ? '<button class="btn btn-sec" type="button" id="respondeu">Respondeu</button><button class="btn btn-sec" type="button" id="parar">Pediu para parar</button>' : ""}
-        ${!bloqueado ? '<div class="nova-nota" style="width:100%"><label>Colar resposta da casa<textarea id="texto-resposta" rows="2" placeholder="Cole aqui o que a casa mandou no WhatsApp"></textarea></label><button class="btn btn-sec" type="button" id="colar-resposta">Registrar resposta</button></div>' : ""}
         ${c.telefone ? `<a class="btn btn-sec" href="tel:${soDigitos(c.telefone)}">Ligar</a>` : ""}
         ${c.email ? `<a class="btn btn-sec" href="mailto:${esc(c.email)}">E-mail</a>` : ""}
         ${c.instagram ? `<a class="btn btn-sec" href="https://instagram.com/${encodeURIComponent(c.instagram)}" target="_blank" rel="noopener">Instagram</a>` : ""}
+        <a class="btn btn-sec" href="#conversa/${c.id}">Conversa</a>
         <a class="btn btn-sec" href="#show/novo?c=${c.id}">Novo show</a></div>
         <p class="estado" id="estado-acao" role="status" style="margin:-8px 0 16px"></p>
         <div class="caixa-zap" id="caixa-zap" hidden></div>`}
       <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
         <label class="c6">Nome da casa, restaurante, evento ou empresa<input name="nome" value="${esc(c.nome)}" required autocomplete="off"></label>
+        <h2 class="grupo-ficha">Negociação</h2>
+        <label class="c2">Etapa do funil<select name="etapa">${opcoes(ETAPAS, c.etapa)}</select></label>
+        <label class="c2">Próxima ação<input name="proxima_acao" value="${esc(c.proxima_acao)}" placeholder="Mandar o release da Ordem Mor" autocomplete="off"></label>
+        <label class="c2">Quando<input name="proxima_data" type="date" value="${esc(c.proxima_data)}"></label>
+        <h2 class="grupo-ficha">Contato</h2>
+        <label class="c2">Pessoa de contato<input name="contato" value="${esc(c.contato)}" autocomplete="off"></label>
+        <label class="c2">Telefone ou WhatsApp<input name="telefone" type="tel" value="${esc(c.telefone)}" placeholder="(31) 9..." autocomplete="off"></label>
+        <label class="c2">Instagram<input name="instagram" value="${esc(c.instagram)}" placeholder="@casa" autocomplete="off"></label>
+        <label class="c6">E-mail<input name="email" type="email" value="${esc(c.email)}" autocomplete="off"></label>
         <label>Tipo<select name="tipo">${opcoes(TIPOS, c.tipo)}</select></label>
         <label>Perfil musical<select name="perfil">${opcoes(PERFIS, c.perfil || "")}</select></label>
+        <h2 class="grupo-ficha">Endereço</h2>
         <label class="c2">CEP<input name="cep" value="${esc(c.cep || "")}" placeholder="32600-000" inputmode="numeric" maxlength="9" autocomplete="off"><span class="dica" id="dica-cep">Preenche rua, bairro, cidade e UF.</span></label>
         <label class="c4">Rua<input name="endereco" value="${esc(c.endereco || "")}" placeholder="Rua do Rosário" autocomplete="off"></label>
         <label class="c1 meia">Número<input name="numero" value="${esc(c.numero || "")}" placeholder="120" autocomplete="off"></label>
@@ -701,13 +945,6 @@ a.item:active { transform: scale(.995); }
         <label class="c4 meia">Cidade<input name="cidade" value="${esc(c.cidade)}" placeholder="Betim" autocomplete="off"></label>
         <label class="c2 meia">UF<input name="uf" value="${esc(c.uf || "")}" placeholder="MG" maxlength="2" autocomplete="off"></label>
         <label class="c6">Ponto de referência (opcional)<input name="referencia" value="${esc(c.referencia || "")}" placeholder="Em frente à praça, entrada pelos fundos" autocomplete="off"></label>
-        <label class="c2">Pessoa de contato<input name="contato" value="${esc(c.contato)}" autocomplete="off"></label>
-        <label class="c2">Telefone ou WhatsApp<input name="telefone" type="tel" value="${esc(c.telefone)}" placeholder="(31) 9..." autocomplete="off"></label>
-        <label class="c2">Instagram<input name="instagram" value="${esc(c.instagram)}" placeholder="@casa" autocomplete="off"></label>
-        <label class="c6">E-mail<input name="email" type="email" value="${esc(c.email)}" autocomplete="off"></label>
-        <label class="c2">Etapa do funil<select name="etapa">${opcoes(ETAPAS, c.etapa)}</select></label>
-        <label class="c2">Próxima ação<input name="proxima_acao" value="${esc(c.proxima_acao)}" placeholder="Mandar o release da Ordem Mor" autocomplete="off"></label>
-        <label class="c2">Quando<input name="proxima_data" type="date" value="${esc(c.proxima_data)}"></label>
         <label class="c6">Observações<textarea name="obs" rows="3" placeholder="Capacidade, estilo da casa, quem decide, quanto costuma pagar">${esc(c.obs)}</textarea></label>
       </form>
       <div class="salvar-barra">
@@ -717,6 +954,8 @@ a.item:active { transform: scale(.995); }
       </div></div>
       ${novo ? "" : `
       ${ultimaAut ? `<p class="ajuda">Autorização de contato: <strong>${{ livre: "livre", conversa: "em conversa", pediu_contato: "pediu contato", bloqueado: "bloqueado" }[ultimaAut.situacao] || ultimaAut.situacao}</strong> — ${esc(ultimaAut.prova)}</p>` : `<p class="ajuda">Autorização de contato: ${c.origem === "csv" ? "importado por planilha, sem autorização registrada" : "nenhuma registrada ainda"}. O primeiro contato é sempre manual, com o seu toque.</p>`}
+      <h2 class="display">Shows</h2>
+      ${seus.length ? `<ul class="lista">${seus.map(itemShow).join("")}</ul>` : '<p class="vazio">Nenhum show com este contratante ainda.</p>'}
       <h2 class="display">Mensagens no WhatsApp</h2>
       <div id="mensagens">${listaMensagens(f.mensagens)}</div>
       ${f.campanhas.length ? `<h2 class="display">Campanhas</h2><ul class="lista">${f.campanhas.map((x) => `<li><a class="item" href="#campanha/${x.id}"><span class="nome">${esc(x.nome)}</span><span class="lado"><span class="etiqueta">${SIT_DEST[x.situacao] || x.situacao}</span></span><span class="meta">${STATUS_CAMP[x.status] || x.status}${x.situacao === "aguardando" && x.cobrar_em ? " · cobrança em " + dataCurta(x.cobrar_em) : ""}</span></a></li>`).join("")}</ul>` : ""}
@@ -726,8 +965,7 @@ a.item:active { transform: scale(.995); }
       <h2 class="display">Histórico</h2>
       <div class="nova-nota"><label>O que aconteceu<textarea id="texto-nota" rows="2" placeholder="Liguei, pediu proposta para março"></textarea></label><button class="btn btn-sec" type="button" id="anotar">Anotar</button></div>
       <ul class="notas" id="notas"><li><span class="quando">Carregando...</span></li></ul>
-      <h2 class="display">Shows</h2>
-      ${seus.length ? `<ul class="lista">${seus.map(itemShow).join("")}</ul>` : '<p class="vazio">Nenhum show com este contratante ainda.</p>'}`}`;
+`}`;
 
     const form = $("#ficha");
     form.addEventListener("input", () => { sujo = true; estado(""); });
@@ -924,8 +1162,8 @@ a.item:active { transform: scale(.995); }
   function telaImportar() {
     const exemplo = "﻿Nome;Contato;Telefone;E-mail;Cidade;UF;Categoria;Perfil;Observações\r\nBar do Exemplo;Ana Souza;(31) 99999-0000;contato@bardoexemplo.com.br;Betim;MG;Bar ou casa de show;Autoral;Toca rock às sextas\r\n";
     tela.innerHTML = `
-      <a class="voltar" href="#contratantes">Voltar para contratantes</a>
-      <div class="cabeca"><h1 class="display">Importar planilha</h1></div>
+      <div class="cabeca"><h1 class="display">Funil</h1></div>
+      ${subabas(SUB_FUNIL, "importar")}
       <p class="ajuda">Salve a planilha como CSV (no Excel: Arquivo > Salvar como > CSV; no Google Planilhas: Arquivo > Fazer download > CSV). A primeira linha precisa ter os títulos. Colunas reconhecidas: Nome, Contato, Telefone (ou WhatsApp), E-mail, Cidade, UF, Categoria, Perfil, Instagram, Observações. Até 1.000 linhas por vez.</p>
       <p class="ajuda">Antes de gravar, o sistema mostra quantas linhas entram e quais ficam de fora, com o motivo. Quem é importado entra como "a contatar": a importação não conta como contato feito nem autoriza mensagens.</p>
       <div class="acoes-rapidas"><a class="btn btn-sec" download="modelo-contratantes-7a.csv" href="data:text/csv;charset=utf-8,${encodeURIComponent(exemplo)}">Baixar planilha de exemplo</a></div>
@@ -1271,7 +1509,8 @@ a.item:active { transform: scale(.995); }
 
   function telaCampanhas() {
     tela.innerHTML = `
-      <div class="cabeca"><h1 class="display">Campanhas</h1><div class="acoes-rapidas" style="margin:0"><a class="btn btn-sec" href="#modelos">Modelos de mensagem</a><a class="btn" href="#campanha/nova">Nova campanha</a></div></div>
+      <div class="cabeca"><h1 class="display">Mensagens</h1><a class="btn" href="#campanha/nova">Nova campanha</a></div>
+      ${subabas(SUB_MSG, "campanhas")}
       ${VERSAO_GRATIS}
       <div class="filtros" id="periodo" role="group" aria-label="Período dos números">${[7, 30, 90].map((n) => `<button type="button" data-dias="${n}" aria-pressed="${n === 30}">${n} dias</button>`).join("")}</div>
       <dl class="numeros" id="indicadores"><div><dt>Carregando...</dt><dd>&nbsp;</dd></div></dl>
@@ -1502,7 +1741,7 @@ a.item:active { transform: scale(.995); }
   const exemploDe = (t) => t.replace(/\{\{([^{}]*)\}\}/g, (todo, dentro) => { const [n, ...r] = dentro.split("|"); return EXEMPLO[n.trim()] || r.join("|").trim() || todo; });
 
   function telaModelos() {
-    tela.innerHTML = '<a class="voltar" href="#campanhas">Voltar para campanhas</a><div class="cabeca"><h1 class="display">Modelos</h1><a class="btn" href="#modelo/novo">Novo modelo</a></div><div id="lista-mod"><p class="vazio">Carregando...</p></div>';
+    tela.innerHTML = '<div class="cabeca"><h1 class="display">Mensagens</h1><a class="btn" href="#modelo/novo">Novo modelo</a></div>' + subabas(SUB_MSG, "modelos") + '<div id="lista-mod"><p class="vazio">Carregando...</p></div>';
     carregarModelos().then(() => {
       if (!$("#lista-mod")) return;
       $("#lista-mod").innerHTML = `<p class="ajuda">Nas campanhas automáticas, cada casa recebe o modelo ativo da sua etapa (primeiro contato, cobrança ou proposta), de preferência o do mesmo perfil musical.</p>
