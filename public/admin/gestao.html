@@ -97,7 +97,6 @@ h2.display { font-size: clamp(22px, 2.2vw, 28px); margin: 40px 0 12px; }
 .lista { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
 .item { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 16px; align-items: center; padding: 11px 14px; background: var(--grafite); text-decoration: none; transition: background-color .15s; }
 a.item:hover { background: var(--grafite-2); }
-a.item:active { transform: scale(.995); }
 .item .nome { font-weight: 700; font-size: 16px; line-height: 1.25; overflow-wrap: anywhere; }
 .item .meta { grid-column: 1; color: var(--cinza); font-size: 14px; overflow-wrap: anywhere; }
 .item .lado { grid-row: 1 / span 2; grid-column: 2; display: grid; justify-items: end; gap: 6px; text-align: right; }
@@ -279,7 +278,31 @@ main.largo { max-width: none; }
   .lista-contratantes .item { grid-template-columns: minmax(0, 1fr); }
   .lista-contratantes .item .lado { grid-row: auto; grid-column: 1; justify-items: start; text-align: left; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* movimento: entradas curtas em sequência, resposta ao toque e números que sobem uma vez */
+:root { --ease-out: cubic-bezier(0.22, 1, 0.36, 1); --ease-in-out: cubic-bezier(0.76, 0, 0.24, 1); --t-press: 140ms; --t-hover: 180ms; --t-ui: 240ms; }
+@media (prefers-reduced-motion: no-preference) {
+  .surge { animation: surge 460ms var(--ease-out) both; animation-delay: calc(var(--i, 0) * 34ms); }
+  .surge.lado-a-lado { animation-name: surge-lado; }
+  @keyframes surge { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes surge-lado { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+  .cartao.chegou { animation: chegou 620ms var(--ease-out) both; }
+  @keyframes chegou { 0% { opacity: 0; transform: scale(.94); background: var(--vermelho); } 45% { opacity: 1; transform: scale(1.02); background: var(--vermelho); } 100% { transform: none; background: var(--grafite); } }
+  .abas a[aria-current="page"]::before { animation: risco var(--t-ui) var(--ease-out) both; transform-origin: center; }
+  @keyframes risco { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  .estado:not(:empty) { animation: surge var(--t-ui) var(--ease-out) both; }
+}
+.btn, .subabas a, .filtros button, .funil-faixa span, .item, .cartao { transition: background-color var(--t-hover) ease, color var(--t-hover) ease, transform var(--t-press) var(--ease-out), opacity var(--t-hover) ease; }
+.btn:active, .subabas a:active, .filtros button:active { transform: scale(.96); }
+a.item:hover { transform: translateX(3px); }
+a.item:active { transform: translateX(3px) scale(.99); }
+.cartao:hover { transform: translateY(-2px); }
+.cartao.arrastando { transform: rotate(-1.5deg) scale(1.02); }
+.coluna { transition: background-color var(--t-ui) var(--ease-out), transform var(--t-ui) var(--ease-out); }
+.coluna.alvo { transform: translateY(-3px); }
+.funil-faixa:hover span { transform: translateY(-2px); }
+.abas a { transition: color var(--t-hover) ease; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
   .conversa { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
   .bolha { max-width: 82%; padding: 10px 12px; border-radius: 12px; font: 400 16px/1.5 var(--f-texto); white-space: pre-line; }
   .bolha small { display: block; margin-top: 4px; font-size: 12px; opacity: .7; }
@@ -394,6 +417,57 @@ main.largo { max-width: none; }
     return "https://wa.me/" + d;
   }
 
+
+  /* ---------- movimento ---------- */
+  // tudo que entra na tela chega em sequência curta, na ordem de leitura; sem JS ou com movimento reduzido, aparece direto
+  const calmo = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const ALVOS = ".cabeca, .subabas, .resumo-dia, .aviso, h2.display, h3.sub, .lista > li, .numeros > div, .funil-faixa > span, .vazio, .coluna, .cartao, .ficha > *, .salvar-barra, .acoes-rapidas, .conversa > *, .notas > li, .nova-nota, .busca, .filtros, .linha-marcas, .kanban + .ajuda, .fila, .caixa-zap:not([hidden])";
+  let fila = [], agendado = false;
+  function marcar(el) {
+    if (!(el instanceof Element)) return;
+    if (el.matches(ALVOS) && !el.closest(".surge-feito")) fila.push(el);
+    el.querySelectorAll(ALVOS).forEach((x) => fila.push(x));
+  }
+  if (!calmo) new MutationObserver((mudancas) => {
+    for (const m of mudancas) m.addedNodes.forEach(marcar);
+    if (agendado || !fila.length) return;
+    agendado = true;
+    requestAnimationFrame(() => {
+      const vistos = new Set();
+      let i = 0;
+      for (const el of fila) {
+        if (vistos.has(el) || !el.isConnected) continue;
+        vistos.add(el);
+        el.classList.remove("surge");
+        el.style.setProperty("--i", Math.min(i++, 16));
+        if (el.matches(".lista > li, .notas > li")) el.classList.add("lado-a-lado");
+        void el.offsetWidth;
+        el.classList.add("surge");
+        el.addEventListener("animationend", () => { el.classList.remove("surge", "lado-a-lado"); el.style.removeProperty("--i"); }, { once: true });
+      }
+      fila = []; agendado = false;
+    });
+  }).observe(tela, { childList: true, subtree: true });
+
+  // números grandes sobem do zero uma vez, para o olho pegar o valor
+  function contarAte(el) {
+    if (calmo) return;
+    const texto = el.textContent.trim();
+    const dinheiro = texto.includes("R$");
+    const m = texto.match(/^(R\$\s?)?([\d.]+)(,\d{2})?/);
+    if (!m) return;
+    const alvo = dinheiro ? Number(m[2].replace(/\./g, "") + (m[3] || ",00").replace(",", ".")) : Number(m[2].replace(/\./g, ""));
+    if (!(alvo > 0)) return;
+    const resto = texto.slice(m[0].length);
+    const inicio = performance.now(), dur = 700;
+    const passo = (t) => {
+      const p = Math.min(1, (t - inicio) / dur), v = alvo * (1 - Math.pow(1 - p, 3));
+      el.textContent = (dinheiro ? moeda.format(p < 1 ? Math.round(v) : alvo) : String(p < 1 ? Math.round(v) : alvo)) + resto;
+      if (p < 1) requestAnimationFrame(passo);
+    };
+    requestAnimationFrame(passo);
+  }
+
   /* ---------- entrada ---------- */
   function mostrarEntrada() { $("#tela-entrada").hidden = false; $("#tela-app").hidden = true; $("#senha").focus(); }
   $("#form-entrar").addEventListener("submit", (ev) => {
@@ -447,7 +521,10 @@ main.largo { max-width: none; }
   function telaHoje() {
     desenharHoje();
     // números e listas do dia sempre frescos
-    api("gestao/dados").then((r) => { if (r.contratantes && (location.hash || "#hoje") === "#hoje") { D = r; desenharHoje(); } });
+    // só redesenha se algo mudou, para a tela não piscar nem repetir a entrada
+    const assinatura = (x) => JSON.stringify(x, (k, v) => (k === "_status" ? undefined : v));
+    const antes = assinatura(D);
+    api("gestao/dados").then((r) => { if (!r.contratantes) return; const mudou = assinatura(r) !== antes; D = r; if (mudou && (location.hash || "#hoje") === "#hoje") desenharHoje(); });
   }
   // sub-abas: o funil (colunas ou lista) e as mensagens (fila, campanhas, modelos) ficam cada um num lugar só
   const subabas = (lista, atual) => `<nav class="subabas" aria-label="Ver">${lista.map(([h, n]) => `<a href="#${h}"${h === atual ? ' aria-current="page"' : ""}>${n}</a>`).join("")}</nav>`;
@@ -667,6 +744,7 @@ main.largo { max-width: none; }
       <h2 class="display">Próximos shows</h2>
       ${depois.length ? `<ul class="lista">${depois.map(itemShow).join("")}</ul>` : '<p class="vazio">Nada marcado entre 8 e 60 dias. Quando uma data for pedida, cadastre como consulta em <a href="#show/novo">Novo show</a>.</p>'}`;
 
+    tela.querySelectorAll(".numeros dd, .funil-faixa b").forEach(contarAte);
     // mensagens prontas para enviar: só um aviso aqui, o trabalho fica em Mensagens
     api("gestao/fila").then((f) => {
       const n = (f.rascunhos || []).length + (f.abertas || []).length;
@@ -730,6 +808,8 @@ main.largo { max-width: none; }
         dados[de] = dados[de].filter((x) => x.id !== id);
         if (dados[para]) dados[para].unshift({ ...c, ...r });
         desenharColuna(de); desenharColuna(para);
+        const novo = $(`.cartao[data-id="${id}"]`);
+        if (novo) { novo.classList.add("chegou"); novo.addEventListener("animationend", () => novo.classList.remove("chegou"), { once: true }); }
         const leve = D.contratantes.find((x) => x.id === id);
         if (leve) leve.etapa = para;
         estado.className = "estado ok";
