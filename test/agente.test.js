@@ -60,6 +60,7 @@ describe("o que fica com a equipe", () => {
   it("apagar, arquivar, exportar e trocar a senha são recusados", async () => {
     expect((await agente(`gestao/contratantes/${casaId}`, "DELETE")).status).toBe(403);
     expect((await agente(`gestao/contratantes/${casaId}/parar`, "POST", {})).status).toBe(403);
+    expect((await agente(`gestao/contratantes/${casaId}/etapa`, "POST", { etapa: "fechado" })).status).toBe(403);
     expect((await agente("gestao/exportar/contratantes.csv")).status).toBe(403);
     expect((await agente("senha", "POST", { atual: "x", nova: "y".repeat(12) })).status).toBe(403);
     expect((await agente("conteudo", "PUT", { agenda: [], artistas: {} })).status).toBe(403);
