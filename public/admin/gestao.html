@@ -243,6 +243,32 @@ a.chip:active { transform: scale(.96); }
 .tabela tbody th { font-weight: 700; }
 .tabela tfoot th, .tabela tfoot td { font: 400 20px/1 var(--f-display); text-transform: uppercase; padding-top: 14px; }
 .tabela .forte { font-weight: 700; }
+/* Casas: diretório de todas as casas, em tabela no computador e em cartões no celular */
+.casas-filtros { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.casas-filtros input { flex: 1 1 280px; }
+.casas-filtros select { flex: 0 1 220px; }
+.casas-total { color: var(--cinza); font-size: 14px; margin: 0 0 10px; }
+.tabela.casas { min-width: 0; }
+.tabela.casas th, .tabela.casas td { text-align: left; white-space: normal; vertical-align: middle; }
+.tabela.casas td.n { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.tabela.casas tbody th a { color: var(--offwhite); text-decoration: none; font-weight: 700; }
+.tabela.casas tbody th a:hover { text-decoration: underline; }
+.tabela.casas tbody th small { display: block; font-weight: 400; color: var(--cinza); font-size: 13px; margin-top: 2px; }
+.tabela.casas tbody tr { transition: background-color .15s; }
+.tabela.casas tbody tr:hover { background: var(--grafite-2); }
+.casas .contatos { display: flex; gap: 6px; flex-wrap: wrap; }
+.casas .contatos a { font-size: 13px; font-weight: 600; padding: 6px 9px; background: var(--grafite-2); color: var(--offwhite); text-decoration: none; white-space: nowrap; }
+.casas .contatos a:hover { background: var(--vermelho); }
+.casas .sem { color: var(--cinza); }
+@media (max-width: 760px) {
+  .tabela.casas thead { display: none; }
+  .tabela.casas, .tabela.casas tbody, .tabela.casas tr, .tabela.casas th, .tabela.casas td { display: block; }
+  .tabela.casas tr { padding: 12px 14px; margin-bottom: 8px; }
+  .tabela.casas th, .tabela.casas td { padding: 3px 0; }
+  .tabela.casas td.n { text-align: left; }
+  .tabela.casas td[data-r]::before { content: attr(data-r) ": "; color: var(--cinza); font-size: 13px; }
+  .tabela.casas td.contatos { padding-top: 8px; }
+}
 .tabela .alerta { color: #FF8A8F; font-weight: 700; }
 
 /* sub-abas */
@@ -374,6 +400,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     <nav class="abas" aria-label="Seções">
       <a href="#hoje" data-aba="hoje">Hoje</a>
       <a href="#funil" data-aba="funil">Funil</a>
+      <a href="#casas" data-aba="casas">Casas</a>
       <a href="#shows" data-aba="agenda">Agenda</a>
       <a href="#whatsapp" data-aba="mensagens">Mensagens</a>
       <a href="#ajustes" data-aba="ajustes">Ajustes</a>
@@ -562,7 +589,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const aba = { contratantes: "funil", contratante: "funil", importar: "funil", conversa: "funil", show: "agenda", shows: "agenda", calendario: "agenda", financeiro: "agenda", whatsapp: "mensagens", campanhas: "mensagens", campanha: "mensagens", modelos: "mensagens", modelo: "mensagens", mensagem: "mensagens" }[nome] || nome;
     document.querySelectorAll("[data-aba]").forEach((a) => (a.dataset.aba === aba ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
     const telas = {
-      hoje: telaHoje, funil: telaFunil, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
+      hoje: telaHoje, funil: telaFunil, casas: telaCasas, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
       campanhas: telaCampanhas, campanha: () => fichaCampanha(id), modelos: telaModelos, modelo: () => fichaModelo(id),
       shows: telaShows, calendario: telaCalendario, financeiro: telaFinanceiro, show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id), conversa: () => telaConversa(id),
     };
@@ -900,6 +927,67 @@ a.item:active { transform: translateX(3px) scale(.99); }
   }
 
   let buscaSeq = 0;
+  // Casas: todas as casas cadastradas (menos arquivadas), com cidade, etapa, shows e contato direto
+  const filtroCasas = { busca: "", tipo: "", cidade: "" };
+  function telaCasas() {
+    tela.innerHTML = `
+      <div class="cabeca"><div><h1 class="display">Casas</h1><p>Todas as casas de show, bares, restaurantes e eventos cadastrados.</p></div><a class="btn" href="#contratante/novo">Nova casa</a></div>
+      <div class="filtros" id="casas-tipos" role="group" aria-label="Tipo"></div>
+      <div class="casas-filtros"><input type="search" id="casas-busca" placeholder="Buscar por nome, cidade ou contato" value="${esc(filtroCasas.busca)}" aria-label="Buscar casa"><select id="casas-cidade" aria-label="Cidade"><option value="">Todas as cidades</option></select></div>
+      <div id="casas-lista"><p class="vazio">Carregando...</p></div>`;
+    const todas = [];
+    const pagina = (n) => api(`gestao/contratantes?por=100&pagina=${n}`).then((r) => {
+      if (!r.itens) throw new Error(r.erro || "falha");
+      todas.push(...r.itens);
+      return todas.length < r.total && r.itens.length ? pagina(n + 1) : r;
+    });
+    pagina(1).then(() => {
+      if (location.hash !== "#casas") return;
+      const cidades = [...new Set(todas.map((c) => (c.cidade || "").trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b, "pt-BR"));
+      $("#casas-cidade").insertAdjacentHTML("beforeend", cidades.map((c) => `<option${c === filtroCasas.cidade ? " selected" : ""}>${esc(c)}</option>`).join(""));
+      const h = hoje();
+      const showsDe = (id) => D.shows.filter((s) => s.contratante_id === id && s.status !== "cancelado");
+      const desenhar = () => {
+        const q = filtroCasas.busca.trim().toLowerCase();
+        const base = todas.filter((c) => (!filtroCasas.cidade || (c.cidade || "").trim() === filtroCasas.cidade)
+          && (!q || [c.nome, c.cidade, c.contato, c.bairro].some((v) => (v || "").toLowerCase().includes(q))));
+        const conta = {}; base.forEach((c) => { conta[c.tipo] = (conta[c.tipo] || 0) + 1; });
+        $("#casas-tipos").innerHTML = `<button type="button" data-tipo="" aria-pressed="${!filtroCasas.tipo}">Todas<span class="conta">${base.length}</span></button>`
+          + TIPOS.filter(([k]) => conta[k]).map(([k, n]) => `<button type="button" data-tipo="${k}" aria-pressed="${filtroCasas.tipo === k}">${n}<span class="conta">${conta[k]}</span></button>`).join("");
+        const lista = base.filter((c) => !filtroCasas.tipo || c.tipo === filtroCasas.tipo).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+        if (!todas.length) { $("#casas-lista").innerHTML = '<p class="vazio">Nenhuma casa cadastrada ainda. Use "Nova casa" ou importe uma planilha no Funil.</p>'; return; }
+        if (!lista.length) { $("#casas-lista").innerHTML = '<p class="vazio">Nenhuma casa com esse filtro.</p>'; return; }
+        $("#casas-lista").innerHTML = `<p class="casas-total">${lista.length} ${lista.length === 1 ? "casa" : "casas"}</p>
+          <table class="tabela casas"><thead><tr><th scope="col">Casa</th><th scope="col">Cidade</th><th scope="col">Etapa</th><th scope="col">Shows</th><th scope="col">Último / próximo</th><th scope="col">Contato</th></tr></thead><tbody>
+          ${lista.map((c) => {
+            const ss = showsDe(c.id);
+            const passados = ss.filter((s) => s.data && s.data < h).map((s) => s.data).sort();
+            const futuros = ss.filter((s) => s.data && s.data >= h).map((s) => s.data).sort();
+            const quando = [passados.length ? "Último " + dataCurta(passados[passados.length - 1]) : "", futuros.length ? "Próximo " + dataCurta(futuros[0]) : ""].filter(Boolean).join(" · ");
+            const etapa = c.comunicacao === "bloqueado" ? '<span class="etiqueta e-bloqueado">Bloqueado</span>' : `<span class="etiqueta e-${c.etapa}">${nomeDe(ETAPAS, c.etapa)}</span>`;
+            const w = c.comunicacao !== "bloqueado" && c.telefone_norm ? whats(c.telefone) : "";
+            const contatos = [
+              w ? `<a href="${w}" target="_blank" rel="noopener">WhatsApp</a>` : "",
+              c.instagram ? `<a href="https://instagram.com/${encodeURIComponent(c.instagram.replace(/^@/, ""))}" target="_blank" rel="noopener">Instagram</a>` : "",
+              c.email ? `<a href="mailto:${esc(c.email)}">E-mail</a>` : "",
+            ].filter(Boolean).join("");
+            return `<tr>
+              <th scope="row"><a href="#contratante/${c.id}">${esc(c.nome)}</a><small>${esc([nomeDe(TIPOS, c.tipo), c.contato].filter(Boolean).join(" · "))}</small></th>
+              <td data-r="Cidade">${esc([c.cidade, c.uf].filter(Boolean).join("/")) || '<span class="sem">Sem cidade</span>'}</td>
+              <td>${etapa}</td>
+              <td class="n" data-r="Shows">${ss.length}</td>
+              <td data-r="Datas">${quando || '<span class="sem">Nenhum show</span>'}</td>
+              <td class="contatos">${contatos || '<span class="sem">Sem contato</span>'}</td></tr>`;
+          }).join("")}</tbody></table>`;
+      };
+      desenhar();
+      let espera;
+      $("#casas-busca").addEventListener("input", (ev) => { filtroCasas.busca = ev.target.value; clearTimeout(espera); espera = setTimeout(desenhar, 150); });
+      $("#casas-cidade").addEventListener("change", (ev) => { filtroCasas.cidade = ev.target.value; desenhar(); });
+      $("#casas-tipos").addEventListener("click", (ev) => { const b = ev.target.closest("[data-tipo]"); if (!b) return; filtroCasas.tipo = b.dataset.tipo; desenhar(); });
+    }).catch(() => { if ($("#casas-lista")) $("#casas-lista").innerHTML = '<p class="vazio">Não deu para carregar as casas. Tente de novo.</p>'; });
+  }
+
   function telaContratantes() {
     tela.innerHTML = `
       <div class="cabeca"><h1 class="display">Funil</h1><a class="btn" href="#contratante/novo">Nova casa</a></div>
