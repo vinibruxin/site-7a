@@ -125,8 +125,8 @@ p { margin: 0; }
 }
 
 @page { size: A4; margin: 0; }
-/* impressão e PDF: sempre o layout largo, em duas folhas A4 (o show na primeira, valores e artista na segunda),
-   mesmo quando o PDF é gerado no celular */
+/* impressão e PDF: sempre o layout largo, em duas folhas A4 (o show na primeira; valores, artista e contato da 7A
+   na segunda), mesmo quando o PDF é gerado no celular. O fecho é compacto para não sobrar numa terceira folha. */
 @media print {
   :root { --m: 15mm; }
   html, body { background: var(--preto); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -146,8 +146,17 @@ p { margin: 0; }
   .valores h2 { margin-bottom: 0; }
   .rider { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 10mm; }
   .rider .inteiro { margin-top: 7mm; }
-  .fecho { padding: 11mm var(--m); gap: 7mm; break-inside: avoid; }
-  .fecho .lema { font-size: 44px; }
+  .valores, .rider { padding: 9mm var(--m) 9mm; }
+  .valores h2, .rider h2 { font-size: 30px; margin-bottom: 5mm; }
+  .valores h2 { margin-bottom: 0; }
+  .rider .inteiro { margin-top: 5mm; }
+  .valores .termos, .rider .bloco { font-size: 14px; line-height: 1.45; }
+  .termos { gap: 4mm; }
+  .rider ul { gap: 3px; }
+  .fecho { padding: 8mm var(--m) 9mm; gap: 4mm; break-inside: avoid; grid-template-columns: auto minmax(0, 1fr); align-items: end; column-gap: 10mm; }
+  .fecho .lema { font-size: 34px; grid-row: span 2; }
+  .contato { font-size: 13px; gap: 3px 18px; }
+  .slogan { font-size: 12px; }
 }
 </style>
 </head>
