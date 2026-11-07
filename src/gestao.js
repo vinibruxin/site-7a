@@ -423,7 +423,7 @@ export async function pedidoDoSite(req, env) {
 /* ---------------- proposta (pública, pelo link com token) ---------------- */
 
 // dados de cada artista que o site já mostra nas cartas do casting
-const CASTING = {
+export const CASTING = {
   "ordem-mor": { genero: "Rock autoral", serie: "7A-001", formato: "Banda completa", foto: "/img/ordem-mor.jpg", foco: "50% 100%", claro: true },
   "sub-rosa": { genero: "Rock progressivo autoral", serie: "7A-002", formato: "Banda completa", foto: "/img/sub-rosa.jpg", foco: "50% 50%" },
   "ossos-do-banquete": { genero: "Rock Clássico / Autoral", serie: "7A-003", formato: "Banda completa", foto: "/img/ossos.jpg", foco: "47% 50%" },
