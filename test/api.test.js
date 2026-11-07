@@ -482,6 +482,12 @@ describe("início e fim do show", () => {
     const pub = await r.json();
     expect(pub.hora_fim).toBe("20:00");
     expect(pub.duracao).toBe("3 horas");
+    expect(p.duracao).toBe("3 horas");
+  });
+  it("sem hora de fim, a proposta guarda o texto enviado", async () => {
+    const s = await api("gestao/shows", "POST", { data: "2030-05-12", hora: "17:00", artista: "athos-tibaes", status: "consulta" });
+    const p = await api(`gestao/shows/${s.id}/proposta`, "PUT", { formato: "Voz e violão", duracao: "2 horas", condicoes: "Pix" });
+    expect(p.duracao).toBe("2 horas");
   });
   it("recusa hora de fim sem hora de início", async () => {
     const r = await api("gestao/shows", "POST", { data: "2030-05-11", hora_fim: "20:00", artista: "athos-tibaes", status: "consulta" });
