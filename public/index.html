@@ -37,7 +37,8 @@
   --f-serial: "Space Mono", Consolas, "Courier New", monospace;
 
   /* cinco degraus */
-  --t-cartaz: clamp(84px, 13vw, 210px);
+  /* o título nunca sobe até a barra do menu: em tela larga e baixa, a altura limita o tamanho */
+  --t-cartaz: clamp(84px, min(13vw, calc((50svh - 100px) / 1.62)), 210px);
   --t-titulo: clamp(40px, 5.2vw, 84px);
   --t-sub: clamp(26px, 2.6vw, 40px);
   --t-lead: 20px;
@@ -374,7 +375,7 @@ a { color: inherit; }
   .grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 12px; }
   .adesivo { display: none; }
   .foto-colada { top: calc(var(--seam) + 0.62 * var(--t-cartaz) + 12px); }
-  :root { --t-cartaz: 17vw; }
+  :root { --t-cartaz: max(64px, min(17vw, calc((50svh - 100px) / 1.62))); }
 }
 @media (max-width: 700px) {
   :root { --t-cartaz: 28vw; --seam: 46%; --m: max(16px, env(safe-area-inset-left, 0px)); --m-r: max(16px, env(safe-area-inset-right, 0px)); }
