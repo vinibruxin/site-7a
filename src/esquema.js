@@ -325,4 +325,22 @@ export const MIGRACOES = [
     `CREATE UNIQUE INDEX IF NOT EXISTS documentos_numero ON documentos(tipo, numero) WHERE numero IS NOT NULL`,
     `CREATE INDEX IF NOT EXISTS documentos_show ON documentos(show_id)`,
   ] },
+  // cadastro de artistas e músicos (do casting e de fora): WhatsApp e Pix ficam só aqui, no painel com senha
+  { versao: 8, nome: "cadastro de artistas", passos: [
+    `CREATE TABLE IF NOT EXISTS musicos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      telefone TEXT NOT NULL DEFAULT '',
+      pix_tipo TEXT NOT NULL DEFAULT '',
+      pix_chave TEXT NOT NULL DEFAULT '',
+      cidade TEXT NOT NULL DEFAULT '',
+      estilo TEXT NOT NULL DEFAULT '',
+      instrumentos TEXT NOT NULL DEFAULT '[]',
+      casting INTEGER NOT NULL DEFAULT 0,
+      obs TEXT NOT NULL DEFAULT '',
+      criado TEXT NOT NULL,
+      atualizado TEXT NOT NULL
+    )`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS musicos_telefone ON musicos(telefone) WHERE telefone <> ''`,
+  ] },
 ];

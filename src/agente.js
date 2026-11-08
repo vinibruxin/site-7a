@@ -68,6 +68,8 @@ async function regraDeShow(env, corpo, atual) {
 
 // null = pode; texto = motivo da recusa (o agente deve repassar à equipe)
 export async function motivoAgente(env, metodo, rota, corpo) {
+  // cadastro de artistas (WhatsApp e Pix): nem leitura
+  if (/^musicos(\/|$)/.test(rota)) return "Artistas (WhatsApp e Pix) ficam só com a equipe.";
   if (metodo === "GET" && LEITURA.some((r) => r.test(rota))) return null;
   if (metodo === "POST" && rota === "contratantes") return null;
   if (metodo === "POST" && /^contratantes\/\d+\/notas$/.test(rota)) return null;
