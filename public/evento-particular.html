@@ -78,7 +78,7 @@ a { color: inherit; }
 
 /* ---------- Abertura: campo preto em cima, vermelho embaixo, foto colada ---------- */
 .abertura { position: relative; display: grid; grid-template-rows: auto auto; min-height: min(calc(100svh - 72px), 1000px); }
-.abertura .cima { background: var(--preto); padding-block: clamp(48px, 9vh, 120px) 0; }
+.abertura .cima { position: relative; background: var(--preto); padding-block: clamp(48px, 9vh, 120px) 0; }
 .abertura .baixo { position: relative; background: var(--vermelho); color: var(--preto); padding-block: 0 56px; }
 .abertura h1 { font-size: var(--t-cartaz); line-height: 1.12; }
 .abertura h1 .l1 { display: block; color: var(--offwhite); }
@@ -90,6 +90,8 @@ a { color: inherit; }
 .abertura .btn-preto:hover { background: var(--grafite); }
 .abertura .link-claro { font-weight: 700; font-size: 15px; color: var(--offwhite); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; padding: 12px 6px; }
 .foto-colada { position: absolute; z-index: 2; right: 7vw; top: clamp(36px, 7vh, 96px); width: clamp(240px, 27vw, 420px); height: auto; aspect-ratio: 1; object-fit: cover; object-position: 50% 40%; transform: rotate(-3deg); filter: grayscale(1); }
+/* logo completa colada na costura preto/vermelho, acima da foto */
+.logo-completa { position: absolute; z-index: 3; right: calc(7vw + clamp(240px, 27vw, 420px) / 2 - clamp(160px, 14vw, 240px) / 2); bottom: calc(-0.1 * clamp(160px, 14vw, 240px)); width: clamp(160px, 14vw, 240px); height: auto; }
 .ocasioes { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 22px 0 0; padding: 0; list-style: none; font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; color: var(--offwhite); }
 
 /* ---------- Quem toca (cartas 5:7) ---------- */
@@ -186,7 +188,7 @@ a { color: inherit; }
 @media (prefers-reduced-motion: no-preference) {
   .js .abertura .l1, .js .abertura .l2 { opacity: 0; transform: translateY(32px); animation: sobe 900ms var(--ease) forwards; animation-delay: calc(var(--i) * 110ms + 120ms); }
   .js .foto-colada { opacity: 0; transform: rotate(-3deg) translateY(40px); animation: cola 900ms var(--ease) 450ms forwards; }
-  .js .abertura .apoio, .js .abertura .acoes, .js .ocasioes { opacity: 0; animation: aparece 700ms var(--ease) 650ms forwards; }
+  .js .logo-completa, .js .abertura .apoio, .js .abertura .acoes, .js .ocasioes { opacity: 0; animation: aparece 700ms var(--ease) 650ms forwards; }
   .js [data-revela] { opacity: 0; transform: translateY(24px); transition: opacity 700ms var(--ease), transform 900ms var(--ease); transition-delay: calc(var(--d, 0) * 80ms); }
   .js [data-revela].dentro { opacity: 1; transform: none; }
   .artista.escolhido .peca { animation: pisca 700ms var(--ease); }
@@ -203,6 +205,7 @@ a { color: inherit; }
   .grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 12px; }
   .barra { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .abertura .baixo { display: flow-root; }
+  .logo-completa { right: calc(var(--m-r) + 2vw + 18vw - 70px); width: 140px; bottom: -24px; }
   .foto-colada { position: relative; right: auto; top: auto; float: right; width: 36vw; margin: 8px 2vw 24px 32px; }
 }
 @media (max-width: 700px) {
@@ -210,6 +213,7 @@ a { color: inherit; }
   .abertura { min-height: 0; }
   .abertura .cima { padding-top: 40px; }
   .abertura .baixo { display: flex; flex-direction: column; padding-bottom: 0; }
+  .logo-completa { right: var(--m-r); width: 25vw; bottom: 4px; }
   .abertura .baixo > .display { order: 0; }
   .ocasioes { order: 1; }
   .abertura .apoio { order: 2; margin: 22px 0 26px; }
@@ -259,6 +263,7 @@ a { color: inherit; }
   <!-- ABERTURA -->
   <section class="abertura" aria-labelledby="t-abertura">
     <div class="cima margem">
+      <img class="logo-completa" src="img/logo-7a-completa.png" alt="Logo 7A Produtora" width="640" height="640">
       <h1 class="display" id="t-abertura" aria-label="Show na sua festa"><span class="l1" style="--i:0">Show na</span></h1>
     </div>
     <div class="baixo margem">
