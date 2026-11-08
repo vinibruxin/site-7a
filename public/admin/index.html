@@ -1839,9 +1839,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
   // tudo grátis e com toque humano: a imagem é feita aqui no navegador e sai pelo compartilhar do celular (WhatsApp > grupo);
   // o sistema não envia nada sozinho. O valor é o cachê do artista (já sem a parte da 7A e as despesas), ou o bruto, se escolhido.
   const DIAS_SEMANA = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
-  function dadosAviso(s, valor) {
+  function dadosAviso(s) {
     const k = contas(s);
-    const liquido = valor !== "bruto" && k.repasse != null;
     const [a, m, d] = (s.data || "").split("-").map(Number);
     return {
       nome: nomeArtista(s),
@@ -1852,11 +1851,16 @@ a.item:active { transform: translateX(3px) scale(.99); }
       local: s.local || "Local a definir",
       cidade: s.cidade || "",
       evento: s.evento || "",
-      valor: liquido ? k.repasse : s.cache,
-      rotulo: liquido ? "Cachê do artista" : "Cachê do show",
+      // cachê aberto: negociado, comissão da 7A (com o %), despesas (se houver) e o líquido do artista
+      cache: s.cache, pct: k.pct, comissao: k.comissao, despesas: s.despesas || 0, liquido: k.repasse,
     };
   }
-  const textoAviso = (x) => `♦ DATA FECHADA: ${x.nome}\n\n${x.evento ? x.evento + "\n" : ""}Data: ${x.data}${x.semana ? " (" + x.semana + ")" : ""}\nHorário: ${x.hora}${x.duracao ? " (" + x.duracao + ")" : ""}\nLocal: ${x.local}${x.cidade ? ", " + x.cidade : ""}\n${x.rotulo}: ${reais(x.valor)}\n\n7A Produtora · (31) 99223-3295`;
+  const pctAviso = (p) => String(Math.round(p * 100) / 100).replace(".", ",") + "%";
+  // linhas do cachê: [rótulo, valor, destaque]
+  const linhasCache = (x) => x.comissao == null
+    ? [["Cachê negociado", reais(x.cache), true]]
+    : [["Cachê negociado", reais(x.cache)], [`Comissão 7A (${pctAviso(x.pct)})`, "− " + reais(x.comissao)], ...(x.despesas ? [["Despesas do show", "− " + reais(x.despesas)]] : []), ["Cachê líquido do artista", reais(x.liquido), true]];
+  const textoAviso = (x) => `♦ DATA FECHADA: ${x.nome}\n\n${x.evento ? x.evento + "\n" : ""}Data: ${x.data}${x.semana ? " (" + x.semana + ")" : ""}\nHorário: ${x.hora}${x.duracao ? " (" + x.duracao + ")" : ""}\nLocal: ${x.local}${x.cidade ? ", " + x.cidade : ""}\n\n${linhasCache(x).map(([r, v]) => r + ": " + v).join("\n")}\n\n7A Produtora · (31) 99223-3295`;
   // quebra o texto em linhas que cabem na largura
   function linhas(ctx, texto, largura) {
     const palavras = String(texto).split(/\s+/), r = [];
@@ -1867,7 +1871,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
   }
   let logoAviso = null;
   async function desenharAviso(canvas, x) {
-    await Promise.all([document.fonts.load('400 100px "Anton"'), document.fonts.load('700 40px "Montserrat"'), document.fonts.load('500 40px "Montserrat"')]).catch(() => {});
+    await Promise.all([document.fonts.load('400 100px "Anton"'), document.fonts.load('700 40px "Montserrat"'), document.fonts.load('500 40px "Montserrat"'), document.fonts.load('600 40px "Montserrat"')]).catch(() => {});
     if (!logoAviso) logoAviso = await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = "/img/logo-7a.png"; });
     const W = 1080, H = 1350, M = 96, ctx = canvas.getContext("2d");
     canvas.width = W; canvas.height = H;
@@ -1896,14 +1900,32 @@ a.item:active { transform: translateX(3px) scale(.99); }
       ll.forEach((l, i) => ctx.fillText(l, M + 40, y + 50 + i * 64));
       let fim = y + 50 + (ll.length - 1) * 64;
       if (extra) { ctx.fillStyle = "#B8B2AA"; ctx.font = '500 28px "Montserrat"'; ctx.fillText(extra, M + 40, fim + 42); fim += 42; }
-      y = fim + 66;
+      y = fim + 54;
     };
     item("DATA", x.data, x.semana ? x.semana[0].toUpperCase() + x.semana.slice(1) : "");
     item("HORÁRIO", x.hora, x.duracao ? "Duração: " + x.duracao : "");
     item("LOCAL", x.local, [x.cidade, x.evento].filter(Boolean).join(" · "));
-    item(x.rotulo.toUpperCase(), reais(x.valor), "");
+    // cachê aberto em linhas, valores alinhados à direita; o líquido em destaque
+    ctx.fillStyle = "#B5121B"; ctx.save(); ctx.translate(M + 9, y - 30); ctx.rotate(Math.PI / 4); ctx.fillRect(-8, -8, 16, 16); ctx.restore();
+    ctx.fillStyle = "#B8B2AA"; ctx.font = '700 28px "Montserrat"'; ctx.fillText("CACHÊ", M + 40, y - 18);
+    y -= 8;
+    const dir = W - M;
+    for (const [rot, val, forte] of linhasCache(x)) {
+      if (forte) {
+        ctx.fillStyle = "#3A3A3A"; ctx.fillRect(M + 40, y + 16, dir - M - 40, 2);
+        y += 76;
+        ctx.fillStyle = "#F2EFEA"; ctx.font = '700 32px "Montserrat"'; ctx.textAlign = "left"; ctx.fillText(rot, M + 40, y - 6);
+        ctx.font = '400 58px "Anton"'; ctx.textAlign = "right"; ctx.fillText(val, dir, y);
+      } else {
+        y += 46;
+        ctx.fillStyle = "#B8B2AA"; ctx.font = '500 30px "Montserrat"'; ctx.textAlign = "left"; ctx.fillText(rot, M + 40, y);
+        ctx.fillStyle = "#F2EFEA"; ctx.font = '600 32px "Montserrat"'; ctx.textAlign = "right"; ctx.fillText(val, dir, y);
+      }
+      ctx.textAlign = "left";
+      y += 8;
+    }
     ctx.fillStyle = "#B8B2AA"; ctx.font = '500 26px "Montserrat"';
-    ctx.fillText("Dúvidas: (31) 99223-3295 · contato@7aprodutora.com.br", M, H - 84);
+    ctx.fillText("Dúvidas: (31) 99223-3295 · contato@7aprodutora.com.br", M, H - 72);
   }
   function montarAviso(s) {
     const caixa = $("#aviso-show");
@@ -1921,7 +1943,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
         <div>
           <p class="ajuda">${m ? (m.grupo ? `Vai para o grupo de ${esc(m.nome)}.` : m.telefone ? `${esc(m.nome)} não tem grupo cadastrado: vai para o WhatsApp dele.` : `${esc(m.nome)} ainda não tem grupo nem WhatsApp no menu <a href="#musico/${m.id}">Artistas</a>.`) : `Este artista não está no menu <a href="#musicos">Artistas</a>. Cadastre o grupo ou o WhatsApp dele lá.`}
           No celular, "Enviar imagem" abre o compartilhar: escolha o WhatsApp e ${solo ? "a conversa do artista" : "o grupo"}. Nada é enviado sozinho.</p>
-          <label style="max-width:320px;margin-bottom:14px" title="Líquido: sem a parte da 7A e sem as despesas">Valor na imagem<select id="aviso-valor"><option value="liquido">Cachê do artista (líquido)</option><option value="bruto">Cachê bruto do show</option></select></label>
+          <p class="ajuda">O cachê sai aberto: negociado, comissão da 7A com o % e o líquido do artista (com as despesas, se o show tiver).</p>
           <div class="acoes-rapidas">
             <button class="btn" type="button" id="aviso-enviar">Enviar imagem</button>
             ${m && m.grupo ? `<a class="btn btn-sec" href="${esc(m.grupo)}" target="_blank" rel="noopener">Abrir o grupo</a>` : ""}
@@ -1930,17 +1952,15 @@ a.item:active { transform: translateX(3px) scale(.99); }
             <button class="btn btn-sec" type="button" id="aviso-copiar">Copiar texto</button>
           </div><p class="estado" id="estado-aviso" role="status"></p>
         </div></div>`;
-      const canvas = $("#aviso-canvas"), sel = $("#aviso-valor");
-      if (contas(s).repasse == null) { sel.value = "bruto"; sel.disabled = true; }
+      const canvas = $("#aviso-canvas");
       const msg = (t, tipo) => { const e = $("#estado-aviso"); if (e) { e.textContent = t; e.className = "estado" + (tipo ? " " + tipo : ""); } };
-      const atual = () => dadosAviso(s, sel.value);
+      const atual = () => dadosAviso(s);
       const nomeArq = () => `data-fechada-${semAcento(atual().nome).replace(/[^a-z0-9]+/g, "-")}-${s.data || "sem-data"}.png`;
       const redesenhar = () => {
         desenharAviso(canvas, atual());
         if ($("#aviso-zap")) $("#aviso-zap").href = whats(m.telefone) + "?text=" + encodeURIComponent(textoAviso(atual()));
       };
       redesenhar();
-      sel.addEventListener("change", redesenhar);
       const arquivo = () => new Promise((ok) => canvas.toBlob((b) => ok(new File([b], nomeArq(), { type: "image/png" })), "image/png"));
       const baixar = (f) => { const a = document.createElement("a"); a.href = URL.createObjectURL(f); a.download = f.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
       $("#aviso-enviar").addEventListener("click", async () => {
