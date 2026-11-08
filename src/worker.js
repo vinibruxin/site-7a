@@ -113,11 +113,16 @@ function itemAgenda(d, conteudo, mostrarArtista) {
     : "";
   const onde = [d.local, d.cidade].filter(Boolean).map(esc).join(", ");
   const carta = mostrarArtista ? miniCarta(d.artista, nome) : "";
+  // artista de fora do casting: carta simples, selo "Convidado 7A" e, sem ingresso, "Pedir data" pelo WhatsApp da 7A (nunca o do artista)
+  const convidado = mostrarArtista && nome && !CASTING[d.artista];
+  const pedir = convidado && !ingresso
+    ? `<a class="ingresso" href="https://wa.me/5531992233295?text=${encodeURIComponent(`Olá, 7A! Quero ${nome} no meu evento.`)}" target="_blank" rel="noopener">Pedir data</a>`
+    : "";
   return `<li class="data-show${carta ? " com-carta" : ""}">
         ${carta}
         <p class="quando"><span class="dia">${String(dia).padStart(2, "0")}</span><span class="mes">${MESES[m - 1]}</span></p>
-        <div class="o-que">${quem}${d.evento ? `<span class="evento">${esc(d.evento)}</span>` : ""}<span class="onde">${onde}</span><span class="hora">${esc(semana)}${d.hora ? ", " + esc(d.hora) : ""}</span></div>
-        ${ingresso ? `<a class="ingresso" href="${esc(ingresso)}" target="_blank" rel="noopener">Ingressos</a>` : ""}
+        <div class="o-que">${quem}${convidado ? '<span class="selo-convidado">Convidado 7A</span>' : ""}${d.evento ? `<span class="evento">${esc(d.evento)}</span>` : ""}<span class="onde">${onde}</span><span class="hora">${esc(semana)}${d.hora ? ", " + esc(d.hora) : ""}</span></div>
+        ${ingresso ? `<a class="ingresso" href="${esc(ingresso)}" target="_blank" rel="noopener">Ingressos</a>` : pedir}
       </li>`;
 }
 
@@ -132,7 +137,9 @@ function miniCarta(slug, nome) {
     : `<span class="inicial">${esc((nome || "7A").trim().charAt(0))}</span>`;
   const tag = k ? "a" : "span";
   const extra = k ? ` href="${esc(slug)}.html" tabindex="-1"` : "";
-  return `<${tag} class="mini-carta${k && TOPO_CLARO.has(slug) ? " clara" : ""}"${extra} aria-hidden="true"><span class="arte">${arte}</span><span class="ind">7A<i></i></span><span class="ind inf">7A<i></i></span></${tag}>`;
+  // o índice 7A nos cantos e o filete ouro são do casting; o convidado ganha só a carta simples com a inicial
+  if (!k) return `<span class="mini-carta convidado" aria-hidden="true"><span class="arte">${arte}</span></span>`;
+  return `<${tag} class="mini-carta${TOPO_CLARO.has(slug) ? " clara" : ""}"${extra} aria-hidden="true"><span class="arte">${arte}</span><span class="ind">7A<i></i></span><span class="ind inf">7A<i></i></span></${tag}>`;
 }
 
 function reescreverInicio(resp, conteudo) {

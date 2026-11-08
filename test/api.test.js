@@ -464,6 +464,21 @@ describe("agenda do site", () => {
   });
 });
 
+describe("agenda do site: artista convidado", () => {
+  it("artista de fora entra com carta simples, selo Convidado 7A e Pedir data pelo WhatsApp da 7A", async () => {
+    const data = somarDias(hojeSP(), 41);
+    const s = await api("gestao/shows", "POST", { data, hora: "20:00", artista: "", artista_texto: "Convidado Teste", local: "Bar Teste Convidado", cidade: "Contagem", status: "confirmado", publicar: 1 });
+    const html = await (await SELF.fetch(BASE + "/")).text();
+    const linha = html.slice(html.lastIndexOf("<li", html.indexOf("Bar Teste Convidado")), html.indexOf("</li>", html.indexOf("Bar Teste Convidado")));
+    expect(linha).toContain('class="mini-carta convidado"');
+    expect(linha).not.toContain('class="ind"'); // o índice 7A é só do casting
+    expect(linha).toContain("Convidado 7A");
+    expect(linha).toContain("https://wa.me/5531992233295?text=");
+    expect(linha).toContain("Pedir data");
+    await api("gestao/shows/" + s.id, "DELETE");
+  });
+});
+
 describe("funil em colunas", () => {
   it("muda só a etapa e deixa a mudança no histórico", async () => {
     const c = await novo({ etapa: "contatado", proxima_acao: "Cobrar resposta" });

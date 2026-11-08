@@ -20,6 +20,7 @@ Envio da proposta por e-mail: Resend, remetente `propostas@7aprodutora.com.br`, 
 Menu **Artistas** (`src/musicos.js`, tabela `musicos`, migração v8). Agenda única de todo mundo que toca com a 7A, do casting ou de fora: nome artístico, WhatsApp, chave Pix (tipo e valor, conferidos: CPF/CNPJ pelos dígitos, celular, e-mail ou chave aleatória), cidade, estilo, formação (instrumentos) e observações, com a marca "Casting 7A".
 
 - Busca por nome, instrumento ou cidade, sem ligar para acento ("violao" acha "Violão"); filtros por cidade, instrumento e casting. Botão de WhatsApp e "Copiar Pix" em cada artista.
+- **Convidado na agenda do site**: show publicado de artista de fora do casting aparece na home com carta simples (sem filete ouro nem índice 7A), o selo "Convidado 7A" e, sem link de ingresso, o botão "Pedir data" para o WhatsApp da 7A (nunca o do artista). Convidado não ganha página própria.
 - Mesmo WhatsApp não entra duas vezes. A auditoria registra quem foi cadastrado, editado ou excluído, sem gravar telefone nem Pix.
 - **Sigilo**: WhatsApp e Pix ficam só no painel com senha. Não entram em `/api/gestao/dados`, no site público, em planilhas nem na API do agente Évora (barrado até para leitura). Só a equipe cadastra: não há auto-cadastro.
 - Não mexe nos artistas do site (cartas e páginas do casting continuam no "Editar o site").
