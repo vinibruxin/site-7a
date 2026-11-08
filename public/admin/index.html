@@ -1674,7 +1674,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       <div class="cabeca"><h1 class="display">${novo ? "Novo show" : esc(nomeArtista(s))}</h1></div>
       <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
         <label>Artista<select name="artista">${opcoes(listaArt, s.artista)}</select></label>
-        <label id="outro"${s.artista ? " hidden" : ""}>Nome do artista<input name="artista_texto" value="${esc(s.artista_texto)}" autocomplete="off"></label>
+        <label id="outro"${s.artista ? " hidden" : ""}>Nome do artista<input name="artista_texto" value="${esc(s.artista_texto)}" autocomplete="off" list="lista-cadastro" placeholder="Digite ou escolha do menu Artistas"><datalist id="lista-cadastro"></datalist><span class="dica" id="dica-cadastro"></span></label>
         <label>Status<select name="status">${opcoes(STATUS, s.status)}</select></label>
         <label class="c2">Data<input name="data" type="date" value="${esc(s.data)}"></label>
         <label class="c2 meia">Início<input name="hora" type="time" value="${esc(s.hora)}"></label>
@@ -1780,7 +1780,22 @@ a.item:active { transform: translateX(3px) scale(.99); }
       if (ev.target.name === "artista") $("#outro").hidden = !!ev.target.value;
       desenharConta();
     });
+    // artista de fora: escolher alguém do menu Artistas já traz o % da 7A dele (30% para quem é de fora)
+    let cadastro = [];
+    api("gestao/musicos").then((l) => {
+      if (!Array.isArray(l) || !$("#lista-cadastro")) return;
+      cadastro = l;
+      $("#lista-cadastro").innerHTML = l.map((m) => `<option value="${esc(m.nome)}">${m.casting ? "Casting 7A" : "De fora"}${m.pct != null ? " · 7A " + pctTexto(m.pct) + "%" : ""}</option>`).join("");
+    }).catch(() => {});
     form.addEventListener("change", (ev) => {
+      if (ev.target.name === "artista_texto") {
+        const m = cadastro.find((x) => semAcento(x.nome) === semAcento(ev.target.value));
+        if (m && m.pct != null) {
+          form.pct.value = pctTexto(m.pct);
+          $("#dica-cadastro").textContent = `Do menu Artistas: ${m.casting ? "casting 7A" : "artista de fora"}, 7A fica com ${pctTexto(m.pct)}%.`;
+          desenharConta();
+        } else $("#dica-cadastro").textContent = "";
+      }
       if (ev.target.name === "contratante_id" && novo && ev.target.value) {
         const c = contratante(Number(ev.target.value));
         if (c && !form.local.value) form.local.value = c.nome;
@@ -1818,6 +1833,9 @@ a.item:active { transform: translateX(3px) scale(.99); }
   const TIPOS_PIX = [["", "Sem chave ainda"], ["celular", "Celular"], ["cpf", "CPF"], ["cnpj", "CNPJ"], ["email", "E-mail"], ["aleatoria", "Chave aleatória"]];
   const semAcento = (t) => String(t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
   const filtroMus = { busca: "", cidade: "", instrumento: "", casting: "" };
+  const pctTexto = (v) => (v == null || v === "" ? "" : String(v).replace(".", ","));
+  // % padrão de cada grupo: casting segue o % padrão da 7A (20%); de fora, o % de fora (30%). Os dois ficam em Ajustes.
+  const pctGrupo = (casting) => (casting ? D.config.pct_padrao : D.config.pct_fora);
   const pixMostrar = (m) => (m.pix_tipo === "cpf" || m.pix_tipo === "cnpj" ? formatarDoc(m.pix_chave) : m.pix_tipo === "celular" ? m.pix_chave.replace(/^\+55(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3") : m.pix_chave);
   function copiarPix(b, m) {
     const ok = () => { if (b.classList.contains("copiado")) return; const antes = b.innerHTML; b.classList.add("copiado"); b.innerHTML = "Pix copiado"; setTimeout(() => { b.classList.remove("copiado"); b.innerHTML = antes; }, 1600); };
@@ -1829,7 +1847,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     return `<li class="musico">
       <div class="quem">
         <a class="nome" href="#musico/${m.id}">${esc(m.nome)}${m.casting ? '<span class="etiqueta e-confirmado">Casting 7A</span>' : ""}</a>
-        <span class="meta">${esc([m.estilo, m.cidade].filter(Boolean).join(" · ")) || "Sem estilo e cidade"}${m.telefone_formatado ? " · " + esc(m.telefone_formatado) : ""}</span>
+        <span class="meta">${esc([m.estilo, m.cidade].filter(Boolean).join(" · ")) || "Sem estilo e cidade"}${m.telefone_formatado ? " · " + esc(m.telefone_formatado) : ""}${m.pct != null ? " · 7A fica com " + pctTexto(m.pct) + "%" : ""}</span>
         ${m.instrumentos.length ? `<div class="insts">${m.instrumentos.map((i) => `<span>${esc(i)}</span>`).join("")}</div>` : ""}
       </div>
       <div class="acoes">${w ? `<a class="btn" href="${w}" target="_blank" rel="noopener">WhatsApp</a>` : '<span class="sem">Sem WhatsApp</span>'}${pix}</div></li>`;
@@ -1897,6 +1915,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
       <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
         <label class="c4">Nome artístico<input name="nome" value="${esc(m.nome)}" autocomplete="off" placeholder="Como o artista é chamado no palco"></label>
         <label class="c2 marcar" style="align-self:end;min-height:40px"><input type="checkbox" name="casting" ${m.casting ? "checked" : ""}> Casting 7A</label>
+        <label class="c2">% da 7A no cachê<input name="pct" inputmode="decimal" value="${esc(pctTexto(m.id ? m.pct : pctGrupo(m.casting)))}" autocomplete="off" placeholder="Ex.: 30"></label>
+        <p class="c4 ajuda" id="pct-dica" style="align-self:end;margin:0 0 10px"></p>
         <label class="c3">WhatsApp<input name="telefone" value="${esc(m.telefone_formatado || m.telefone)}" inputmode="tel" autocomplete="off" placeholder="(31) 99999-9999"></label>
         <label class="c3">Cidade<input name="cidade" value="${esc(m.cidade)}" autocomplete="off" placeholder="Betim"></label>
         <label class="c6">Estilo<input name="estilo" value="${esc(m.estilo)}" autocomplete="off" placeholder="Rock clássico, MPB, pop rock..."></label>
@@ -1911,12 +1931,21 @@ a.item:active { transform: translateX(3px) scale(.99); }
       </form>
       <div class="salvar-barra"><button class="btn" type="button" id="salvar">${novo ? "Cadastrar" : "Salvar"}</button>${novo ? "" : '<button class="texto-btn perigo" type="button" id="excluir">Excluir cadastro</button>'}<p class="estado" id="estado" role="status"></p></div></div>`;
     const form = $("#ficha");
-    form.addEventListener("input", () => { sujo = true; estado(""); });
+    const dicaPct = () => { $("#pct-dica").textContent = `Padrão: ${pctTexto(D.config.pct_padrao) || "—"}% para o casting e ${pctTexto(D.config.pct_fora) || "—"}% para artista de fora (Ajustes). Entra sozinho no show deste artista.`; };
+    dicaPct();
+    form.addEventListener("input", (ev) => {
+      sujo = true; estado("");
+      // marcou ou desmarcou o casting: se o % era o padrão do grupo antigo, passa para o padrão do grupo novo
+      if (ev.target.name === "casting") {
+        const antes = pctTexto(pctGrupo(!ev.target.checked));
+        if (!form.pct.value.trim() || form.pct.value.trim() === antes) form.pct.value = pctTexto(pctGrupo(ev.target.checked));
+      }
+    });
     $("#salvar").addEventListener("click", () => {
       const f = new FormData(form);
       const dados = {
         nome: f.get("nome"), telefone: f.get("telefone"), cidade: f.get("cidade"), estilo: f.get("estilo"), obs: f.get("obs"),
-        casting: form.casting.checked, pix_tipo: f.get("pix_tipo"), pix_chave: f.get("pix_chave"),
+        casting: form.casting.checked, pix_tipo: f.get("pix_tipo"), pix_chave: f.get("pix_chave"), pct: String(f.get("pct") || "").trim().replace(",", "."),
         instrumentos: [...f.getAll("inst"), ...String(f.get("outros") || "").split(",")],
       };
       if (!String(dados.nome).trim()) { estado("Digite o nome artístico.", "ruim"); return form.nome.focus(); }
@@ -2570,6 +2599,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
       <form class="ajustes" id="ficha" novalidate>
         <label>% padrão da 7A em cada show<input name="pct_padrao" inputmode="decimal" value="${c.pct_padrao === "" ? "" : String(c.pct_padrao).replace(".", ",")}" placeholder="Ex.: 20" autocomplete="off"></label>
         <p class="ajuda" style="margin:0">Vale para shows novos e para os que estão sem % próprio. Cada show pode ter um % diferente.</p>
+        <label>% da 7A para artista de fora do casting<input name="pct_fora" inputmode="decimal" value="${c.pct_fora === "" || c.pct_fora == null ? "" : String(c.pct_fora).replace(".", ",")}" placeholder="Ex.: 30" autocomplete="off"></label>
+        <p class="ajuda" style="margin:0">Sugerido no cadastro de quem não é do casting (menu Artistas). Cada artista pode ter o seu.</p>
         <fieldset class="radios" style="border:0;padding:0;margin:0">
           <legend style="font-weight:600;font-size:14px;color:var(--cinza);margin-bottom:12px">A comissão da 7A é calculada sobre</legend>
           <label class="marcar"><input type="radio" name="base" value="bruto"${c.base !== "liquido" ? " checked" : ""}> O cachê bruto</label>
@@ -2606,7 +2637,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
     form.addEventListener("input", () => { sujo = true; estado(""); });
     $("#salvar").addEventListener("click", () => {
       const v = form.pct_padrao.value.trim().replace(",", ".");
-      const dados = { pct_padrao: v === "" ? "" : Number(v), base: form.base.value, limite_diario: Number(form.limite_diario.value), intervalo_dias: Number(form.intervalo_dias.value), simulacao: form.simulacao.checked };
+      const vf = form.pct_fora.value.trim().replace(",", ".");
+      const dados = { pct_padrao: v === "" ? "" : Number(v), pct_fora: vf === "" ? "" : Number(vf), base: form.base.value, limite_diario: Number(form.limite_diario.value), intervalo_dias: Number(form.intervalo_dias.value), simulacao: form.simulacao.checked };
       salvar("gestao/config", "PUT", dados, (r) => { D.config = r; sujo = false; estado("Salvo.", "ok"); });
     });
     const fe = $("#ficha-emit");

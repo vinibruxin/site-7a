@@ -203,6 +203,9 @@ export async function gestao(req, env, rota, quem = "equipe") {
     if (pct !== "" && !(Number.isFinite(pct) && pct >= 0 && pct <= 100)) return json({ erro: "O % precisa ficar entre 0 e 100." }, 400);
     const base = corpo?.base === "liquido" ? "liquido" : "bruto";
     const atual = await lerConfig(env);
+    // % da 7A para artistas de fora do casting (padrão 30%)
+    const fora = corpo?.pct_fora == null ? atual.pct_fora : corpo.pct_fora === "" ? "" : Number(corpo.pct_fora);
+    if (fora !== "" && !(Number.isFinite(Number(fora)) && Number(fora) >= 0 && Number(fora) <= 100)) return json({ erro: "O % de artistas de fora precisa ficar entre 0 e 100." }, 400);
     const limite = corpo?.limite_diario == null ? Number(atual.limite_diario) : Math.round(Number(corpo.limite_diario));
     if (!(limite >= 1 && limite <= 250)) return json({ erro: "O limite diário precisa ficar entre 1 e 250 novas abordagens." }, 400);
     const intervalo = corpo?.intervalo_dias == null ? Number(atual.intervalo_dias) : Math.round(Number(corpo.intervalo_dias));
@@ -211,6 +214,7 @@ export async function gestao(req, env, rota, quem = "equipe") {
     const up = "INSERT INTO config (chave, valor) VALUES (?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor";
     await env.DB.batch([
       env.DB.prepare(up).bind("pct_padrao", String(pct)),
+      env.DB.prepare(up).bind("pct_fora", String(fora)),
       env.DB.prepare(up).bind("base", base),
       env.DB.prepare(up).bind("limite_diario", String(limite)),
       env.DB.prepare(up).bind("intervalo_dias", String(intervalo)),

@@ -343,4 +343,9 @@ export const MIGRACOES = [
     )`,
     `CREATE UNIQUE INDEX IF NOT EXISTS musicos_telefone ON musicos(telefone) WHERE telefone <> ''`,
   ] },
+  // % da 7A por artista: quem é do casting segue o % padrão (20%), quem é de fora começa no % de fora (30%); dá para mudar em cada um
+  { versao: 9, nome: "% da 7A por artista", passos: [
+    coluna("musicos", "pct", "REAL"),
+    `UPDATE musicos SET pct = 30 WHERE pct IS NULL AND casting = 0`,
+  ] },
 ];

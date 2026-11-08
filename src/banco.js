@@ -46,7 +46,7 @@ export function auditoria(env, req, acao, entidade, id, detalhe = "") {
 }
 
 // configurações com padrão
-export const CONFIG_PADRAO = { pct_padrao: "", base: "bruto", limite_diario: "20", intervalo_dias: "3", simulacao: "0",
+export const CONFIG_PADRAO = { pct_padrao: "", pct_fora: "30", base: "bruto", limite_diario: "20", intervalo_dias: "3", simulacao: "0",
   // dados da 7A para recibos e notas: começam vazios e só a equipe preenche (Ajustes)
   emit_nome: "", emit_doc: "", emit_im: "", emit_endereco: "", emit_cidade: "", emit_responsavel: "", emit_regime: "" };
 export async function lerConfig(env) {
