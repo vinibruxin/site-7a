@@ -33,17 +33,56 @@ a { color: inherit; }
 .display { font-family: var(--f-display); font-weight: 400; text-transform: uppercase; line-height: .95; margin: 0; letter-spacing: -0.01em; }
 .num { font-variant-numeric: tabular-nums; }
 
-/* barra de cima */
-.topo { display: flex; align-items: center; gap: 20px; padding: 10px var(--m); background: var(--preto); position: sticky; top: 0; z-index: 20; }
-.topo .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; margin-right: auto; }
-.topo .marca img { width: 28px; height: auto; }
-.topo .marca span { font: 400 18px/1 var(--f-display); text-transform: uppercase; }
-.topo .sec { font-weight: 600; font-size: 14px; background: none; border: 0; text-decoration: none; cursor: pointer; padding: 10px 0; }
-.topo .sec:hover { color: var(--cinza); }
-.abas { display: flex; gap: 4px; }
-.abas a { font: 400 21px/1 var(--f-display); text-transform: uppercase; text-decoration: none; color: var(--grafite-2); padding: 6px 10px; transition: color .2s; }
-.abas a:hover { color: var(--cinza); }
-.abas a[aria-current="page"] { color: var(--offwhite); }
+
+/* casca: menu lateral fixo + barra de cima com a trilha da página */
+.app { display: grid; grid-template-columns: 252px minmax(0, 1fr); min-height: 100svh; }
+.pular { position: absolute; left: 12px; top: -60px; z-index: 60; background: var(--offwhite); color: var(--preto); padding: 10px 14px; font-weight: 700; }
+.pular:focus { top: 12px; }
+.lateral { position: sticky; top: 0; height: 100svh; display: flex; flex-direction: column; background: #111; border-right: 1px solid #1d1d1d; padding: 16px 12px 14px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; z-index: 40; }
+.lateral-topo { display: flex; align-items: center; justify-content: space-between; padding: 2px 8px 6px; }
+.lateral .marca { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.lateral .marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; }
+.menu-grupo { margin-top: 18px; }
+.menu-grupo h2 { margin: 0 10px 6px; font: 600 11px/1 var(--f-texto); letter-spacing: .09em; text-transform: uppercase; color: #8A847D; }
+.menu-item { position: relative; display: flex; align-items: center; gap: 11px; width: 100%; min-height: 38px; padding: 8px 10px; background: none; border: 0; color: var(--cinza); font: 600 14px/1.2 var(--f-texto); text-align: left; text-decoration: none; cursor: pointer; transition: background-color var(--t-hover, .18s) ease, color var(--t-hover, .18s) ease; }
+.menu-item svg { width: 18px; height: 18px; flex: none; }
+.menu-item > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.menu-item:hover { background: #1B1B1B; color: var(--offwhite); }
+.menu-item[aria-current="page"] { background: var(--grafite); color: var(--offwhite); }
+.menu-item[aria-current="page"]::before { content: ""; position: absolute; left: -12px; top: 7px; bottom: 7px; width: 3px; background: var(--vermelho); }
+.menu-item .contador { margin-left: auto; min-width: 22px; padding: 3px 7px; background: #1E1E1E; color: var(--cinza); font: 700 12px/1 var(--f-texto); font-variant-numeric: tabular-nums; text-align: center; }
+.menu-item[aria-current="page"] .contador { background: var(--preto); color: var(--offwhite); }
+.menu-item .contador.quente { background: var(--vermelho); color: var(--offwhite); }
+.lateral-pe { margin-top: auto; padding-top: 14px; border-top: 1px solid #1d1d1d; }
+.corpo { min-width: 0; display: flex; flex-direction: column; }
+.barra { position: sticky; top: 0; z-index: 20; display: flex; align-items: center; gap: 14px; min-height: 64px; padding: 10px var(--m); background: rgba(10, 10, 10, .9); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid #1a1a1a; }
+.trilha { min-width: 0; flex: 1; }
+.trilha .caminho { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #8A847D; }
+.trilha .caminho b { color: var(--offwhite); font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.trilha p { margin: 2px 0 0; font-size: 13px; color: var(--cinza); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.barra-acoes { display: flex; gap: 8px; flex: none; }
+.barra-acoes .btn { min-height: 36px; padding: 8px 12px; font-size: 13px; }
+.barra-acoes svg, .icone-btn svg { width: 16px; height: 16px; }
+.icone-btn { display: none; align-items: center; justify-content: center; width: 40px; height: 40px; flex: none; background: var(--grafite); border: 0; color: var(--offwhite); cursor: pointer; }
+.icone-btn svg { width: 20px; height: 20px; }
+.icone-btn:hover { background: var(--grafite-2); }
+.fundo-menu { position: fixed; inset: 0; z-index: 35; background: rgba(0, 0, 0, .6); }
+main:focus { outline: none; }
+@media (min-width: 1024px) {
+  /* o menu lateral já mostra as sub-seções */
+  .subabas { display: none; }
+}
+@media (max-width: 1023px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .lateral { position: fixed; left: 0; top: 0; bottom: 0; width: min(300px, 86vw); height: auto; transform: translateX(-102%); transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1); padding-top: max(16px, env(safe-area-inset-top, 0px)); padding-bottom: max(14px, env(safe-area-inset-bottom, 0px)); }
+  .app.menu-aberto .lateral { transform: none; box-shadow: 20px 0 60px rgba(0, 0, 0, .5); }
+  .icone-btn { display: inline-flex; }
+  .barra { min-height: 58px; gap: 10px; }
+}
+@media (max-width: 560px) {
+  .trilha p { display: none; }
+  .barra-acoes .btn-sec { display: none; }
+}
 
 /* botões */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: 700 14px/1 var(--f-texto); padding: 11px 16px; min-height: 40px; background: var(--vermelho); color: var(--offwhite); border: 0; cursor: pointer; text-decoration: none; transition: transform .15s, background-color .2s; }
@@ -76,7 +115,7 @@ input[type="checkbox"], input[type="radio"] { width: 22px; height: 22px; min-hei
 .entrada form p { margin: 0 0 8px; font-size: 18px; }
 
 /* conteúdo */
-main { padding: 4px var(--m) 140px; max-width: 1080px; }
+main { padding: 8px var(--m) 80px; max-width: 1140px; width: 100%; }
 .cabeca { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 24px; margin: 24px 0 28px; }
 .cabeca h1 { font-size: clamp(34px, 3.6vw, 52px); }
 .cabeca p { margin: 6px 0 0; color: var(--cinza); font-size: 15px; }
@@ -306,16 +345,8 @@ main.largo { max-width: none; }
   .conta-show { grid-template-columns: minmax(0, 1fr); gap: 16px; }
 }
 @media (max-width: 760px) {
-  .topo { gap: 16px; }
   input, select, textarea, .btn { min-height: 44px; font-size: 16px; }
   .cabeca h1 { font-size: 40px; }
-  .topo .marca span { font-size: 18px; }
-  /* no celular, as abas viram uma barra fixa embaixo, ao alcance do polegar */
-  .abas { position: fixed; left: 0; right: 0; bottom: 0; z-index: 30; background: var(--grafite); padding: 0 0 env(safe-area-inset-bottom, 0px); gap: 0; }
-  .abas a { flex: 1; text-align: center; font: 600 13px/1 var(--f-texto); text-transform: none; color: var(--cinza); padding: 20px 2px 18px; position: relative; }
-  .abas a[aria-current="page"] { color: var(--offwhite); }
-  .abas a[aria-current="page"]::before { content: ""; position: absolute; left: 22%; right: 22%; top: 0; height: 4px; background: var(--vermelho); }
-  main { padding-bottom: 120px; }
   .mes-nav { grid-template-columns: auto 1fr auto; }
   .mes-nav p { grid-column: 1 / -1; justify-self: start; }
   .mes-nav h2.display { min-width: 0; }
@@ -355,7 +386,6 @@ main.largo { max-width: none; }
   @keyframes surge-lado { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
   .cartao.chegou { animation: chegou 620ms var(--ease-out) both; }
   @keyframes chegou { 0% { opacity: 0; transform: scale(.94); background: var(--vermelho); } 45% { opacity: 1; transform: scale(1.02); background: var(--vermelho); } 100% { transform: none; background: var(--grafite); } }
-  .abas a[aria-current="page"]::before { animation: risco var(--t-ui) var(--ease-out) both; transform-origin: center; }
   @keyframes risco { from { transform: scaleX(0); } to { transform: scaleX(1); } }
   .estado:not(:empty) { animation: surge var(--t-ui) var(--ease-out) both; }
 }
@@ -368,7 +398,6 @@ a.item:active { transform: translateX(3px) scale(.99); }
 .coluna { transition: background-color var(--t-ui) var(--ease-out), transform var(--t-ui) var(--ease-out); }
 .coluna.alvo { transform: translateY(-3px); }
 .funil-faixa:hover span { transform: translateY(-2px); }
-.abas a { transition: color var(--t-hover) ease; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
   .conversa { display: flex; flex-direction: column; gap: 10px; margin: 12px 0; }
   .bolha { max-width: 82%; padding: 10px 12px; border-radius: 12px; font: 400 16px/1.5 var(--f-texto); white-space: pre-line; }
@@ -394,21 +423,31 @@ a.item:active { transform: translateX(3px) scale(.99); }
   </form>
 </section>
 
-<div id="tela-app" hidden>
-  <header class="topo">
-    <a class="marca" href="#hoje"><img src="/img/logo-7a.png" alt="" width="34" height="40"><span>7A Gestão</span></a>
-    <nav class="abas" aria-label="Seções">
-      <a href="#hoje" data-aba="hoje">Hoje</a>
-      <a href="#funil" data-aba="funil">Funil</a>
-      <a href="#casas" data-aba="casas">Casas</a>
-      <a href="#shows" data-aba="agenda">Agenda</a>
-      <a href="#whatsapp" data-aba="mensagens">Mensagens</a>
-      <a href="#ajustes" data-aba="ajustes">Ajustes</a>
-    </nav>
-    <a class="sec" href="/admin/">Editar o site</a>
-    <button class="sec" type="button" id="sair">Sair</button>
-  </header>
-  <main id="tela" aria-live="polite"></main>
+<div id="tela-app" class="app" hidden>
+  <a class="pular" href="#tela" id="pular">Pular para o conteúdo</a>
+  <aside class="lateral" id="lateral" aria-label="Menu principal">
+    <div class="lateral-topo">
+      <a class="marca" href="#hoje"><img src="/img/logo-7a.png" alt="" width="30" height="35"><span>7A Gestão</span></a>
+      <button class="icone-btn fechar-menu" type="button" id="fechar-menu" aria-label="Fechar menu"></button>
+    </div>
+    <nav id="menu" aria-label="Seções"></nav>
+    <div class="lateral-pe">
+      <a class="menu-item" href="/admin/" data-icone="site"><span>Editar o site</span></a>
+      <button class="menu-item" type="button" id="sair" data-icone="sair"><span>Sair</span></button>
+    </div>
+  </aside>
+  <div class="fundo-menu" id="fundo-menu" hidden></div>
+  <div class="corpo">
+    <header class="barra">
+      <button class="icone-btn abrir-menu" type="button" id="abrir-menu" aria-label="Abrir menu" aria-expanded="false" aria-controls="lateral"></button>
+      <div class="trilha" id="trilha"></div>
+      <div class="barra-acoes">
+        <a class="btn btn-sec" href="#contratante/novo" data-icone="mais"><span>Casa</span></a>
+        <a class="btn" href="#show/novo" data-icone="mais"><span>Show</span></a>
+      </div>
+    </header>
+    <main id="tela" tabindex="-1" aria-live="polite"></main>
+  </div>
 </div>
 
 <script>
@@ -549,6 +588,91 @@ a.item:active { transform: translateX(3px) scale(.99); }
   }
 
   /* ---------- entrada ---------- */
+
+  /* ---------- menu lateral ---------- */
+  const ICONES = {
+    hoje: '<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+    funil: '<path d="M3 4h18l-7 8.5V19l-4 2v-8.5z"/>',
+    casas: '<path d="M3 21h18"/><path d="M5 21V7l7-4v18"/><path d="M12 9h7v12"/><path d="M8 9v.01M8 13v.01M8 17v.01M15.5 13v.01M15.5 17v.01"/>',
+    contratantes: '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+    importar: '<path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/>',
+    shows: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>',
+    calendario: '<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+    financeiro: '<rect x="2" y="6" width="20" height="12"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
+    whatsapp: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8"/>',
+    campanhas: '<path d="M3 10v4h4l8 5V5L7 10z"/><path d="M19 9a4 4 0 0 1 0 6"/>',
+    modelos: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
+    ajustes: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/>',
+    site: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+    sair: '<path d="M14 4h5v16h-5"/><path d="m9 8-4 4 4 4M5 12h11"/>',
+    menu: '<path d="M4 6h16M4 12h16M4 18h16"/>',
+    fechar: '<path d="M6 6l12 12M18 6 6 18"/>',
+    mais: '<path d="M12 5v14M5 12h14"/>',
+  };
+  const icone = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONES[n] || ""}</svg>`;
+  const MENU = [
+    ["Visão geral", [["hoje", "Hoje", "O que fazer hoje, shows da semana e dinheiro a receber"]]],
+    ["Comercial", [
+      ["funil", "Funil", "Negociações em colunas, da abordagem ao fechamento"],
+      ["casas", "Casas", "Todas as casas de show, bares e eventos cadastrados"],
+      ["contratantes", "Busca de contratantes", "Lista com filtros por etapa, perfil e bloqueio"],
+      ["importar", "Importar planilha", "Trazer contratantes de uma planilha CSV"],
+    ]],
+    ["Agenda", [
+      ["shows", "Shows", "Todos os shows, com cachê, status e proposta"],
+      ["calendario", "Calendário", "Os shows mês a mês"],
+      ["financeiro", "Financeiro", "Cachês, comissão da 7A e repasses por mês e por artista"],
+    ]],
+    ["Mensagens", [
+      ["whatsapp", "Fila do WhatsApp", "Mensagens prontas para mandar com um toque"],
+      ["campanhas", "Campanhas", "Abordagens em lote, com acompanhamento"],
+      ["modelos", "Modelos", "Textos padrão de primeiro contato, cobrança e proposta"],
+    ]],
+    ["Sistema", [["ajustes", "Ajustes", "WhatsApp, planilhas e configurações da gestão"]]],
+  ];
+  // telas internas acendem o item do menu de onde vieram
+  const MENU_PAI = { contratante: "casas", conversa: "casas", show: "shows", campanha: "campanhas", modelo: "modelos", mensagem: "whatsapp" };
+  const TITULO_INTERNO = { contratante: "Ficha da casa", conversa: "Conversa", show: "Ficha do show", campanha: "Campanha", modelo: "Modelo", mensagem: "Mensagem" };
+  function contadores() {
+    const h = hoje();
+    const c = {};
+    if (D) {
+      c.casas = [D.contratantes.length, false];
+      c.shows = [D.shows.filter((s) => s.data && s.data >= h && s.status !== "cancelado").length, false];
+      const neg = D.contratantes.filter((x) => x.etapa === "negociando").length;
+      c.funil = [neg, neg > 0];
+      const sem = D.indicadores ? D.indicadores.sem_confirmar : 0;
+      if (sem) c.whatsapp = [sem, true];
+    }
+    return c;
+  }
+  const DICA_CONTADOR = { casas: "casas cadastradas", shows: "shows daqui pra frente", funil: "em negociação", whatsapp: "abertas sem confirmar" };
+  function desenharMenu(nome) {
+    const atual = MENU_PAI[nome] || nome;
+    const cont = contadores();
+    $("#menu").innerHTML = MENU.map(([grupo, itens]) => `<div class="menu-grupo"><h2>${grupo}</h2>${itens.map(([k, n]) => {
+      const c = cont[k];
+      return `<a class="menu-item" href="#${k}"${k === atual ? ' aria-current="page"' : ""}>${icone(k)}<span>${n}</span>${c && c[0] ? `<b class="contador${c[1] ? " quente" : ""}" title="${c[0]} ${DICA_CONTADOR[k]}">${c[0]}</b>` : ""}</a>`;
+    }).join("")}</div>`).join("");
+    let grupo = "", item = null;
+    MENU.forEach(([g, itens]) => itens.forEach((i) => { if (i[0] === atual) { grupo = g; item = i; } }));
+    if (!item) { grupo = "Visão geral"; item = MENU[0][1][0]; }
+    const interno = TITULO_INTERNO[nome];
+    $("#trilha").innerHTML = `<div class="caminho"><span>${grupo}</span><span aria-hidden="true">/</span>${interno ? `<a href="#${item[0]}" style="color:inherit">${item[1]}</a><span aria-hidden="true">/</span><b>${interno}</b>` : `<b>${item[1]}</b>`}</div><p>${interno ? "" : item[2]}</p>`;
+    document.title = (interno || item[1]) + " | 7A Gestão";
+  }
+  const app = $("#tela-app");
+  function abrirMenu() { app.classList.add("menu-aberto"); $("#fundo-menu").hidden = false; $("#abrir-menu").setAttribute("aria-expanded", "true"); const a = $("#menu [aria-current]") || $("#menu a"); if (a) a.focus(); }
+  function fecharMenu() { if (!app.classList.contains("menu-aberto")) return; app.classList.remove("menu-aberto"); $("#fundo-menu").hidden = true; $("#abrir-menu").setAttribute("aria-expanded", "false"); }
+  document.querySelectorAll("[data-icone]").forEach((el) => el.insertAdjacentHTML("afterbegin", icone(el.dataset.icone)));
+  $("#abrir-menu").innerHTML = icone("menu");
+  $("#fechar-menu").innerHTML = icone("fechar");
+  $("#abrir-menu").addEventListener("click", abrirMenu);
+  $("#fechar-menu").addEventListener("click", () => { fecharMenu(); $("#abrir-menu").focus(); });
+  $("#fundo-menu").addEventListener("click", fecharMenu);
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && app.classList.contains("menu-aberto")) { fecharMenu(); $("#abrir-menu").focus(); } });
+  $("#pular").addEventListener("click", (ev) => { ev.preventDefault(); tela.focus(); });
+
   function mostrarEntrada() { $("#tela-entrada").hidden = false; $("#tela-app").hidden = true; $("#senha").focus(); }
   $("#form-entrar").addEventListener("submit", (ev) => {
     ev.preventDefault();
@@ -586,8 +710,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const h = location.hash || "#hoje";
     ultimo = h;
     const [nome, id] = h.slice(1).split("/");
-    const aba = { contratantes: "funil", contratante: "funil", importar: "funil", conversa: "funil", show: "agenda", shows: "agenda", calendario: "agenda", financeiro: "agenda", whatsapp: "mensagens", campanhas: "mensagens", campanha: "mensagens", modelos: "mensagens", modelo: "mensagens", mensagem: "mensagens" }[nome] || nome;
-    document.querySelectorAll("[data-aba]").forEach((a) => (a.dataset.aba === aba ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current")));
+    desenharMenu(nome);
+    fecharMenu();
     const telas = {
       hoje: telaHoje, funil: telaFunil, casas: telaCasas, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
       campanhas: telaCampanhas, campanha: () => fichaCampanha(id), modelos: telaModelos, modelo: () => fichaModelo(id),
@@ -798,8 +922,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const plural = (n, um, varios) => `${n} ${n === 1 ? um : varios}`;
 
     tela.innerHTML = `
-      <div class="cabeca"><div><h1 class="display">Hoje</h1><p>${DIAS[d.getUTCDay()]}, ${d.getUTCDate()} de ${MESES[d.getUTCMonth()]}</p></div>
-        <div class="acoes-rapidas" style="margin:0"><a class="btn btn-sec" href="#contratante/novo">Nova casa</a><a class="btn" href="#show/novo">Novo show</a></div></div>
+      <div class="cabeca"><div><h1 class="display">Hoje</h1><p>${DIAS[d.getUTCDay()]}, ${d.getUTCDate()} de ${MESES[d.getUTCMonth()]}</p></div></div>
       ${D.config.simulacao === "1" ? '<p class="aviso">Modo simulação ligado: as mensagens são registradas como teste e o WhatsApp não abre. Desligue em <a href="#ajustes">Ajustes</a>.</p>' : ""}
       <p class="resumo-dia">${fazer.length ? `${plural(fazer.length, "casa pede", "casas pedem")} ação${atrasadas.length ? `, ${plural(atrasadas.length, "atrasada", "atrasadas")}` : ""}` : "Nenhuma casa esperando ação"} · ${semana.length ? plural(semana.length, "show nesta semana", "shows nesta semana") : "nenhum show nesta semana"}<span id="resumo-fila"></span></p>
 
