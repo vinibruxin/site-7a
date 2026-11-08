@@ -1,7 +1,7 @@
 // Site da 7A Produtora: serve os arquivos de public/ e encaixa nas páginas o conteúdo editado no /admin.
 // O conteúdo editável (agenda, textos e formação dos artistas) fica no KV CONTEUDO, chave "conteudo".
 // Sem nada salvo no KV, o site mostra o que está em public/ (gerado por ferramentas/gera_artistas.py).
-// O sistema de gestão (/admin/gestao.html) fica em src/gestao.js, com os dados no D1 DB.
+// O sistema de gestão (/admin/, arquivo public/admin/index.html) fica em src/gestao.js, com os dados no D1 DB.
 
 import { CASTING, gestao, pedidoDoSite, propostaPublica, showsPublicos } from "./gestao.js";
 import { agenteAutorizado, motivoAgente, rotasAgente } from "./agente.js";
@@ -25,6 +25,9 @@ export default {
         return json({ erro: "Algo deu errado no servidor. Tente de novo." }, 500);
       }
     }
+
+    // a Gestão virou a página principal do /admin; o endereço antigo continua valendo (o navegador mantém o #seção)
+    if (p === "/admin/gestao" || p === "/admin/gestao.html") return Response.redirect(new URL("/admin/" + url.search, req.url).toString(), 301);
 
     // proposta enviada ao contratante: a página é fixa e busca os dados pelo token do endereço
     if (/^\/proposta\/[a-f0-9]{24}$/.test(p)) {
