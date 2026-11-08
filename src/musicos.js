@@ -53,6 +53,15 @@ export function validarPix(tipo, chave) {
   return { ok: true, tipo, valor: a };
 }
 
+// link de convite do grupo do WhatsApp (https://chat.whatsapp.com/...)
+export function validarGrupo(v) {
+  const t = String(v ?? "").trim();
+  if (!t) return { ok: true, valor: "" };
+  const m = t.match(/^(?:https?:\/\/)?chat\.whatsapp\.com\/(?:invite\/)?([A-Za-z0-9]{10,40})\/?(?:\?.*)?$/);
+  if (!m) return { ok: false, erro: "Grupo do WhatsApp: cole o link de convite do grupo, que começa com https://chat.whatsapp.com/" };
+  return { ok: true, valor: "https://chat.whatsapp.com/" + m[1] };
+}
+
 // % da 7A sobre o cachê do artista: o que vier preenchido, ou o padrão do grupo (casting: % padrão; de fora: % de fora, 30%)
 export function pctDoArtista(m, config) {
   const v = m?.pct === "" || m?.pct == null ? null : Number(String(m.pct).replace(",", "."));
@@ -70,7 +79,10 @@ function limpar(m, config) {
   if (!pix.ok) return { erro: pix.erro };
   const pct = pctDoArtista(m, config);
   if (!pct.ok) return { erro: pct.erro };
+  const grupo = validarGrupo(m?.grupo);
+  if (!grupo.ok) return { erro: grupo.erro };
   return {
+    grupo: grupo.valor,
     pct: pct.pct,
     nome,
     telefone: t.numero,
@@ -122,9 +134,9 @@ export async function rotasMusicos(req, env, partes, corpo, url) {
     }
     const t = agora();
     const novo = await env.DB.prepare(
-      `INSERT INTO musicos (nome, telefone, pix_tipo, pix_chave, cidade, estilo, instrumentos, casting, pct, obs, criado, atualizado)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
-    ).bind(m.nome, m.telefone, m.pix_tipo, m.pix_chave, m.cidade, m.estilo, m.instrumentos, m.casting, m.pct, m.obs, t, t).first();
+      `INSERT INTO musicos (nome, telefone, pix_tipo, pix_chave, cidade, estilo, instrumentos, casting, pct, grupo, obs, criado, atualizado)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+    ).bind(m.nome, m.telefone, m.pix_tipo, m.pix_chave, m.cidade, m.estilo, m.instrumentos, m.casting, m.pct, m.grupo, m.obs, t, t).first();
     // a auditoria guarda só o nome: telefone e Pix não vão para o registro
     await auditoria(env, req, "cadastrou artista", "musico", novo.id, m.nome).run();
     return json(saida(novo));
@@ -141,13 +153,13 @@ export async function rotasMusicos(req, env, partes, corpo, url) {
         const igual = await env.DB.prepare("SELECT id, nome FROM musicos WHERE telefone = ? AND id <> ?").bind(m.telefone, id).first();
         if (igual) return json({ erro: `Este WhatsApp já está no cadastro de ${igual.nome}.`, existente: igual }, 409);
       }
-      const mudou = ["nome", "telefone", "pix_chave", "cidade", "estilo", "instrumentos", "casting", "pct", "obs"].filter((k) => String(m[k]) !== String(atual[k]))
-        .map((k) => ({ telefone: "WhatsApp", pix_chave: "Pix", instrumentos: "formação", casting: "casting", pct: "% da 7A", obs: "observações" })[k] || k);
+      const mudou = ["nome", "telefone", "pix_chave", "cidade", "estilo", "instrumentos", "casting", "pct", "grupo", "obs"].filter((k) => String(m[k]) !== String(atual[k]))
+        .map((k) => ({ telefone: "WhatsApp", pix_chave: "Pix", instrumentos: "formação", casting: "casting", pct: "% da 7A", grupo: "grupo do WhatsApp", obs: "observações" })[k] || k);
       const [{ results }] = await env.DB.batch([
         env.DB.prepare(
-          `UPDATE musicos SET nome = ?, telefone = ?, pix_tipo = ?, pix_chave = ?, cidade = ?, estilo = ?, instrumentos = ?, casting = ?, pct = ?, obs = ?, atualizado = ?
+          `UPDATE musicos SET nome = ?, telefone = ?, pix_tipo = ?, pix_chave = ?, cidade = ?, estilo = ?, instrumentos = ?, casting = ?, pct = ?, grupo = ?, obs = ?, atualizado = ?
            WHERE id = ? RETURNING *`
-        ).bind(m.nome, m.telefone, m.pix_tipo, m.pix_chave, m.cidade, m.estilo, m.instrumentos, m.casting, m.pct, m.obs, agora(), id),
+        ).bind(m.nome, m.telefone, m.pix_tipo, m.pix_chave, m.cidade, m.estilo, m.instrumentos, m.casting, m.pct, m.grupo, m.obs, agora(), id),
         auditoria(env, req, "editou artista", "musico", id, `${m.nome}${mudou.length ? ": " + mudou.join(", ") : ""}`),
       ]);
       return json(saida(results[0]));
