@@ -37,7 +37,8 @@
   --f-serial: "Space Mono", Consolas, "Courier New", monospace;
 
   /* cinco degraus */
-  --t-cartaz: clamp(84px, 13vw, 210px);
+  /* o título nunca sobe até a barra do menu: em tela larga e baixa, a altura limita o tamanho */
+  --t-cartaz: clamp(84px, min(13vw, calc((50svh - 100px) / 1.62)), 210px);
   --t-titulo: clamp(40px, 5.2vw, 84px);
   --t-sub: clamp(26px, 2.6vw, 40px);
   --t-lead: 20px;
@@ -182,9 +183,9 @@ a { color: inherit; }
   width: clamp(200px, 22vw, 340px); aspect-ratio: 4 / 5; height: auto; object-fit: cover; object-position: 50% 30%;
   transform: rotate(4deg);
 }
-.adesivo {
-  position: absolute; z-index: 2; width: clamp(150px, 13vw, 210px); height: auto;
-  left: calc(var(--m) + 1vw); top: calc(var(--seam) - 7vw);
+.adesivo { /* logo completa colada na costura preto/vermelho */
+  position: absolute; z-index: 2; width: clamp(250px, 24vw, 400px); height: auto;
+  left: calc(var(--m) + 1vw); top: calc(var(--seam) - clamp(250px, 24vw, 400px) / 2);
 }
 
 /* ---------- Casting ---------- */
@@ -374,7 +375,7 @@ a { color: inherit; }
   .grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 12px; }
   .adesivo { display: none; }
   .foto-colada { top: calc(var(--seam) + 0.62 * var(--t-cartaz) + 12px); }
-  :root { --t-cartaz: 17vw; }
+  :root { --t-cartaz: max(64px, min(17vw, calc((50svh - 100px) / 1.62))); }
 }
 @media (max-width: 700px) {
   :root { --t-cartaz: 28vw; --seam: 46%; --m: max(16px, env(safe-area-inset-left, 0px)); --m-r: max(16px, env(safe-area-inset-right, 0px)); }
@@ -447,7 +448,7 @@ a { color: inherit; }
   </div>
 
   <img class="foto-colada" src="img/v2.jpg" alt="Vocalista de uma banda da 7A cantando, foto em preto e branco" width="800" height="769">
-  <img class="adesivo" src="img/logo-7a-g.png" alt="" width="640" height="751">
+  <img class="adesivo" src="img/logo-7a-completa.png" alt="" width="640" height="640">
   <p class="apoio">Aqui o artista é levado a sério. Somos uma produtora e incubadora de rock em Betim, MG, com seis artistas prontos para o seu palco.</p>
 </div>
 
