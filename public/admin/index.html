@@ -285,6 +285,35 @@ a.chip:active { transform: scale(.96); }
 .tabela tbody th { font-weight: 700; }
 .tabela tfoot th, .tabela tfoot td { font: 400 20px/1 var(--f-display); text-transform: uppercase; padding-top: 14px; }
 .tabela .forte { font-weight: 700; }
+/* Artistas: cadastro e agenda de músicos (WhatsApp e Pix só aqui) */
+.musico { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px 20px; align-items: center; padding: 14px 16px; background: var(--grafite); }
+.musico .quem { display: grid; gap: 4px; min-width: 0; }
+.musico .nome { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; font: 400 22px/1.12 var(--f-display); text-transform: uppercase; text-decoration: none; overflow-wrap: anywhere; }
+.musico a.nome:hover { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 2px; }
+.musico .nome .etiqueta { font-size: 12px; text-transform: none; }
+.musico .meta { color: var(--cinza); font-size: 14px; overflow-wrap: anywhere; }
+.musico .insts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.musico .insts span { font: 600 13px/1 var(--f-texto); padding: 6px 8px; background: var(--preto); color: var(--offwhite); }
+.musico .acoes { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.musico .acoes .btn { min-height: 40px; }
+.musico .btn-pix { display: grid; justify-items: start; gap: 3px; text-align: left; background: var(--preto); }
+.musico .btn-pix:hover { background: #000; filter: brightness(1.4); }
+.musico .pix-txt { display: block; max-width: 22em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; font-size: 12px; opacity: .8; }
+.musico .btn.copiado { background: var(--offwhite); color: var(--preto); }
+.musico .sem { color: var(--cinza); font-size: 13px; align-self: center; }
+.casas-filtros.filtros-mus select { flex: 1 1 200px; }
+.ficha .grupo-ficha { line-height: 1.12; }
+.marcas-inst { display: flex; flex-wrap: wrap; gap: 6px; }
+.marcas-inst label { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; background: var(--grafite); color: var(--offwhite); font-weight: 600; font-size: 14px; cursor: pointer; transition: background-color .15s; }
+.marcas-inst label:hover { background: var(--grafite-2); }
+.marcas-inst input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.marcas-inst label:has(input:checked) { background: var(--offwhite); color: var(--preto); }
+.marcas-inst label:has(input:focus-visible) { outline: 3px solid var(--ouro); outline-offset: 2px; }
+@media (max-width: 760px) {
+  .musico { grid-template-columns: minmax(0, 1fr); }
+  .musico .acoes { justify-content: flex-start; }
+  .musico .acoes .btn { flex: 1 1 auto; }
+}
 /* Casas: diretório de todas as casas, em tabela no computador e em cartões no celular */
 .casas-filtros { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
 .casas-filtros input { flex: 1 1 280px; }
@@ -603,6 +632,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     calendario: '<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/>',
     financeiro: '<rect x="2" y="6" width="20" height="12"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
     documentos: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
+    musicos: '<path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/>',
     whatsapp: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8"/>',
     campanhas: '<path d="M3 10v4h4l8 5V5L7 10z"/><path d="M19 9a4 4 0 0 1 0 6"/>',
     modelos: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
@@ -628,6 +658,9 @@ a.item:active { transform: translateX(3px) scale(.99); }
       ["financeiro", "Financeiro", "Cachês, comissão da 7A e repasses por mês e por artista"],
       ["documentos", "Recibos e notas", "Recibos de pagamento e notas fiscais preparadas para o Emissor Nacional"],
     ]],
+    ["Artistas", [
+      ["musicos", "Cadastro de artistas", "Músicos do casting e de fora: formação, cidade, WhatsApp e Pix"],
+    ]],
     ["Mensagens", [
       ["whatsapp", "Fila do WhatsApp", "Mensagens prontas para mandar com um toque"],
       ["campanhas", "Campanhas", "Abordagens em lote, com acompanhamento"],
@@ -636,8 +669,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
     ["Sistema", [["ajustes", "Ajustes", "WhatsApp, planilhas e configurações da gestão"]]],
   ];
   // telas internas acendem o item do menu de onde vieram
-  const MENU_PAI = { documento: "documentos", contratante: "casas", conversa: "casas", show: "shows", campanha: "campanhas", modelo: "modelos", mensagem: "whatsapp" };
-  const TITULO_INTERNO = { documento: "Documento", contratante: "Ficha da casa", conversa: "Conversa", show: "Ficha do show", campanha: "Campanha", modelo: "Modelo", mensagem: "Mensagem" };
+  const MENU_PAI = { musico: "musicos", documento: "documentos", contratante: "casas", conversa: "casas", show: "shows", campanha: "campanhas", modelo: "modelos", mensagem: "whatsapp" };
+  const TITULO_INTERNO = { musico: "Ficha do artista", documento: "Documento", contratante: "Ficha da casa", conversa: "Conversa", show: "Ficha do show", campanha: "Campanha", modelo: "Modelo", mensagem: "Mensagem" };
   function contadores() {
     const h = hoje();
     const c = {};
@@ -720,7 +753,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const telas = {
       hoje: telaHoje, funil: telaFunil, casas: telaCasas, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
       campanhas: telaCampanhas, campanha: () => fichaCampanha(id), modelos: telaModelos, modelo: () => fichaModelo(id),
-      shows: telaShows, calendario: telaCalendario, financeiro: telaFinanceiro, documentos: telaDocumentos, documento: () => fichaDocumento(id), show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id), conversa: () => telaConversa(id),
+      shows: telaShows, calendario: telaCalendario, financeiro: telaFinanceiro, documentos: telaDocumentos, documento: () => fichaDocumento(id), musicos: telaMusicos, musico: () => fichaMusico(id), show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id), conversa: () => telaConversa(id),
     };
     tela.classList.toggle("largo", nome === "funil");
     (telas[nome] || telaHoje)();
@@ -1776,6 +1809,126 @@ a.item:active { transform: translateX(3px) scale(.99); }
         D.shows = D.shows.filter((x) => x.id !== s.id);
         sujo = false; location.hash = "#shows";
       });
+    });
+  }
+
+  /* ---------- cadastro de artistas e agenda de músicos ---------- */
+  // WhatsApp e Pix ficam só aqui (painel com senha): não entram na carga do painel, no site nem em planilhas
+  const INSTRUMENTOS = ["Voz", "Violão", "Guitarra", "Baixo", "Bateria", "Teclado", "Percussão", "Sax", "DJ"];
+  const TIPOS_PIX = [["", "Sem chave ainda"], ["celular", "Celular"], ["cpf", "CPF"], ["cnpj", "CNPJ"], ["email", "E-mail"], ["aleatoria", "Chave aleatória"]];
+  const semAcento = (t) => String(t || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+  const filtroMus = { busca: "", cidade: "", instrumento: "", casting: "" };
+  const pixMostrar = (m) => (m.pix_tipo === "cpf" || m.pix_tipo === "cnpj" ? formatarDoc(m.pix_chave) : m.pix_tipo === "celular" ? m.pix_chave.replace(/^\+55(\d{2})(\d{4,5})(\d{4})$/, "($1) $2-$3") : m.pix_chave);
+  function copiarPix(b, m) {
+    const ok = () => { if (b.classList.contains("copiado")) return; const antes = b.innerHTML; b.classList.add("copiado"); b.innerHTML = "Pix copiado"; setTimeout(() => { b.classList.remove("copiado"); b.innerHTML = antes; }, 1600); };
+    navigator.clipboard.writeText(m.pix_chave).then(ok, () => prompt("Copie a chave Pix:", m.pix_chave));
+  }
+  function itemMusico(m) {
+    const w = m.telefone ? whats(m.telefone) : "";
+    const pix = m.pix_chave ? `<button class="btn btn-pix" type="button" data-pix="${m.id}">Copiar Pix<span class="pix-txt">${esc(nomeDe(TIPOS_PIX, m.pix_tipo))}: ${esc(pixMostrar(m))}</span></button>` : '<span class="sem">Sem Pix</span>';
+    return `<li class="musico">
+      <div class="quem">
+        <a class="nome" href="#musico/${m.id}">${esc(m.nome)}${m.casting ? '<span class="etiqueta e-confirmado">Casting 7A</span>' : ""}</a>
+        <span class="meta">${esc([m.estilo, m.cidade].filter(Boolean).join(" · ")) || "Sem estilo e cidade"}${m.telefone_formatado ? " · " + esc(m.telefone_formatado) : ""}</span>
+        ${m.instrumentos.length ? `<div class="insts">${m.instrumentos.map((i) => `<span>${esc(i)}</span>`).join("")}</div>` : ""}
+      </div>
+      <div class="acoes">${w ? `<a class="btn" href="${w}" target="_blank" rel="noopener">WhatsApp</a>` : '<span class="sem">Sem WhatsApp</span>'}${pix}</div></li>`;
+  }
+  function telaMusicos() {
+    tela.innerHTML = `
+      <div class="cabeca"><div><h1 class="display">Cadastro de artistas</h1><p>Todo mundo que toca com a 7A, do casting ou não. Ache pelo instrumento, pela cidade ou pelo nome.</p></div><a class="btn" href="#musico/novo">Novo artista</a></div>
+      <div class="filtros" id="mus-casting" role="group" aria-label="Casting"></div>
+      <div class="casas-filtros filtros-mus"><input type="search" id="mus-busca" placeholder="Buscar: guitarra, Betim, nome..." value="${esc(filtroMus.busca)}" aria-label="Buscar artista"><select id="mus-cidade" aria-label="Cidade"><option value="">Todas as cidades</option></select><select id="mus-inst" aria-label="Instrumento"><option value="">Todos os instrumentos</option></select></div>
+      <div id="mus-lista"><p class="vazio">Carregando...</p></div>`;
+    api("gestao/musicos").then((todos) => {
+      if (location.hash !== "#musicos") return;
+      if (!Array.isArray(todos)) throw new Error("falha");
+      const ord = (l) => [...new Set(l)].sort((a, b) => a.localeCompare(b, "pt-BR"));
+      const cidades = ord(todos.map((m) => m.cidade.trim()).filter(Boolean));
+      const insts = ord(todos.flatMap((m) => m.instrumentos));
+      $("#mus-cidade").insertAdjacentHTML("beforeend", cidades.map((c) => `<option${c === filtroMus.cidade ? " selected" : ""}>${esc(c)}</option>`).join(""));
+      $("#mus-inst").insertAdjacentHTML("beforeend", insts.map((c) => `<option${c === filtroMus.instrumento ? " selected" : ""}>${esc(c)}</option>`).join(""));
+      // mesma busca do servidor (src/musicos.js, filtrar): sem acento, todos os termos precisam bater
+      const desenhar = () => {
+        const termos = semAcento(filtroMus.busca).split(/\s+/).filter(Boolean);
+        const base = todos.filter((m) => {
+          const is = m.instrumentos.map(semAcento);
+          if (filtroMus.instrumento && !is.includes(semAcento(filtroMus.instrumento))) return false;
+          if (filtroMus.cidade && semAcento(m.cidade) !== semAcento(filtroMus.cidade)) return false;
+          const onde = [m.nome, m.cidade, m.estilo, ...is].map(semAcento).join(" | ");
+          return termos.every((t) => onde.includes(t));
+        });
+        const nCast = base.filter((m) => m.casting).length;
+        $("#mus-casting").innerHTML = [["", "Todos", base.length], ["sim", "Casting 7A", nCast], ["nao", "De fora", base.length - nCast]]
+          .map(([k, n, c]) => `<button type="button" data-casting="${k}" aria-pressed="${filtroMus.casting === k}">${n}<span class="conta">${c}</span></button>`).join("");
+        const lista = base.filter((m) => !filtroMus.casting || (filtroMus.casting === "sim") === m.casting);
+        if (!todos.length) { $("#mus-lista").innerHTML = '<p class="vazio">Ninguém cadastrado ainda. Comece pelo casting: toque em "Novo artista".</p>'; return; }
+        if (!lista.length) { $("#mus-lista").innerHTML = '<p class="vazio">Ninguém com esse filtro.</p>'; return; }
+        $("#mus-lista").innerHTML = `<p class="casas-total">${lista.length} ${lista.length === 1 ? "artista" : "artistas"}</p><ul class="lista">${lista.map(itemMusico).join("")}</ul>`;
+      };
+      desenhar();
+      let espera;
+      $("#mus-busca").addEventListener("input", (ev) => { filtroMus.busca = ev.target.value; clearTimeout(espera); espera = setTimeout(desenhar, 150); });
+      $("#mus-cidade").addEventListener("change", (ev) => { filtroMus.cidade = ev.target.value; desenhar(); });
+      $("#mus-inst").addEventListener("change", (ev) => { filtroMus.instrumento = ev.target.value; desenhar(); });
+      $("#mus-casting").addEventListener("click", (ev) => { const b = ev.target.closest("[data-casting]"); if (!b) return; filtroMus.casting = b.dataset.casting; desenhar(); });
+      $("#mus-lista").addEventListener("click", (ev) => { const b = ev.target.closest("[data-pix]"); if (!b) return; const m = todos.find((x) => x.id === Number(b.dataset.pix)); if (m) copiarPix(b, m); });
+    }).catch(() => { if ($("#mus-lista")) $("#mus-lista").innerHTML = '<p class="vazio">Não deu para carregar o cadastro. Tente de novo.</p>'; });
+  }
+
+  function fichaMusico(id) {
+    const novo = id === "novo";
+    if (!novo) {
+      tela.innerHTML = '<p class="vazio">Carregando...</p>';
+      return api("gestao/musicos/" + Number(id)).then((m) => {
+        if (!m.id) { tela.innerHTML = '<a class="voltar" href="#musicos">Voltar</a><p class="vazio">Cadastro não encontrado.</p>'; return; }
+        formMusico(m);
+      });
+    }
+    formMusico({ nome: "", telefone: "", pix_tipo: "", pix_chave: "", cidade: "", estilo: "", instrumentos: [], casting: false, obs: "" });
+  }
+  function formMusico(m) {
+    const novo = !m.id;
+    const outros = m.instrumentos.filter((i) => !INSTRUMENTOS.some((p) => semAcento(p) === semAcento(i)));
+    const tem = (p) => m.instrumentos.some((i) => semAcento(i) === semAcento(p));
+    const pixCampo = m.pix_tipo === "cpf" || m.pix_tipo === "cnpj" || m.pix_tipo === "celular" ? pixMostrar(m) : m.pix_chave;
+    tela.innerHTML = `<a class="voltar" href="#musicos">Voltar para o cadastro</a>
+      <div class="cabeca"><h1 class="display">${novo ? "Novo artista" : esc(m.nome)}</h1>${m.casting ? '<span class="etiqueta e-confirmado">Casting 7A</span>' : ""}</div>
+      <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
+        <label class="c4">Nome artístico<input name="nome" value="${esc(m.nome)}" autocomplete="off" placeholder="Como o artista é chamado no palco"></label>
+        <label class="c2 marcar" style="align-self:end;min-height:40px"><input type="checkbox" name="casting" ${m.casting ? "checked" : ""}> Casting 7A</label>
+        <label class="c3">WhatsApp<input name="telefone" value="${esc(m.telefone_formatado || m.telefone)}" inputmode="tel" autocomplete="off" placeholder="(31) 99999-9999"></label>
+        <label class="c3">Cidade<input name="cidade" value="${esc(m.cidade)}" autocomplete="off" placeholder="Betim"></label>
+        <label class="c6">Estilo<input name="estilo" value="${esc(m.estilo)}" autocomplete="off" placeholder="Rock clássico, MPB, pop rock..."></label>
+        <h2 class="grupo-ficha">Formação</h2>
+        <div class="c6 marcas-inst" role="group" aria-label="Instrumentos">${INSTRUMENTOS.map((p) => `<label><input type="checkbox" name="inst" value="${esc(p)}" ${tem(p) ? "checked" : ""}>${esc(p)}</label>`).join("")}</div>
+        <label class="c6">Outros instrumentos<input name="outros" value="${esc(outros.join(", "))}" autocomplete="off" placeholder="Separados por vírgula: gaita, cavaquinho"></label>
+        <h2 class="grupo-ficha">Pagamento</h2>
+        <label class="c2">Tipo da chave Pix<select name="pix_tipo">${opcoes(TIPOS_PIX, m.pix_tipo)}</select></label>
+        <label class="c4">Chave Pix<input name="pix_chave" value="${esc(pixCampo)}" autocomplete="off" placeholder="A chave que o artista passou"></label>
+        <label class="c6">Observações<textarea name="obs" placeholder="Disponibilidade, cachê de referência, com quem já tocou...">${esc(m.obs)}</textarea></label>
+        <p class="c6 ajuda" style="margin:0">WhatsApp e Pix ficam só aqui na Gestão, com senha. Não aparecem no site nem em planilhas.</p>
+      </form>
+      <div class="salvar-barra"><button class="btn" type="button" id="salvar">${novo ? "Cadastrar" : "Salvar"}</button>${novo ? "" : '<button class="texto-btn perigo" type="button" id="excluir">Excluir cadastro</button>'}<p class="estado" id="estado" role="status"></p></div></div>`;
+    const form = $("#ficha");
+    form.addEventListener("input", () => { sujo = true; estado(""); });
+    $("#salvar").addEventListener("click", () => {
+      const f = new FormData(form);
+      const dados = {
+        nome: f.get("nome"), telefone: f.get("telefone"), cidade: f.get("cidade"), estilo: f.get("estilo"), obs: f.get("obs"),
+        casting: form.casting.checked, pix_tipo: f.get("pix_tipo"), pix_chave: f.get("pix_chave"),
+        instrumentos: [...f.getAll("inst"), ...String(f.get("outros") || "").split(",")],
+      };
+      if (!String(dados.nome).trim()) { estado("Digite o nome artístico.", "ruim"); return form.nome.focus(); }
+      if (String(dados.pix_chave).trim() && !dados.pix_tipo) { estado("Escolha o tipo da chave Pix.", "ruim"); return form.pix_tipo.focus(); }
+      salvar(novo ? "gestao/musicos" : "gestao/musicos/" + m.id, novo ? "POST" : "PUT", dados, (r) => {
+        sujo = false;
+        if (novo) location.hash = "#musico/" + r.id; else { formMusico(r); estado("Salvo.", "ok"); }
+      }, (r) => { if (r.existente) estado(r.erro + " Abra o cadastro dele em Cadastro de artistas.", "ruim"); });
+    });
+    if (!novo) $("#excluir").addEventListener("click", () => {
+      if (!confirm(`Excluir o cadastro de ${m.nome}? Isso não pode ser desfeito.`)) return;
+      api("gestao/musicos/" + m.id, "DELETE").then((r) => { if (r.erro) return estado(r.erro, "ruim"); sujo = false; location.hash = "#musicos"; });
     });
   }
 
