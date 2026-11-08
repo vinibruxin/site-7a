@@ -501,14 +501,14 @@ describe("pedido do site", () => {
     const r = await SELF.fetch(BASE + "/api/pedido", {
       method: "POST",
       headers: { "content-type": "application/json", "cf-connecting-ip": "10.0.0." + Math.floor(Math.random() * 250) },
-      body: JSON.stringify({ nome, artista: "Ænima", evento: "Casamento", particular: true, data: "2027-03-20", horario: "20:00", cidade: "Betim", convidados: "120", local: "Sítio" }),
+      body: JSON.stringify({ nome, artista: "Ænima", evento: "Casamento", particular: true, data: "2027-03-20", inicio: "21:30", fim: "01:00", cidade: "Betim", convidados: "120", local: "Sítio" }),
     });
     expect(r.status).toBe(200);
     const achado = await api(`gestao/contratantes?busca=${nome}`);
     expect(achado.itens).toHaveLength(1);
     expect(achado.itens[0].tipo).toBe("particular");
     const notas = await api(`gestao/contratantes/${achado.itens[0].id}/notas`);
-    expect(notas[0].texto).toContain("Horário: 20:00");
+    expect(notas[0].texto).toContain("Horário: 21:30 às 01:00 (3 h 30 min)");
     expect(notas[0].texto).toContain("Convidados: 120");
     expect(notas[0].texto).toContain("Local: Sítio");
   });

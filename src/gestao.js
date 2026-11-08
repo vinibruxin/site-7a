@@ -408,6 +408,15 @@ const TIPO_DO_EVENTO = {
   "Festa em casa": "particular",
 };
 
+// duração entre início e fim (fim antes do início passa da meia-noite), ex.: "3 h 30 min"
+export function duracaoShow(inicio, fim) {
+  const min = (h) => +h.slice(0, 2) * 60 + +h.slice(3, 5);
+  let d = min(fim) - min(inicio);
+  if (d <= 0) d += 1440;
+  const h = Math.floor(d / 60), m = d % 60;
+  return [h ? `${h} h` : "", m ? `${m} min` : ""].filter(Boolean).join(" ");
+}
+
 export async function pedidoDoSite(req, env) {
   await prepararBanco(env);
   const p = await req.json().catch(() => ({}));
@@ -431,7 +440,9 @@ export async function pedidoDoSite(req, env) {
   if (porIp.results[0].n >= LIMITE_IP_HORA || repetido.results[0].n > 0 || noDia.results[0].n >= LIMITE_DIA) return json({ ok: true });
 
   // página de evento particular manda também horário, convidados e local
-  const horario = /^\d{2}:\d{2}$/.test(p?.horario || "") ? p.horario : "";
+  const hora = (x) => (/^([01]\d|2[0-3]):[0-5]\d$/.test(x || "") ? x : "");
+  const inicio = hora(p?.inicio), fim = hora(p?.fim);
+  const horario = inicio && fim ? `${inicio} às ${fim} (${duracaoShow(inicio, fim)})` : inicio || (fim ? `até ${fim}` : "");
   const convidados = txt(p?.convidados, 20);
   const local = txt(p?.local, 120);
 

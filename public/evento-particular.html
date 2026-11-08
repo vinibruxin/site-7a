@@ -89,7 +89,7 @@ a { color: inherit; }
 .abertura .btn-preto { background: var(--preto); }
 .abertura .btn-preto:hover { background: var(--grafite); }
 .abertura .link-claro { font-weight: 700; font-size: 15px; color: var(--offwhite); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; padding: 12px 6px; }
-.foto-colada { position: absolute; z-index: 2; right: 7vw; top: clamp(36px, 7vh, 96px); width: clamp(220px, 25vw, 380px); aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 30%; transform: rotate(-3deg); filter: grayscale(1); }
+.foto-colada { position: absolute; z-index: 2; right: 7vw; top: clamp(36px, 7vh, 96px); width: clamp(240px, 27vw, 420px); height: auto; aspect-ratio: 1; object-fit: cover; object-position: 50% 40%; transform: rotate(-3deg); filter: grayscale(1); }
 .ocasioes { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 22px 0 0; padding: 0; list-style: none; font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; color: var(--offwhite); }
 
 /* ---------- Quem toca (cartas 5:7) ---------- */
@@ -150,6 +150,11 @@ a { color: inherit; }
 .celula input::placeholder { color: #8A847D; }
 .celula input:focus, .celula select:focus { outline: none; }
 .celula select { cursor: pointer; }
+.celula.calculada { background: #1A1A1A; }
+.celula .rotulo { position: absolute; top: 16px; left: 20px; font-size: var(--t-nota); font-weight: 600; color: var(--cinza); }
+.celula output { display: flex; align-items: center; height: 104px; padding: 44px 20px 16px; font: 600 var(--t-lead)/1.2 var(--f-texto); color: var(--cinza); }
+.celula output.tem { color: var(--offwhite); }
+.barra > a { grid-column: span 2; }
 .celula select option { background: var(--preto); color: var(--offwhite); }
 .barra > a { display: grid; place-items: center; height: 104px; padding-inline: 16px; text-align: center; text-decoration: none; font: 700 var(--t-lead)/1.2 var(--f-texto); transition: background-color .2s, color .2s, transform .15s var(--ease); }
 .barra > a:active { transform: scale(.98); }
@@ -188,6 +193,7 @@ a { color: inherit; }
 }
 @keyframes sobe { to { opacity: 1; transform: none; } }
 @keyframes aparece { to { opacity: 1; } }
+@keyframes entra { to { opacity: 1; transform: none; } }
 @keyframes cola { to { opacity: 1; transform: rotate(-3deg); } }
 @keyframes pisca { 40% { transform: translateY(-8px) rotate(-1deg); } }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition-duration: 0s !important; } }
@@ -197,14 +203,19 @@ a { color: inherit; }
   .grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 12px; }
   .barra { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .abertura .baixo { display: flow-root; }
-  .foto-colada { position: relative; right: auto; top: auto; float: right; width: 38vw; margin: 8px 2vw 24px 32px; }
+  .foto-colada { position: relative; right: auto; top: auto; float: right; width: 36vw; margin: 8px 2vw 24px 32px; }
 }
 @media (max-width: 700px) {
   :root { --t-cartaz: 19vw; --m: max(16px, env(safe-area-inset-left, 0px)); --m-r: max(16px, env(safe-area-inset-right, 0px)); }
   .abertura { min-height: 0; }
   .abertura .cima { padding-top: 40px; }
-  .foto-colada { float: none; width: 54vw; margin: 4px 4vw 28px auto; }
-  .abertura .baixo { padding-bottom: 44px; }
+  .abertura .baixo { display: flex; flex-direction: column; padding-bottom: 0; }
+  .abertura .baixo > .display { order: 0; }
+  .ocasioes { order: 1; }
+  .abertura .apoio { order: 2; margin: 22px 0 26px; }
+  .abertura .acoes { order: 3; }
+  .foto-colada { order: 4; float: none; width: calc(100% + var(--m) + var(--m-r)); max-width: none; margin: 40px calc(-1 * var(--m-r)) 0 calc(-1 * var(--m)); aspect-ratio: 5 / 4; object-position: 50% 35%; transform: none; }
+  .js .foto-colada { transform: translateY(40px); animation-name: entra; }
   .abertura .apoio { font-size: 17px; }
   .ocasioes { font-size: 22px; gap: 4px 16px; }
   .quem-toca, .como { padding-block: 96px 104px; }
@@ -220,7 +231,9 @@ a { color: inherit; }
   .orcamento { padding-block: 96px 104px; }
   .barra { grid-template-columns: minmax(0, 1fr); gap: 12px; }
   .celula.dupla { grid-column: auto; }
-  .celula label { top: 14px; left: 18px; }
+  .celula label, .celula .rotulo { top: 14px; left: 18px; }
+  .celula output { height: 84px; padding: 40px 18px 14px; font-size: 17px; }
+  .barra > a { grid-column: auto; }
   .celula input, .celula select { height: 84px; padding: 40px 18px 14px; font-size: 17px; }
   .barra > a { height: 84px; font-size: 18px; }
   .desvio .frase { font-size: 17px; padding-right: 48px; }
@@ -312,7 +325,7 @@ a { color: inherit; }
   <section class="como margem" id="como" aria-labelledby="t-como">
     <h2 class="display" id="t-como" data-revela>Como funciona</h2>
     <ol class="passos">
-      <li data-revela><h3>Você conta</h3><p>A data, o horário, a cidade, o lugar e mais ou menos quantos convidados.</p></li>
+      <li data-revela><h3>Você conta</h3><p>A data, o início e o fim do show, a cidade, o lugar e mais ou menos quantos convidados.</p></li>
       <li data-revela><h3>A 7A indica</h3><p>O artista que combina com a festa, com proposta de formato, duração e valor.</p></li>
       <li data-revela><h3>Fechou, a 7A cuida</h3><p>Contrato, horário e passagem de som com o artista, até o último acorde.</p></li>
     </ol>
@@ -335,8 +348,10 @@ a { color: inherit; }
               <option>Quero uma indicação</option><option>Athos Tibães</option><option>Ænima</option><option>DJ Ivan Lennon</option><option>Ordem Mor</option><option>Ordem Mor acústico</option><option>Ossos do Banquete</option><option>Sub Rosa</option>
             </select></div>
           <div class="celula"><label for="f-data">Data</label><input id="f-data" name="data" type="date"></div>
-          <div class="celula"><label for="f-horario">Horário do show</label><input id="f-horario" name="horario" type="time"></div>
           <div class="celula"><label for="f-cidade">Cidade</label><input id="f-cidade" name="cidade" type="text" placeholder="Betim" autocomplete="address-level2"></div>
+          <div class="celula"><label for="f-inicio">Início do show</label><input id="f-inicio" name="inicio" type="time"></div>
+          <div class="celula"><label for="f-fim">Fim do show</label><input id="f-fim" name="fim" type="time"></div>
+          <div class="celula calculada"><span class="rotulo" id="r-duracao">Duração</span><output id="f-duracao" for="f-inicio f-fim" aria-labelledby="r-duracao">Preencha início e fim</output></div>
           <div class="celula"><label for="f-convidados">Convidados</label><input id="f-convidados" name="convidados" type="text" inputmode="numeric" placeholder="Mais ou menos"></div>
           <div class="celula dupla"><label for="f-local">Local</label><input id="f-local" name="local" type="text" placeholder="Salão, casa, sítio, restaurante"></div>
           <div class="celula dupla"><label for="f-nome">Seu nome</label><input id="f-nome" name="nome" type="text" autocomplete="name"></div>
@@ -375,10 +390,22 @@ a { color: inherit; }
   var campoArtista = document.getElementById("f-artista");
   function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ""; }
   function dataBR(x) { var p = x.split("-"); return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : x; }
+  function minutos(h) { var p = /^(\d{2}):(\d{2})$/.exec(h); return p ? +p[1] * 60 + +p[2] : null; }
+  // duração do show a partir do início e do fim; fim antes do início = passa da meia-noite
+  function duracao() {
+    var a = minutos(v("f-inicio")), b = minutos(v("f-fim"));
+    if (a === null || b === null) return "";
+    var d = b - a; if (d <= 0) d += 1440;
+    var h = Math.floor(d / 60), m = d % 60;
+    return (h ? h + " h" : "") + (h && m ? " " : "") + (m ? m + " min" : "");
+  }
   function montar() {
+    var dur = duracao(), saida = document.getElementById("f-duracao");
+    saida.textContent = dur || "Preencha início e fim";
+    saida.classList.toggle("tem", !!dur);
     var l = ["Olá, 7A! Quero um orçamento de show para um evento particular.", "Ocasião: " + v("f-evento"), "Artista: " + v("f-artista")];
     if (v("f-data")) l.push("Data: " + dataBR(v("f-data")));
-    if (v("f-horario")) l.push("Horário: " + v("f-horario"));
+    if (v("f-inicio") || v("f-fim")) l.push("Horário: " + (v("f-inicio") || "?") + " às " + (v("f-fim") || "?") + (dur ? " (" + dur + ")" : ""));
     if (v("f-cidade")) l.push("Cidade: " + v("f-cidade"));
     if (v("f-local")) l.push("Local: " + v("f-local"));
     if (v("f-convidados")) l.push("Convidados: " + v("f-convidados"));
@@ -396,7 +423,7 @@ a { color: inherit; }
   function registrar() {
     try {
       fetch("/api/pedido", { method: "POST", keepalive: true, headers: { "content-type": "application/json" },
-        body: JSON.stringify({ particular: true, nome: v("f-nome"), artista: v("f-artista"), evento: v("f-evento"), data: v("f-data"), horario: v("f-horario"), cidade: v("f-cidade"), local: v("f-local"), convidados: v("f-convidados") }) }).catch(function () {});
+        body: JSON.stringify({ particular: true, nome: v("f-nome"), artista: v("f-artista"), evento: v("f-evento"), data: v("f-data"), inicio: v("f-inicio"), fim: v("f-fim"), cidade: v("f-cidade"), local: v("f-local"), convidados: v("f-convidados") }) }).catch(function () {});
     } catch (e) {}
   }
   whats.addEventListener("click", registrar);
