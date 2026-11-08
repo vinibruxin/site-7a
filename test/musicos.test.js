@@ -72,6 +72,22 @@ describe("API do cadastro", () => {
     expect((await api("gestao/musicos/" + novo.id)).status).toBe(404);
   });
 
+  it("% da 7A: 30% para quem é de fora, % padrão para o casting, e cada um pode ter o seu", async () => {
+    await api("gestao/config", "PUT", { pct_padrao: 20, base: "bruto" });
+    const fora = await api("gestao/musicos", "POST", { nome: "Teste Fora", telefone: tel() });
+    expect(fora.pct).toBe(30);
+    const casting = await api("gestao/musicos", "POST", { nome: "Teste Casting", telefone: tel(), casting: true });
+    expect(casting.pct).toBe(20);
+    const proprio = await api("gestao/musicos", "POST", { nome: "Teste Próprio", telefone: tel(), pct: "25,5" });
+    expect(proprio.pct).toBe(25.5);
+    expect((await api("gestao/musicos", "POST", { nome: "Teste Ruim", pct: 120 })).status).toBe(400);
+    // o % de fora muda em Ajustes
+    const cfg = await api("gestao/config", "PUT", { pct_padrao: 20, pct_fora: 35, base: "bruto" });
+    expect(cfg.pct_fora).toBe("35");
+    expect((await api("gestao/musicos", "POST", { nome: "Teste Fora 2", telefone: tel() })).pct).toBe(35);
+    await api("gestao/config", "PUT", { pct_padrao: 20, pct_fora: 30, base: "bruto" });
+  });
+
   it("recusa sem nome, telefone ruim e Pix errado", async () => {
     expect((await api("gestao/musicos", "POST", { nome: "" })).status).toBe(400);
     expect((await api("gestao/musicos", "POST", { nome: "X", telefone: "123" })).status).toBe(400);

@@ -140,6 +140,10 @@ a { color: inherit; }
 .mini-carta.clara .ind:not(.inf) { color: var(--preto); }
 .mini-carta .ind i { width: 5px; height: 5px; background: var(--vermelho); transform: rotate(45deg); }
 .data-show:hover .mini-carta { transform: translateY(-3px) rotate(-1.5deg); }
+/* artista convidado (fora do casting): carta simples, sem filete ouro nem índice 7A, e o selo */
+.mini-carta.convidado .arte { background: #1A1A1A; }
+.mini-carta.convidado::after { border-color: var(--cinza); opacity: .55; }
+.data-show .selo-convidado { justify-self: start; font: 700 13px/1 var(--f-texto); padding: 6px 8px; background: var(--preto); color: var(--offwhite); }
 @media (prefers-reduced-motion: reduce) { .data-show:hover .mini-carta { transform: none; } }
 @media (max-width: 700px) {
   .data-show.com-carta { grid-template-columns: 76px 72px minmax(0, 1fr); gap: 8px 16px; align-items: start; }

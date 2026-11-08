@@ -3,7 +3,7 @@
 // Regras: só a equipe (painel com senha) lê e grava; o agente Évora é barrado em motivoAgente; nada daqui vai para o site
 // público, para a carga inicial do painel (/api/gestao/dados) nem para planilhas. Sem auto-cadastro.
 
-import { agora, auditoria, json, txt } from "./banco.js";
+import { agora, auditoria, json, lerConfig, txt } from "./banco.js";
 import { formatarTelefone, normalizarTelefone } from "./telefone.js";
 import { validarDocumento } from "./documentos.js";
 
@@ -53,14 +53,25 @@ export function validarPix(tipo, chave) {
   return { ok: true, tipo, valor: a };
 }
 
-function limpar(m) {
+// % da 7A sobre o cachê do artista: o que vier preenchido, ou o padrão do grupo (casting: % padrão; de fora: % de fora, 30%)
+export function pctDoArtista(m, config) {
+  const v = m?.pct === "" || m?.pct == null ? null : Number(String(m.pct).replace(",", "."));
+  if (v != null) return Number.isFinite(v) && v >= 0 && v <= 100 ? { ok: true, pct: v } : { ok: false, erro: "O % da 7A precisa ficar entre 0 e 100." };
+  const padrao = m?.casting ? config.pct_padrao : config.pct_fora;
+  return { ok: true, pct: padrao === "" || padrao == null ? null : Number(padrao) };
+}
+
+function limpar(m, config) {
   const nome = txt(m?.nome, 120);
   if (!nome) return { erro: "Digite o nome artístico." };
   const t = normalizarTelefone(m?.telefone);
   if (!t.ok) return { erro: t.erro };
   const pix = validarPix(m?.pix_tipo, m?.pix_chave);
   if (!pix.ok) return { erro: pix.erro };
+  const pct = pctDoArtista(m, config);
+  if (!pct.ok) return { erro: pct.erro };
   return {
+    pct: pct.pct,
     nome,
     telefone: t.numero,
     pix_tipo: pix.tipo,
@@ -103,7 +114,7 @@ export async function rotasMusicos(req, env, partes, corpo, url) {
   }
 
   if (partes.length === 1 && metodo === "POST") {
-    const m = limpar(corpo);
+    const m = limpar(corpo, await lerConfig(env));
     if (m.erro) return json(m, 400);
     if (m.telefone) {
       const igual = await env.DB.prepare("SELECT id, nome FROM musicos WHERE telefone = ?").bind(m.telefone).first();
@@ -111,9 +122,9 @@ export async function rotasMusicos(req, env, partes, corpo, url) {
     }
     const t = agora();
     const novo = await env.DB.prepare(
-      `INSERT INTO musicos (nome, telefone, pix_tipo, pix_chave, cidade, estilo, instrumentos, casting, obs, criado, atualizado)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
-    ).bind(m.nome, m.telefone, m.pix_tipo, m.pix_chave, m.cidade, m.estilo, m.instrumentos, m.casting, m.obs, t, t).first();
+      `INSERT INTO musicos (nome, telefone, pix_tipo, pix_chave, cidade, estilo, instrumentos, casting, pct, obs, criado, atualizado)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING *`
+    ).bind(m.nome, m.telefone, m.pix_tipo, m.pix_chave, m.cidade, m.estilo, m.instrumentos, m.casting, m.pct, m.obs, t, t).first();
     // a auditoria guarda só o nome: telefone e Pix não vão para o registro
     await auditoria(env, req, "cadastrou artista", "musico", novo.id, m.nome).run();
     return json(saida(novo));
@@ -124,19 +135,19 @@ export async function rotasMusicos(req, env, partes, corpo, url) {
     if (!atual) return json({ erro: "Cadastro não encontrado." }, 404);
     if (metodo === "GET") return json(saida(atual));
     if (metodo === "PUT") {
-      const m = limpar(corpo);
+      const m = limpar(corpo, await lerConfig(env));
       if (m.erro) return json(m, 400);
       if (m.telefone) {
         const igual = await env.DB.prepare("SELECT id, nome FROM musicos WHERE telefone = ? AND id <> ?").bind(m.telefone, id).first();
         if (igual) return json({ erro: `Este WhatsApp já está no cadastro de ${igual.nome}.`, existente: igual }, 409);
       }
-      const mudou = ["nome", "telefone", "pix_chave", "cidade", "estilo", "instrumentos", "casting", "obs"].filter((k) => String(m[k]) !== String(atual[k]))
-        .map((k) => ({ telefone: "WhatsApp", pix_chave: "Pix", instrumentos: "formação", casting: "casting", obs: "observações" })[k] || k);
+      const mudou = ["nome", "telefone", "pix_chave", "cidade", "estilo", "instrumentos", "casting", "pct", "obs"].filter((k) => String(m[k]) !== String(atual[k]))
+        .map((k) => ({ telefone: "WhatsApp", pix_chave: "Pix", instrumentos: "formação", casting: "casting", pct: "% da 7A", obs: "observações" })[k] || k);
       const [{ results }] = await env.DB.batch([
         env.DB.prepare(
-          `UPDATE musicos SET nome = ?, telefone = ?, pix_tipo = ?, pix_chave = ?, cidade = ?, estilo = ?, instrumentos = ?, casting = ?, obs = ?, atualizado = ?
+          `UPDATE musicos SET nome = ?, telefone = ?, pix_tipo = ?, pix_chave = ?, cidade = ?, estilo = ?, instrumentos = ?, casting = ?, pct = ?, obs = ?, atualizado = ?
            WHERE id = ? RETURNING *`
-        ).bind(m.nome, m.telefone, m.pix_tipo, m.pix_chave, m.cidade, m.estilo, m.instrumentos, m.casting, m.obs, agora(), id),
+        ).bind(m.nome, m.telefone, m.pix_tipo, m.pix_chave, m.cidade, m.estilo, m.instrumentos, m.casting, m.pct, m.obs, agora(), id),
         auditoria(env, req, "editou artista", "musico", id, `${m.nome}${mudou.length ? ": " + mudou.join(", ") : ""}`),
       ]);
       return json(saida(results[0]));
