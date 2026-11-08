@@ -395,6 +395,27 @@ async function exportar(env, req, qual) {
 
 const LIMITE_IP_HORA = 5;
 const LIMITE_DIA = 100;
+// tipo do contratante a partir do que a pessoa escolheu no site (home e página de evento particular)
+const TIPO_DO_EVENTO = {
+  "Bar ou casa de show": "casa",
+  Festival: "festival",
+  "Evento de empresa": "empresa",
+  "Confraternização de empresa": "empresa",
+  "Festa particular": "particular",
+  Aniversário: "particular",
+  Casamento: "particular",
+  Formatura: "particular",
+  "Festa em casa": "particular",
+};
+
+// duração entre início e fim (fim antes do início passa da meia-noite), ex.: "3 h 30 min"
+export function duracaoShow(inicio, fim) {
+  const min = (h) => +h.slice(0, 2) * 60 + +h.slice(3, 5);
+  let d = min(fim) - min(inicio);
+  if (d <= 0) d += 1440;
+  const h = Math.floor(d / 60), m = d % 60;
+  return [h ? `${h} h` : "", m ? `${m} min` : ""].filter(Boolean).join(" ");
+}
 
 export async function pedidoDoSite(req, env) {
   await prepararBanco(env);
@@ -407,7 +428,7 @@ export async function pedidoDoSite(req, env) {
   if (!artista || !evento) return json({ ok: false }, 400);
 
   const ip = req.headers.get("cf-connecting-ip") || "local";
-  const assinatura = [nome, artista, evento, cidade, data].join("|").toLowerCase();
+  const assinatura = [nome, artista, evento, cidade, data, String(p?.local || "").slice(0, 120)].join("|").toLowerCase();
   const umaHora = new Date(Date.now() - 3600e3).toISOString();
   const umDia = new Date(Date.now() - 86400e3).toISOString();
   const [porIp, repetido, noDia] = await env.DB.batch([
@@ -418,9 +439,24 @@ export async function pedidoDoSite(req, env) {
   // mesmo pedido clicado duas vezes, ou excesso: responde ok sem gravar de novo
   if (porIp.results[0].n >= LIMITE_IP_HORA || repetido.results[0].n > 0 || noDia.results[0].n >= LIMITE_DIA) return json({ ok: true });
 
+  // página de evento particular manda também horário, convidados e local
+  const hora = (x) => (/^([01]\d|2[0-3]):[0-5]\d$/.test(x || "") ? x : "");
+  const inicio = hora(p?.inicio), fim = hora(p?.fim);
+  const horario = inicio && fim ? `${inicio} às ${fim} (${duracaoShow(inicio, fim)})` : inicio || (fim ? `até ${fim}` : "");
+  const convidados = txt(p?.convidados, 20);
+  const local = txt(p?.local, 120);
+
   const t = agora();
-  const tipo = { "Bar ou casa de show": "casa", Festival: "festival", "Evento de empresa": "empresa", "Festa particular": "particular" }[evento] || "outro";
-  const detalhe = [`Pedido pelo site: ${artista}`, `Evento: ${evento}`, data ? `Data: ${data.split("-").reverse().join("/")}` : "", cidade ? `Cidade: ${cidade}` : ""].filter(Boolean).join(". ");
+  const tipo = TIPO_DO_EVENTO[evento] || (p?.particular ? "particular" : "outro");
+  const detalhe = [
+    `Pedido pelo site: ${artista}`,
+    `Evento: ${evento}`,
+    data ? `Data: ${data.split("-").reverse().join("/")}` : "",
+    horario ? `Horário: ${horario}` : "",
+    cidade ? `Cidade: ${cidade}` : "",
+    local ? `Local: ${local}` : "",
+    convidados ? `Convidados: ${convidados}` : "",
+  ].filter(Boolean).join(". ");
   const titulo = nome || `Pedido do site (${cidade || evento})`;
   const c = await env.DB.prepare(
     `INSERT INTO contratantes (nome, tipo, contato, cidade, etapa, proxima_acao, proxima_data, origem, obs, criado, atualizado)

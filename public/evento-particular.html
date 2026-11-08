@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Evento particular | 7A Produtora</title>
+<meta name="description" content="Show na sua festa: aniversário, casamento, formatura ou confraternização da empresa. Voz e violão, duo acústico de rock, DJ ou banda completa, com a 7A Produtora, Betim, MG.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:site_name" content="7A Produtora">
+<meta property="og:title" content="Show na sua festa | 7A Produtora">
+<meta property="og:description" content="Aniversário, casamento, formatura ou empresa. Escolha o artista e peça o orçamento no WhatsApp da 7A.">
+<meta property="og:url" content="https://7aprodutora.com.br/evento-particular.html">
+<meta property="og:image" content="https://7aprodutora.com.br/img/aenima.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/logo-7a.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Space+Mono&display=swap">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* Evento particular: mesma direção cartaz de rua da home (campos chapados, Anton grande, artista em carta 5:7).
+   Paleta e fontes do manual 7A. */
+:root {
+  --preto: #0A0A0A;
+  --vermelho: #B5121B;
+  --offwhite: #F2EFEA;
+  --grafite: #2B2B2B;
+  --ouro: #F2D27C;
+  --cinza: #B8B2AA;
+  --cinza-tinta: #5E5852;
+  --f-display: "Anton", "Impact", "Arial Narrow Bold", sans-serif;
+  --f-texto: "Montserrat", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --f-serial: "Space Mono", Consolas, "Courier New", monospace;
+  --t-cartaz: clamp(84px, 11.5vw, 190px);
+  --t-titulo: clamp(40px, 5.2vw, 84px);
+  --t-sub: clamp(26px, 2.6vw, 40px);
+  --t-lead: 20px;
+  --t-texto: 17px;
+  --t-nota: 14px;
+  --m: max(20px, env(safe-area-inset-left, 0px));
+  --m-r: max(20px, env(safe-area-inset-right, 0px));
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--preto); scroll-behavior: smooth; scroll-padding-top: 84px; }
+body { margin: 0; background: var(--preto); color: var(--offwhite); font-family: var(--f-texto); font-size: var(--t-texto); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+img, video { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--ouro); outline-offset: 3px; }
+.margem { padding-left: var(--m); padding-right: var(--m-r); }
+.display { font-family: var(--f-display); font-weight: 400; text-transform: uppercase; letter-spacing: -0.01em; line-height: .92; margin: 0; text-wrap: balance; }
+[hidden] { display: none !important; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font: 700 15px/1 var(--f-texto); text-decoration: none; cursor: pointer; border: 0; padding: 18px 26px; background: var(--vermelho); color: var(--offwhite); transition: transform .15s var(--ease), background-color .2s, color .2s; }
+.btn:hover { background: #9A0F17; }
+.btn:active { transform: scale(.97); }
+
+/* ---------- Barra do topo ---------- */
+.topo-site { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 32px; padding-top: calc(env(safe-area-inset-top, 0px) + 16px); padding-bottom: 16px; background: var(--preto); }
+.topo-site .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--offwhite); margin-right: auto; }
+.topo-site .marca img { width: 40px; height: auto; }
+.topo-site .marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; }
+.menu { display: flex; gap: 28px; }
+.menu a { position: relative; font: 600 15px/1 var(--f-texto); color: var(--offwhite); text-decoration: none; padding: 8px 0; }
+.menu a::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; background: var(--vermelho); transform: scaleX(0); transform-origin: left; transition: transform .25s var(--ease); }
+.menu a:hover::after, .menu a:focus-visible::after, .menu a[aria-current]::after { transform: scaleX(1); }
+.btn-barra { padding: 13px 20px; font-size: 14px; }
+@media (max-width: 860px) {
+  .topo-site { gap: 16px; }
+  .topo-site .marca span { display: none; }
+  .menu { gap: 18px; }
+  .menu a { font-size: 14px; }
+  .menu .so-largo { display: none; }
+  .btn-barra { padding: 11px 14px; }
+}
+
+/* ---------- Abertura: campo preto em cima, vermelho embaixo, foto colada ---------- */
+.abertura { position: relative; display: grid; grid-template-rows: auto auto; min-height: min(calc(100svh - 72px), 1000px); }
+.abertura .cima { background: var(--preto); padding-block: clamp(48px, 9vh, 120px) 0; }
+.abertura .baixo { position: relative; background: var(--vermelho); color: var(--preto); padding-block: 0 56px; }
+.abertura h1 { font-size: var(--t-cartaz); line-height: 1.12; }
+.abertura h1 .l1 { display: block; color: var(--offwhite); }
+.abertura h1 .l2 { display: block; }
+.abertura .cima h1 { margin-bottom: -.06em; }
+.abertura .apoio { margin: 28px 0 32px; max-width: 30em; font-size: var(--t-lead); line-height: 1.45; color: var(--offwhite); font-weight: 600; }
+.abertura .acoes { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.abertura .btn-preto { background: var(--preto); }
+.abertura .btn-preto:hover { background: var(--grafite); }
+.abertura .link-claro { font-weight: 700; font-size: 15px; color: var(--offwhite); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 6px; padding: 12px 6px; }
+.foto-colada { position: absolute; z-index: 2; right: 7vw; top: clamp(36px, 7vh, 96px); width: clamp(240px, 27vw, 420px); height: auto; aspect-ratio: 1; object-fit: cover; object-position: 50% 40%; transform: rotate(-3deg); filter: grayscale(1); }
+.ocasioes { display: flex; flex-wrap: wrap; gap: 6px 22px; margin: 22px 0 0; padding: 0; list-style: none; font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; color: var(--offwhite); }
+
+/* ---------- Quem toca (cartas 5:7) ---------- */
+.quem-toca { background: var(--preto); padding-block: 140px 150px; }
+.quem-toca .intro { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 12px 48px; margin-bottom: 44px; }
+.quem-toca h2 { font-size: var(--t-titulo); line-height: 1.12; }
+.quem-toca .intro p { margin: 0; max-width: 30em; font-size: var(--t-lead); }
+.grade { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.artista { display: block; min-width: 0; color: var(--offwhite); text-decoration: none; cursor: pointer; background: none; border: 0; padding: 0; text-align: left; font: inherit; }
+.peca { position: relative; display: flex; flex-direction: column; aspect-ratio: 5 / 7; overflow: hidden; background: var(--grafite); transition: transform .35s var(--ease); }
+.artista:hover .peca, .artista:focus-visible .peca { transform: translateY(-4px); }
+.peca::after { content: ""; position: absolute; inset: 10px; border: 1px solid var(--ouro); pointer-events: none; z-index: 2; }
+.peca .arte { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; background: var(--preto); }
+.peca .arte img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); transition: transform .7s var(--ease); }
+.artista:hover .peca .arte img { transform: scale(1.04); }
+.peca .indice { position: absolute; z-index: 3; top: 22px; left: 22px; display: grid; justify-items: center; gap: 5px; font: 400 20px/1 var(--f-display); color: var(--offwhite); }
+.peca.clara .indice:not(.inf) { color: var(--preto); }
+.peca .indice.inf { top: auto; left: auto; bottom: 22px; right: 22px; transform: rotate(180deg); }
+.peca .indice i { width: 10px; height: 10px; background: var(--vermelho); transform: rotate(45deg); }
+.peca .info { position: relative; z-index: 1; display: grid; gap: 6px; padding: 16px 26px 26px; background: var(--grafite); }
+.peca .info::before { content: ""; position: absolute; top: 0; width: 12.2%; height: 5px; background: var(--vermelho); }
+.peca .info.aba-ini::before { left: 26px; }
+.peca .info.aba-meio::before { left: 50%; transform: translateX(-50%); }
+.peca .info.aba-fim::before { right: 26px; }
+.artista .nome { font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; }
+.artista .papel { margin: 0; font-size: var(--t-nota); color: var(--cinza); line-height: 1.45; }
+.artista .festa { margin: 0; font-size: 15px; color: var(--offwhite); font-weight: 600; line-height: 1.45; }
+.artista .rodape { display: flex; justify-content: space-between; align-items: baseline; gap: 6px 12px; margin-top: 8px; padding-right: 30px; white-space: nowrap; }
+.artista .serial { font: 400 13px/1 var(--f-serial); letter-spacing: .06em; text-transform: uppercase; }
+.artista .pedir { font-weight: 700; font-size: var(--t-nota); text-decoration: underline; text-decoration-color: var(--vermelho); text-underline-offset: 5px; text-decoration-thickness: 2px; }
+.bandas { margin-top: 56px; display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px 48px; align-items: center; background: var(--grafite); padding: 36px 36px 36px 0; }
+.bandas .fotos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.bandas .fotos img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(1); }
+.bandas h3 { margin: 0 0 14px; font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; }
+.bandas p { margin: 0 0 20px; font-size: var(--t-texto); max-width: 30em; }
+.bandas .link { font-weight: 700; font-size: 15px; text-decoration: underline; text-decoration-color: var(--vermelho); text-decoration-thickness: 2px; text-underline-offset: 6px; }
+
+/* ---------- Como funciona ---------- */
+.como { background: var(--offwhite); color: var(--preto); padding-block: 140px 150px; }
+.como h2 { font-size: var(--t-titulo); line-height: 1.12; margin-bottom: 56px; }
+.passos { list-style: none; margin: 0; padding: 0; display: grid; gap: 40px; }
+.passos li { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 32px; align-items: first baseline; }
+.passos h3 { margin: 0; font: 400 var(--t-titulo)/1.12 var(--f-display); text-transform: uppercase; letter-spacing: -0.01em; }
+.passos li:nth-child(2) h3 { color: var(--vermelho); }
+.passos p { margin: 0; font-size: var(--t-lead); font-weight: 500; max-width: 24em; }
+.como .nota { margin: 64px 0 0; max-width: 46em; font-size: var(--t-texto); color: var(--grafite); font-weight: 500; }
+
+/* ---------- Orçamento (formulário) ---------- */
+.orcamento { background: var(--grafite); padding-block: 130px 140px; }
+.orcamento h2 { font-size: var(--t-titulo); line-height: 1.12; }
+.orcamento .lead { margin: 24px 0 48px; max-width: 36em; font-size: var(--t-lead); }
+.barra { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.celula { position: relative; background: var(--preto); min-width: 0; transition: background-color .2s; }
+.celula.dupla { grid-column: span 2; }
+.celula:focus-within { background: #3A3A3A; }
+.celula label { position: absolute; top: 16px; left: 20px; font-size: var(--t-nota); font-weight: 600; color: var(--cinza); pointer-events: none; }
+.celula input, .celula select { width: 100%; height: 104px; padding: 44px 20px 16px; background: transparent; border: 0; border-radius: 0; color: var(--offwhite); font: 600 var(--t-lead) var(--f-texto); appearance: none; -webkit-appearance: none; }
+.celula input::placeholder { color: #8A847D; }
+.celula input:focus, .celula select:focus { outline: none; }
+.celula select { cursor: pointer; }
+.celula.calculada { background: #1A1A1A; }
+.celula .rotulo { position: absolute; top: 16px; left: 20px; font-size: var(--t-nota); font-weight: 600; color: var(--cinza); }
+.celula output { display: flex; align-items: center; height: 104px; padding: 44px 20px 16px; font: 600 var(--t-lead)/1.2 var(--f-texto); color: var(--cinza); }
+.celula output.tem { color: var(--offwhite); }
+.barra > a { grid-column: span 2; }
+.celula select option { background: var(--preto); color: var(--offwhite); }
+.barra > a { display: grid; place-items: center; height: 104px; padding-inline: 16px; text-align: center; text-decoration: none; font: 700 var(--t-lead)/1.2 var(--f-texto); transition: background-color .2s, color .2s, transform .15s var(--ease); }
+.barra > a:active { transform: scale(.98); }
+.barra .whats { background: var(--vermelho); color: var(--offwhite); }
+.barra .whats:hover, .barra .whats:focus-visible { background: var(--offwhite); color: var(--vermelho); }
+.barra .email { background: var(--offwhite); color: var(--preto); }
+.barra .email:hover, .barra .email:focus-visible { background: var(--preto); color: var(--offwhite); }
+.mensagem { margin-top: 16px; background: var(--preto); padding: 28px 24px; display: grid; gap: 12px; }
+.mensagem span { font-size: var(--t-nota); font-weight: 600; color: var(--cinza); }
+.mensagem pre { margin: 0; white-space: pre-wrap; font: 400 var(--t-texto)/1.55 var(--f-texto); color: var(--offwhite); }
+.orcamento .letra-miuda { margin: 28px 0 0; line-height: 1.6; font-size: var(--t-nota); color: var(--cinza); }
+.orcamento .letra-miuda b { color: var(--offwhite); user-select: all; }
+
+/* ---------- Casa de show? (desvio) + rodapé ---------- */
+.desvio { display: flex; flex-direction: column; gap: 32px; min-height: 44svh; padding: 28px var(--m-r) 24px var(--m); background: var(--vermelho); color: var(--preto); text-decoration: none; position: relative; overflow: hidden; }
+.desvio .frase { margin: 0; max-width: 26em; padding-right: 72px; font-size: var(--t-lead); font-weight: 600; color: var(--offwhite); }
+.desvio svg { position: absolute; top: 28px; right: var(--m-r); width: 48px; height: 48px; }
+.desvio .palavra { display: block; margin-top: auto; font: 400 clamp(72px, 13vw, 220px)/.84 var(--f-display); text-transform: uppercase; letter-spacing: -0.02em; }
+.desvio:hover, .desvio:focus-visible { background: var(--preto); color: var(--vermelho); }
+.fim { display: grid; grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr); gap: 32px 64px; align-items: start; padding-block: 64px 32px; background: var(--preto); font-size: var(--t-nota); }
+.fim .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.fim .marca img { width: 40px; }
+.fim .marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; }
+.fim p { margin: 0; }
+.fim b { display: block; margin-bottom: 4px; }
+.fim .legal { grid-column: 1 / -1; color: var(--cinza); font-size: 13px; }
+
+/* ---------- Movimento ---------- */
+@media (prefers-reduced-motion: no-preference) {
+  .js .abertura .l1, .js .abertura .l2 { opacity: 0; transform: translateY(32px); animation: sobe 900ms var(--ease) forwards; animation-delay: calc(var(--i) * 110ms + 120ms); }
+  .js .foto-colada { opacity: 0; transform: rotate(-3deg) translateY(40px); animation: cola 900ms var(--ease) 450ms forwards; }
+  .js .abertura .apoio, .js .abertura .acoes, .js .ocasioes { opacity: 0; animation: aparece 700ms var(--ease) 650ms forwards; }
+  .js [data-revela] { opacity: 0; transform: translateY(24px); transition: opacity 700ms var(--ease), transform 900ms var(--ease); transition-delay: calc(var(--d, 0) * 80ms); }
+  .js [data-revela].dentro { opacity: 1; transform: none; }
+  .artista.escolhido .peca { animation: pisca 700ms var(--ease); }
+}
+@keyframes sobe { to { opacity: 1; transform: none; } }
+@keyframes aparece { to { opacity: 1; } }
+@keyframes entra { to { opacity: 1; transform: none; } }
+@keyframes cola { to { opacity: 1; transform: rotate(-3deg); } }
+@keyframes pisca { 40% { transform: translateY(-8px) rotate(-1deg); } }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition-duration: 0s !important; } }
+
+/* ---------- Telas menores ---------- */
+@media (max-width: 1000px) {
+  .grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 12px; }
+  .barra { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .abertura .baixo { display: flow-root; }
+  .foto-colada { position: relative; right: auto; top: auto; float: right; width: 36vw; margin: 8px 2vw 24px 32px; }
+}
+@media (max-width: 700px) {
+  :root { --t-cartaz: 19vw; --m: max(16px, env(safe-area-inset-left, 0px)); --m-r: max(16px, env(safe-area-inset-right, 0px)); }
+  .abertura { min-height: 0; }
+  .abertura .cima { padding-top: 40px; }
+  .abertura .baixo { display: flex; flex-direction: column; padding-bottom: 0; }
+  .abertura .baixo > .display { order: 0; }
+  .ocasioes { order: 1; }
+  .abertura .apoio { order: 2; margin: 22px 0 26px; }
+  .abertura .acoes { order: 3; }
+  .foto-colada { order: 4; float: none; width: calc(100% + var(--m) + var(--m-r)); max-width: none; margin: 40px calc(-1 * var(--m-r)) 0 calc(-1 * var(--m)); aspect-ratio: 5 / 4; object-position: 50% 35%; transform: none; }
+  .js .foto-colada { transform: translateY(40px); animation-name: entra; }
+  .abertura .apoio { font-size: 17px; }
+  .ocasioes { font-size: 22px; gap: 4px 16px; }
+  .quem-toca, .como { padding-block: 96px 104px; }
+  .grade { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .artista .peca { max-width: 440px; margin-inline: auto; }
+  .artista .nome { font-size: 24px; }
+  .bandas { grid-template-columns: minmax(0, 1fr); padding: 0 0 28px; }
+  .bandas > div:last-child { padding-inline: 20px; }
+  .passos { gap: 36px; }
+  .passos li { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .passos h3 { font-size: 44px; }
+  .passos p { font-size: 17px; }
+  .orcamento { padding-block: 96px 104px; }
+  .barra { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .celula.dupla { grid-column: auto; }
+  .celula label, .celula .rotulo { top: 14px; left: 18px; }
+  .celula output { height: 84px; padding: 40px 18px 14px; font-size: 17px; }
+  .barra > a { grid-column: auto; }
+  .celula input, .celula select { height: 84px; padding: 40px 18px 14px; font-size: 17px; }
+  .barra > a { height: 84px; font-size: 18px; }
+  .desvio .frase { font-size: 17px; padding-right: 48px; }
+  .desvio svg { top: 20px; width: 32px; height: 32px; }
+  .desvio .palavra { font-size: 21vw; }
+  .fim { grid-template-columns: minmax(0, 1fr); gap: 24px; }
+}
+</style>
+</head>
+<body>
+
+<header class="topo-site margem">
+  <a class="marca" href="/" aria-label="7A Produtora, início"><img src="img/logo-7a.png" srcset="img/logo-7a.png 1x, img/logo-7a-g.png 3x" alt="Logo 7A" width="40" height="47"><span>7A Produtora</span></a>
+  <nav class="menu" aria-label="Principal">
+    <a class="so-largo" href="/#casting">Casting</a>
+    <a href="#quem-toca">Quem toca</a>
+    <a class="so-largo" href="#como">Como funciona</a>
+  </nav>
+  <a class="btn btn-barra" href="#orcamento">Pedir orçamento</a>
+</header>
+
+<main>
+  <!-- ABERTURA -->
+  <section class="abertura" aria-labelledby="t-abertura">
+    <div class="cima margem">
+      <h1 class="display" id="t-abertura" aria-label="Show na sua festa"><span class="l1" style="--i:0">Show na</span></h1>
+    </div>
+    <div class="baixo margem">
+      <p class="display" aria-hidden="true" style="font-size:var(--t-cartaz);line-height:1.12;margin:0"><span class="l2" style="--i:1;display:block">sua festa</span></p>
+      <img class="foto-colada" src="img/aenima.jpg" alt="Ænima: Athos Tibães com a guitarra e Bruno Bizonni com o microfone, foto em preto e branco" width="599" height="610">
+      <ul class="ocasioes" aria-label="Ocasiões">
+        <li>Aniversário</li><li>Casamento</li><li>Formatura</li><li>Empresa</li>
+      </ul>
+      <p class="apoio">A 7A leva o artista do tamanho da sua festa: voz e violão, duo acústico de rock, DJ ou banda completa. Você conta a data, a gente monta o orçamento.</p>
+      <div class="acoes">
+        <a class="btn btn-preto" href="#orcamento">Pedir orçamento</a>
+        <a class="link-claro" href="#quem-toca">Ver quem toca</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUEM TOCA -->
+  <section class="quem-toca margem" id="quem-toca" aria-labelledby="t-quem">
+    <div class="intro">
+      <h2 class="display" id="t-quem" data-revela>Quem toca na sua festa</h2>
+      <p data-revela style="--d:1">Três formatos que cabem em salão, casa, sítio ou restaurante. Toque em um artista para já pedir com ele.</p>
+    </div>
+    <div class="grade">
+      <button class="artista" type="button" data-artista="Athos Tibães" data-revela>
+        <span class="peca">
+          <span class="indice">7A<i></i></span>
+          <span class="arte"><img src="img/athos.jpg" alt="Athos Tibães com a guitarra na frente do rosto" loading="lazy" width="800" height="1009" style="object-position:50% 25%"></span>
+          <span class="info aba-ini"><span class="nome">Athos Tibães</span><span class="papel">MPB e pop rock, voz e violão</span><span class="festa">Show intimista para jantar, aniversário e evento privado.</span><span class="rodape"><span class="serial">Série 7A-004</span><span class="pedir">Pedir com ele</span></span></span>
+          <span class="indice inf">7A<i></i></span>
+        </span>
+      </button>
+      <button class="artista" type="button" data-artista="Ænima" data-revela style="--d:1">
+        <span class="peca clara">
+          <span class="indice">7A<i></i></span>
+          <span class="arte"><img src="img/aenima.jpg" alt="Ænima: Athos Tibães e Bruno Bizonni, foto em preto e branco" loading="lazy" width="599" height="610" style="object-position:50% 30%"></span>
+          <span class="info aba-meio"><span class="nome">Ænima</span><span class="papel">Clássicos do rock em versões acústicas</span><span class="festa">Rock dos anos 80, 90 e 2000 para celebração e empresa.</span><span class="rodape"><span class="serial">Série 7A-005</span><span class="pedir">Pedir com eles</span></span></span>
+          <span class="indice inf">7A<i></i></span>
+        </span>
+      </button>
+      <button class="artista" type="button" data-artista="DJ Ivan Lennon" data-revela style="--d:2">
+        <span class="peca">
+          <span class="indice">7A<i></i></span>
+          <span class="arte"><img src="img/dj-ivan.jpg" alt="DJ Ivan Lennon de fones na cabine, foto em preto e branco" loading="lazy" width="680" height="690" style="object-position:55% 40%"></span>
+          <span class="info aba-fim"><span class="nome">DJ Ivan Lennon</span><span class="papel">Pop e pop rock na pista</span><span class="festa">Hits nacionais e internacionais para a pista não parar.</span><span class="rodape"><span class="serial">Série 7A-006</span><span class="pedir">Pedir com ele</span></span></span>
+          <span class="indice inf">7A<i></i></span>
+        </span>
+      </button>
+    </div>
+
+    <div class="bandas" data-revela>
+      <div class="fotos">
+        <img src="img/ordem-mor.jpg" alt="Ordem Mor, os cinco integrantes, foto em preto e branco" loading="lazy" width="1000" height="1064" style="object-position:50% 70%">
+        <img src="img/ossos.jpg" alt="Ossos do Banquete, foto em preto e branco" loading="lazy" width="1200" height="800">
+      </div>
+      <div>
+        <h3>Festa grande, com palco?</h3>
+        <p>Ordem Mor e Ossos do Banquete também tocam em eventos, com banda completa. A Ordem Mor ainda tem um formato acústico.</p>
+        <button class="artista link" type="button" data-artista="Quero uma indicação">Pedir uma banda</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO FUNCIONA -->
+  <section class="como margem" id="como" aria-labelledby="t-como">
+    <h2 class="display" id="t-como" data-revela>Como funciona</h2>
+    <ol class="passos">
+      <li data-revela><h3>Você conta</h3><p>A data, o início e o fim do show, a cidade, o lugar e mais ou menos quantos convidados.</p></li>
+      <li data-revela><h3>A 7A indica</h3><p>O artista que combina com a festa, com proposta de formato, duração e valor.</p></li>
+      <li data-revela><h3>Fechou, a 7A cuida</h3><p>Contrato, horário e passagem de som com o artista, até o último acorde.</p></li>
+    </ol>
+    <p class="nota" data-revela>Os artistas levam o próprio equipamento de som. Espaço, horário de montagem e alimentação da equipe a gente combina com você na proposta.</p>
+  </section>
+
+  <!-- ORÇAMENTO -->
+  <section class="orcamento" id="orcamento" aria-labelledby="t-orc">
+    <div class="margem">
+      <h2 class="display" id="t-orc" data-revela>Peça seu orçamento</h2>
+      <p class="lead" data-revela style="--d:1">Preencha o que já souber. A mensagem chega pronta no WhatsApp da 7A, ou no e-mail, e a resposta vem com artista, formato e valor.</p>
+      <form id="pedido" novalidate data-revela style="--d:2">
+        <div class="barra">
+          <div class="celula"><label for="f-evento">Ocasião</label>
+            <select id="f-evento" name="evento">
+              <option>Aniversário</option><option>Casamento</option><option>Formatura</option><option>Confraternização de empresa</option><option>Festa em casa</option><option>Outro</option>
+            </select></div>
+          <div class="celula"><label for="f-artista">Artista</label>
+            <select id="f-artista" name="artista">
+              <option>Quero uma indicação</option><option>Athos Tibães</option><option>Ænima</option><option>DJ Ivan Lennon</option><option>Ordem Mor</option><option>Ordem Mor acústico</option><option>Ossos do Banquete</option><option>Sub Rosa</option>
+            </select></div>
+          <div class="celula"><label for="f-data">Data</label><input id="f-data" name="data" type="date"></div>
+          <div class="celula"><label for="f-cidade">Cidade</label><input id="f-cidade" name="cidade" type="text" placeholder="Betim" autocomplete="address-level2"></div>
+          <div class="celula"><label for="f-inicio">Início do show</label><input id="f-inicio" name="inicio" type="time"></div>
+          <div class="celula"><label for="f-fim">Fim do show</label><input id="f-fim" name="fim" type="time"></div>
+          <div class="celula calculada"><span class="rotulo" id="r-duracao">Duração</span><output id="f-duracao" for="f-inicio f-fim" aria-labelledby="r-duracao">Preencha início e fim</output></div>
+          <div class="celula"><label for="f-convidados">Convidados</label><input id="f-convidados" name="convidados" type="text" inputmode="numeric" placeholder="Mais ou menos"></div>
+          <div class="celula dupla"><label for="f-local">Local</label><input id="f-local" name="local" type="text" placeholder="Salão, casa, sítio, restaurante"></div>
+          <div class="celula dupla"><label for="f-nome">Seu nome</label><input id="f-nome" name="nome" type="text" autocomplete="name"></div>
+          <a class="whats" id="enviar-whats" href="https://wa.me/5531992233295" target="_blank" rel="noopener">Enviar no WhatsApp</a>
+          <a class="email" id="enviar-email" href="mailto:contato@7aprodutora.com.br?subject=Or%C3%A7amento%20de%20show%20para%20evento%20particular">Mandar por e-mail</a>
+        </div>
+        <div class="mensagem" aria-live="polite"><span>Sua mensagem</span><pre id="previa">Olá, 7A! Quero um orçamento de show para um evento particular.</pre></div>
+      </form>
+      <p class="letra-miuda">Prefere ligar? <b>(31) 99223-3295</b> · <b>contato@7aprodutora.com.br</b></p>
+    </div>
+  </section>
+
+  <!-- CASA DE SHOW? -->
+  <a class="desvio" href="/#pedir">
+    <p class="frase">Tem bar, casa de show ou festival? O pedido de data para palco é por aqui.</p>
+    <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36 36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="4"/></svg>
+    <span class="palavra">Casa de show</span>
+  </a>
+</main>
+
+<footer class="fim margem">
+  <a class="marca" href="/" aria-label="Voltar ao início"><img src="img/logo-7a.png" alt="Logo 7A" width="40" height="47"><span>7A Produtora</span></a>
+  <p><b>Contato</b>(31) 99223-3295, WhatsApp e celular<br>contato@7aprodutora.com.br</p>
+  <p><b>Redes</b><a href="https://instagram.com/7a_produtora" target="_blank" rel="noopener">@7a_produtora no Instagram</a><br>Betim, Minas Gerais</p>
+  <p class="legal">© 2026 7A Produtora. Criar, produzir, transformar. Fotos: Ayra Mendes Fotografia e Mateus Rodrigues.</p>
+</footer>
+
+<script>
+(function () {
+  var numero = "5531992233295";
+  var email = "contato@7aprodutora.com.br";
+  var form = document.getElementById("pedido");
+  var previa = document.getElementById("previa");
+  var whats = document.getElementById("enviar-whats");
+  var mail = document.getElementById("enviar-email");
+  var campoArtista = document.getElementById("f-artista");
+  function v(id) { var el = document.getElementById(id); return el ? el.value.trim() : ""; }
+  function dataBR(x) { var p = x.split("-"); return p.length === 3 ? p[2] + "/" + p[1] + "/" + p[0] : x; }
+  function minutos(h) { var p = /^(\d{2}):(\d{2})$/.exec(h); return p ? +p[1] * 60 + +p[2] : null; }
+  // duração do show a partir do início e do fim; fim antes do início = passa da meia-noite
+  function duracao() {
+    var a = minutos(v("f-inicio")), b = minutos(v("f-fim"));
+    if (a === null || b === null) return "";
+    var d = b - a; if (d <= 0) d += 1440;
+    var h = Math.floor(d / 60), m = d % 60;
+    return (h ? h + " h" : "") + (h && m ? " " : "") + (m ? m + " min" : "");
+  }
+  function montar() {
+    var dur = duracao(), saida = document.getElementById("f-duracao");
+    saida.textContent = dur || "Preencha início e fim";
+    saida.classList.toggle("tem", !!dur);
+    var l = ["Olá, 7A! Quero um orçamento de show para um evento particular.", "Ocasião: " + v("f-evento"), "Artista: " + v("f-artista")];
+    if (v("f-data")) l.push("Data: " + dataBR(v("f-data")));
+    if (v("f-inicio") || v("f-fim")) l.push("Horário: " + (v("f-inicio") || "?") + " às " + (v("f-fim") || "?") + (dur ? " (" + dur + ")" : ""));
+    if (v("f-cidade")) l.push("Cidade: " + v("f-cidade"));
+    if (v("f-local")) l.push("Local: " + v("f-local"));
+    if (v("f-convidados")) l.push("Convidados: " + v("f-convidados"));
+    if (v("f-nome")) l.push("Nome: " + v("f-nome"));
+    var texto = l.join("\n");
+    previa.textContent = texto;
+    whats.href = "https://wa.me/" + numero + "?text=" + encodeURIComponent(texto);
+    mail.href = "mailto:" + email + "?subject=" + encodeURIComponent("Orçamento de show: " + v("f-evento")) + "&body=" + encodeURIComponent(texto);
+  }
+  form.addEventListener("input", montar);
+  form.addEventListener("change", montar);
+  form.addEventListener("submit", function (e) { e.preventDefault(); });
+
+  // o pedido também entra na Gestão da 7A como contratante "particular" (não atrasa a abertura do WhatsApp)
+  function registrar() {
+    try {
+      fetch("/api/pedido", { method: "POST", keepalive: true, headers: { "content-type": "application/json" },
+        body: JSON.stringify({ particular: true, nome: v("f-nome"), artista: v("f-artista"), evento: v("f-evento"), data: v("f-data"), inicio: v("f-inicio"), fim: v("f-fim"), cidade: v("f-cidade"), local: v("f-local"), convidados: v("f-convidados") }) }).catch(function () {});
+    } catch (e) {}
+  }
+  whats.addEventListener("click", registrar);
+  mail.addEventListener("click", registrar);
+
+  try {
+    var q = new URLSearchParams(location.search);
+    var pa = q.get("artista"), po = q.get("ocasiao");
+    if (pa) Array.prototype.forEach.call(campoArtista.options, function (o) { if (o.text === pa) campoArtista.value = o.text; });
+    if (po) Array.prototype.forEach.call(document.getElementById("f-evento").options, function (o) { if (o.text === po) o.selected = true; });
+  } catch (e) {}
+  montar();
+
+  document.querySelectorAll("[data-artista]").forEach(function (el) {
+    el.addEventListener("click", function () {
+      campoArtista.value = el.getAttribute("data-artista");
+      montar();
+      document.querySelectorAll(".artista.escolhido").forEach(function (a) { a.classList.remove("escolhido"); });
+      el.classList.add("escolhido");
+      document.getElementById("orcamento").scrollIntoView({ behavior: "smooth" });
+    });
+  });
+
+  var alvos = document.querySelectorAll("[data-revela]");
+  if (!("IntersectionObserver" in window)) { alvos.forEach(function (a) { a.classList.add("dentro"); }); return; }
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("dentro"); io.unobserve(e.target); } });
+  }, { rootMargin: "0px 0px -8% 0px", threshold: 0.05 });
+  alvos.forEach(function (a) { io.observe(a); });
+})();
+</script>
+</body>
+</html>
