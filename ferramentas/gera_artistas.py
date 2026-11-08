@@ -172,6 +172,7 @@ def pagina(i, a):
 <meta property="og:title" content="{e(a["nome"])} | 7A Produtora">
 <meta property="og:description" content="{e(a["genero"])}. {e(a["chamada"])}">
 <meta property="og:url" content="{BASE}/{a["slug"]}.html">
+<link rel="canonical" href="{BASE}/{a["slug"]}.html">
 <meta property="og:image" content="{BASE}/{a["foto"][0]}">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preconnect" href="https://fonts.googleapis.com">
