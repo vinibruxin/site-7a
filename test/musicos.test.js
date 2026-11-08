@@ -2,7 +2,7 @@
 import { SELF } from "cloudflare:test";
 import { beforeAll, describe, expect, it } from "vitest";
 import { BASE, cliente, clienteAgente, entrar, tel } from "./ajuda.js";
-import { filtrar, limparInstrumentos, validarPix } from "../src/musicos.js";
+import { filtrar, limparInstrumentos, validarGrupo, validarPix } from "../src/musicos.js";
 
 let api;
 beforeAll(async () => {
@@ -23,6 +23,34 @@ describe("chave Pix", () => {
     expect(validarPix("email", "sem-arroba").ok).toBe(false);
     expect(validarPix("aleatoria", "1234").ok).toBe(false);
     expect(validarPix("", "qualquer").ok).toBe(false);
+  });
+});
+
+describe("grupo do WhatsApp", () => {
+  it("aceita o link de convite e recusa outro endereço", () => {
+    expect(validarGrupo("chat.whatsapp.com/AbCdEfGhIjKlMnOp")).toEqual({ ok: true, valor: "https://chat.whatsapp.com/AbCdEfGhIjKlMnOp" });
+    expect(validarGrupo("https://chat.whatsapp.com/AbCdEfGhIjKlMnOp?mode=r_c").valor).toBe("https://chat.whatsapp.com/AbCdEfGhIjKlMnOp");
+    expect(validarGrupo("").ok).toBe(true);
+    expect(validarGrupo("https://exemplo.com/grupo").ok).toBe(false);
+  });
+});
+
+describe("casting já cadastrado", () => {
+  it("os 6 do casting entram marcados, ligados ao site, só com o nome", async () => {
+    const lista = await api("gestao/musicos?casting=sim");
+    const porSlug = Object.fromEntries(lista.filter((m) => m.slug).map((m) => [m.slug, m]));
+    expect(Object.keys(porSlug).sort()).toEqual(["aenima", "athos-tibaes", "dj-ivan-lennon", "ordem-mor", "ossos-do-banquete", "sub-rosa"]);
+    expect(porSlug.aenima.nome).toBe("Ænima");
+    for (const m of Object.values(porSlug)) {
+      expect(m.casting).toBe(true);
+      expect(m.pct).toBe(20);
+      expect([m.telefone, m.pix_chave, m.grupo, m.cidade, m.estilo]).toEqual(["", "", "", "", ""]);
+    }
+    // editar mantém a ligação com o site e grava o grupo
+    const ed = await api("gestao/musicos/" + porSlug["sub-rosa"].id, "PUT", { ...porSlug["sub-rosa"], grupo: "https://chat.whatsapp.com/GrupoTesteSubRosa1" });
+    expect(ed.slug).toBe("sub-rosa");
+    expect(ed.grupo).toBe("https://chat.whatsapp.com/GrupoTesteSubRosa1");
+    await api("gestao/musicos/" + ed.id, "PUT", { ...ed, grupo: "" });
   });
 });
 

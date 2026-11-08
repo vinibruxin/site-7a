@@ -303,6 +303,11 @@ a.chip:active { transform: scale(.96); }
 .musico .sem { color: var(--cinza); font-size: 13px; align-self: center; }
 .casas-filtros.filtros-mus select { flex: 1 1 200px; }
 .ficha .grupo-ficha { line-height: 1.12; }
+.aviso-show { display: grid; grid-template-columns: minmax(0, 300px) minmax(0, 1fr); gap: 20px 28px; align-items: start; margin-bottom: 28px; }
+.aviso-show canvas { width: 100%; height: auto; display: block; background: var(--preto); }
+.aviso-show .acoes-rapidas { margin: 0; }
+.aviso-show .ajuda { margin: 0 0 12px; }
+@media (max-width: 760px) { .aviso-show { grid-template-columns: minmax(0, 1fr); } .aviso-show canvas { max-width: 340px; } }
 .marcas-inst { display: flex; flex-wrap: wrap; gap: 6px; }
 .marcas-inst label { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 8px 12px; background: var(--grafite); color: var(--offwhite); font-weight: 600; font-size: 14px; cursor: pointer; transition: background-color .15s; }
 .marcas-inst label:hover { background: var(--grafite-2); }
@@ -1700,6 +1705,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
         ${novo ? "" : '<button class="texto-btn perigo apagar" type="button" id="apagar">Apagar show</button>'}
       </div></div>
       ${novo ? "" : `
+      <h2 class="display">Aviso ao artista</h2>
+      <div id="aviso-show"></div>
       <h2 class="display">Proposta</h2>
       <p class="ajuda">Uma página com a marca da 7A, a carta do artista, data, local e cachê deste show. Você manda o link para o contratante, e ele abre no celular ou salva em PDF.</p>
       <form class="ficha" id="ficha-proposta" novalidate>
@@ -1809,13 +1816,14 @@ a.item:active { transform: translateX(3px) scale(.99); }
       if (!dados.artista && !dados.artista_texto.trim()) { estado("Escreva o nome do artista.", "ruim"); form.artista_texto.focus(); return; }
       if (dados.hora_fim && !dados.hora) { estado("Preencha a hora de início.", "ruim"); form.hora.focus(); return; }
       salvar(novo ? "gestao/shows" : "gestao/shows/" + s.id, novo ? "POST" : "PUT", dados, (r) => {
-        if (novo) D.shows.push(r); else Object.assign(s, r);
+        if (novo) D.shows.push(r); else { Object.assign(s, r); montarAviso(s); }
         sujo = false;
         if (novo) location.hash = "#show/" + r.id; else estado(r.status === "confirmado" && r.publicar && r.data >= hoje() ? "Salvo. Já aparece na agenda do site." : "Salvo.", "ok");
       });
     });
     if (novo) return;
     montarProposta(s);
+    montarAviso(s);
     api("gestao/documentos?show=" + s.id).then((l) => { if (Array.isArray(l) && $("#docs-show")) $("#docs-show").innerHTML = l.map(itemDocumento).join(""); });
     $("#apagar").addEventListener("click", () => {
       if (!confirm("Apagar este show? Se ele não aconteceu, prefira marcar como cancelado.")) return;
@@ -1825,6 +1833,149 @@ a.item:active { transform: translateX(3px) scale(.99); }
         sujo = false; location.hash = "#shows";
       });
     });
+  }
+
+  /* ---------- aviso de data fechada: imagem para o grupo da banda ou o WhatsApp do artista solo ---------- */
+  // tudo grátis e com toque humano: a imagem é feita aqui no navegador e sai pelo compartilhar do celular (WhatsApp > grupo);
+  // o sistema não envia nada sozinho. O valor é o cachê do artista (já sem a parte da 7A e as despesas), ou o bruto, se escolhido.
+  const DIAS_SEMANA = ["domingo", "segunda", "terça", "quarta", "quinta", "sexta", "sábado"];
+  function dadosAviso(s) {
+    const k = contas(s);
+    const [a, m, d] = (s.data || "").split("-").map(Number);
+    return {
+      nome: nomeArtista(s),
+      data: s.data ? `${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}/${a}` : "Data a definir",
+      semana: s.data ? DIAS_SEMANA[new Date(Date.UTC(a, m - 1, d)).getUTCDay()] : "",
+      hora: s.hora ? (s.hora_fim ? `${s.hora} às ${s.hora_fim}` : s.hora) : "Horário a definir",
+      duracao: duracaoTexto(s.hora, s.hora_fim),
+      local: s.local || "Local a definir",
+      cidade: s.cidade || "",
+      evento: s.evento || "",
+      // cachê aberto: negociado, comissão da 7A (com o %), despesas (se houver) e o líquido do artista
+      cache: s.cache, pct: k.pct, comissao: k.comissao, despesas: s.despesas || 0, liquido: k.repasse,
+    };
+  }
+  const pctAviso = (p) => String(Math.round(p * 100) / 100).replace(".", ",") + "%";
+  // linhas do cachê: [rótulo, valor, destaque]
+  const linhasCache = (x) => x.comissao == null
+    ? [["Cachê negociado", reais(x.cache), true]]
+    : [["Cachê negociado", reais(x.cache)], [`Comissão 7A (${pctAviso(x.pct)})`, "− " + reais(x.comissao)], ...(x.despesas ? [["Despesas do show", "− " + reais(x.despesas)]] : []), ["Cachê líquido do artista", reais(x.liquido), true]];
+  const textoAviso = (x) => `♦ DATA FECHADA: ${x.nome}\n\n${x.evento ? x.evento + "\n" : ""}Data: ${x.data}${x.semana ? " (" + x.semana + ")" : ""}\nHorário: ${x.hora}${x.duracao ? " (" + x.duracao + ")" : ""}\nLocal: ${x.local}${x.cidade ? ", " + x.cidade : ""}\n\n${linhasCache(x).map(([r, v]) => r + ": " + v).join("\n")}\n\n7A Produtora · (31) 99223-3295`;
+  // quebra o texto em linhas que cabem na largura
+  function linhas(ctx, texto, largura) {
+    const palavras = String(texto).split(/\s+/), r = [];
+    let atual = "";
+    for (const p of palavras) { const t = atual ? atual + " " + p : p; if (ctx.measureText(t).width > largura && atual) { r.push(atual); atual = p; } else atual = t; }
+    if (atual) r.push(atual);
+    return r;
+  }
+  let logoAviso = null;
+  async function desenharAviso(canvas, x) {
+    await Promise.all([document.fonts.load('400 100px "Anton"'), document.fonts.load('700 40px "Montserrat"'), document.fonts.load('500 40px "Montserrat"'), document.fonts.load('600 40px "Montserrat"')]).catch(() => {});
+    if (!logoAviso) logoAviso = await new Promise((ok) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => ok(null); i.src = "/img/logo-7a.png"; });
+    const W = 1080, H = 1350, M = 96, ctx = canvas.getContext("2d");
+    canvas.width = W; canvas.height = H;
+    ctx.fillStyle = "#0A0A0A"; ctx.fillRect(0, 0, W, H);
+    // filete ouro (só filete, como no brand book)
+    ctx.strokeStyle = "#F2D27C"; ctx.lineWidth = 2; ctx.strokeRect(36, 36, W - 72, H - 72);
+    if (logoAviso) { const h = 120, w = h * logoAviso.width / logoAviso.height; ctx.drawImage(logoAviso, M, 84, w, h); }
+    ctx.fillStyle = "#B8B2AA"; ctx.font = '700 30px "Montserrat"'; ctx.textBaseline = "alphabetic";
+    ctx.fillText("7A PRODUTORA", M + 110, 158);
+    // título
+    ctx.fillStyle = "#B5121B"; ctx.font = '400 64px "Anton"';
+    ctx.fillText("DATA FECHADA", M, 290);
+    ctx.fillStyle = "#F2EFEA";
+    let tam = 116; ctx.font = `400 ${tam}px "Anton"`;
+    let ls = linhas(ctx, x.nome.toUpperCase(), W - 2 * M);
+    while (ls.length > 2 && tam > 64) { tam -= 8; ctx.font = `400 ${tam}px "Anton"`; ls = linhas(ctx, x.nome.toUpperCase(), W - 2 * M); }
+    let y = 290 + tam * 1.12;
+    ls.slice(0, 2).forEach((l) => { ctx.fillText(l, M, y); y += tam * 1.12; });
+    y += 20;
+    // linhas de informação, com o losango vermelho pontual
+    const item = (rot, val, extra) => {
+      ctx.fillStyle = "#B5121B"; ctx.save(); ctx.translate(M + 9, y - 30); ctx.rotate(Math.PI / 4); ctx.fillRect(-8, -8, 16, 16); ctx.restore();
+      ctx.fillStyle = "#B8B2AA"; ctx.font = '700 28px "Montserrat"'; ctx.fillText(rot, M + 40, y - 18);
+      ctx.fillStyle = "#F2EFEA"; ctx.font = '400 56px "Anton"';
+      const ll = linhas(ctx, val, W - 2 * M - 40).slice(0, 2);
+      ll.forEach((l, i) => ctx.fillText(l, M + 40, y + 50 + i * 64));
+      let fim = y + 50 + (ll.length - 1) * 64;
+      if (extra) { ctx.fillStyle = "#B8B2AA"; ctx.font = '500 28px "Montserrat"'; ctx.fillText(extra, M + 40, fim + 42); fim += 42; }
+      y = fim + 54;
+    };
+    item("DATA", x.data, x.semana ? x.semana[0].toUpperCase() + x.semana.slice(1) : "");
+    item("HORÁRIO", x.hora, x.duracao ? "Duração: " + x.duracao : "");
+    item("LOCAL", x.local, [x.cidade, x.evento].filter(Boolean).join(" · "));
+    // cachê aberto em linhas, valores alinhados à direita; o líquido em destaque
+    ctx.fillStyle = "#B5121B"; ctx.save(); ctx.translate(M + 9, y - 30); ctx.rotate(Math.PI / 4); ctx.fillRect(-8, -8, 16, 16); ctx.restore();
+    ctx.fillStyle = "#B8B2AA"; ctx.font = '700 28px "Montserrat"'; ctx.fillText("CACHÊ", M + 40, y - 18);
+    y -= 8;
+    const dir = W - M;
+    for (const [rot, val, forte] of linhasCache(x)) {
+      if (forte) {
+        ctx.fillStyle = "#3A3A3A"; ctx.fillRect(M + 40, y + 16, dir - M - 40, 2);
+        y += 76;
+        ctx.fillStyle = "#F2EFEA"; ctx.font = '700 32px "Montserrat"'; ctx.textAlign = "left"; ctx.fillText(rot, M + 40, y - 6);
+        ctx.font = '400 58px "Anton"'; ctx.textAlign = "right"; ctx.fillText(val, dir, y);
+      } else {
+        y += 46;
+        ctx.fillStyle = "#B8B2AA"; ctx.font = '500 30px "Montserrat"'; ctx.textAlign = "left"; ctx.fillText(rot, M + 40, y);
+        ctx.fillStyle = "#F2EFEA"; ctx.font = '600 32px "Montserrat"'; ctx.textAlign = "right"; ctx.fillText(val, dir, y);
+      }
+      ctx.textAlign = "left";
+      y += 8;
+    }
+    ctx.fillStyle = "#B8B2AA"; ctx.font = '500 26px "Montserrat"';
+    ctx.fillText("Dúvidas: (31) 99223-3295 · contato@7aprodutora.com.br", M, H - 72);
+  }
+  function montarAviso(s) {
+    const caixa = $("#aviso-show");
+    if (!caixa) return;
+    if (s.status !== "confirmado" && s.status !== "realizado") {
+      caixa.innerHTML = '<p class="ajuda">Quando a data fechar (status "Confirmado"), aparece aqui a imagem com local, data, hora e cachê para mandar ao grupo da banda ou ao WhatsApp do artista.</p>';
+      return;
+    }
+    caixa.innerHTML = '<p class="vazio">Montando a imagem...</p>';
+    api("gestao/musicos").then((lista) => {
+      if (!$("#aviso-show")) return;
+      const m = (Array.isArray(lista) ? lista : []).find((x) => (s.artista && x.slug === s.artista) || (!s.artista && semAcento(x.nome) === semAcento(s.artista_texto))) || null;
+      const solo = m && !m.grupo && m.telefone;
+      caixa.innerHTML = `<div class="aviso-show"><canvas id="aviso-canvas" width="1080" height="1350" aria-label="Imagem do aviso de data fechada"></canvas>
+        <div>
+          <p class="ajuda">${m ? (m.grupo ? `Vai para o grupo de ${esc(m.nome)}.` : m.telefone ? `${esc(m.nome)} não tem grupo cadastrado: vai para o WhatsApp dele.` : `${esc(m.nome)} ainda não tem grupo nem WhatsApp no menu <a href="#musico/${m.id}">Artistas</a>.`) : `Este artista não está no menu <a href="#musicos">Artistas</a>. Cadastre o grupo ou o WhatsApp dele lá.`}
+          No celular, "Enviar imagem" abre o compartilhar: escolha o WhatsApp e ${solo ? "a conversa do artista" : "o grupo"}. Nada é enviado sozinho.</p>
+          <p class="ajuda">O cachê sai aberto: negociado, comissão da 7A com o % e o líquido do artista (com as despesas, se o show tiver).</p>
+          <div class="acoes-rapidas">
+            <button class="btn" type="button" id="aviso-enviar">Enviar imagem</button>
+            ${m && m.grupo ? `<a class="btn btn-sec" href="${esc(m.grupo)}" target="_blank" rel="noopener">Abrir o grupo</a>` : ""}
+            ${solo ? `<a class="btn btn-sec" id="aviso-zap" target="_blank" rel="noopener">WhatsApp do artista</a>` : ""}
+            <button class="btn btn-sec" type="button" id="aviso-baixar">Baixar imagem</button>
+            <button class="btn btn-sec" type="button" id="aviso-copiar">Copiar texto</button>
+          </div><p class="estado" id="estado-aviso" role="status"></p>
+        </div></div>`;
+      const canvas = $("#aviso-canvas");
+      const msg = (t, tipo) => { const e = $("#estado-aviso"); if (e) { e.textContent = t; e.className = "estado" + (tipo ? " " + tipo : ""); } };
+      const atual = () => dadosAviso(s);
+      const nomeArq = () => `data-fechada-${semAcento(atual().nome).replace(/[^a-z0-9]+/g, "-")}-${s.data || "sem-data"}.png`;
+      const redesenhar = () => {
+        desenharAviso(canvas, atual());
+        if ($("#aviso-zap")) $("#aviso-zap").href = whats(m.telefone) + "?text=" + encodeURIComponent(textoAviso(atual()));
+      };
+      redesenhar();
+      const arquivo = () => new Promise((ok) => canvas.toBlob((b) => ok(new File([b], nomeArq(), { type: "image/png" })), "image/png"));
+      const baixar = (f) => { const a = document.createElement("a"); a.href = URL.createObjectURL(f); a.download = f.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); };
+      $("#aviso-enviar").addEventListener("click", async () => {
+        const f = await arquivo();
+        if (navigator.canShare && navigator.canShare({ files: [f] })) {
+          try { await navigator.share({ files: [f], text: textoAviso(atual()) }); msg("Compartilhado. Confira no WhatsApp se chegou no grupo certo.", "ok"); }
+          catch (e) { if (e && e.name !== "AbortError") msg("Não deu para compartilhar. Use Baixar imagem.", "ruim"); }
+        } else {
+          baixar(f);
+          msg(m && m.grupo ? "Este aparelho não compartilha imagem direto. A imagem foi baixada: abra o grupo e anexe." : "Este aparelho não compartilha imagem direto. A imagem foi baixada: anexe na conversa.", "ok");
+        }
+      });
+      $("#aviso-baixar").addEventListener("click", async () => baixar(await arquivo()));
+      $("#aviso-copiar").addEventListener("click", () => navigator.clipboard.writeText(textoAviso(atual())).then(() => msg("Texto copiado.", "ok"), () => prompt("Copie o texto:", textoAviso(atual()))));
+    }).catch(() => { if ($("#aviso-show")) $("#aviso-show").innerHTML = '<p class="vazio">Não deu para montar o aviso. Recarregue a página.</p>'; });
   }
 
   /* ---------- cadastro de artistas e agenda de músicos ---------- */
@@ -1850,7 +2001,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
         <span class="meta">${esc([m.estilo, m.cidade].filter(Boolean).join(" · ")) || "Sem estilo e cidade"}${m.telefone_formatado ? " · " + esc(m.telefone_formatado) : ""}${m.pct != null ? " · 7A fica com " + pctTexto(m.pct) + "%" : ""}</span>
         ${m.instrumentos.length ? `<div class="insts">${m.instrumentos.map((i) => `<span>${esc(i)}</span>`).join("")}</div>` : ""}
       </div>
-      <div class="acoes">${w ? `<a class="btn" href="${w}" target="_blank" rel="noopener">WhatsApp</a>` : '<span class="sem">Sem WhatsApp</span>'}${pix}</div></li>`;
+      <div class="acoes">${m.grupo ? `<a class="btn btn-sec" href="${esc(m.grupo)}" target="_blank" rel="noopener">Grupo</a>` : ""}${w ? `<a class="btn" href="${w}" target="_blank" rel="noopener">WhatsApp</a>` : m.grupo ? "" : '<span class="sem">Sem WhatsApp</span>'}${pix}</div></li>`;
   }
   function telaMusicos() {
     tela.innerHTML = `
@@ -1919,6 +2070,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
         <p class="c4 ajuda" id="pct-dica" style="align-self:end;margin:0 0 10px"></p>
         <label class="c3">WhatsApp<input name="telefone" value="${esc(m.telefone_formatado || m.telefone)}" inputmode="tel" autocomplete="off" placeholder="(31) 99999-9999"></label>
         <label class="c3">Cidade<input name="cidade" value="${esc(m.cidade)}" autocomplete="off" placeholder="Betim"></label>
+        <label class="c6">Grupo do WhatsApp<input name="grupo" value="${esc(m.grupo || "")}" inputmode="url" autocomplete="off" placeholder="https://chat.whatsapp.com/..."><span class="dica">Para bandas: no grupo, toque no nome > Convidar via link > Copiar link, e cole aqui. O aviso de data fechada vai para esse grupo. Artista solo pode ficar sem.</span></label>
         <label class="c6">Estilo<input name="estilo" value="${esc(m.estilo)}" autocomplete="off" placeholder="Rock clássico, MPB, pop rock..."></label>
         <h2 class="grupo-ficha">Formação</h2>
         <div class="c6 marcas-inst" role="group" aria-label="Instrumentos">${INSTRUMENTOS.map((p) => `<label><input type="checkbox" name="inst" value="${esc(p)}" ${tem(p) ? "checked" : ""}>${esc(p)}</label>`).join("")}</div>
@@ -1944,7 +2096,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     $("#salvar").addEventListener("click", () => {
       const f = new FormData(form);
       const dados = {
-        nome: f.get("nome"), telefone: f.get("telefone"), cidade: f.get("cidade"), estilo: f.get("estilo"), obs: f.get("obs"),
+        nome: f.get("nome"), telefone: f.get("telefone"), grupo: f.get("grupo"), cidade: f.get("cidade"), estilo: f.get("estilo"), obs: f.get("obs"),
         casting: form.casting.checked, pix_tipo: f.get("pix_tipo"), pix_chave: f.get("pix_chave"), pct: String(f.get("pct") || "").trim().replace(",", "."),
         instrumentos: [...f.getAll("inst"), ...String(f.get("outros") || "").split(",")],
       };

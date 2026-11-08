@@ -348,4 +348,22 @@ export const MIGRACOES = [
     coluna("musicos", "pct", "REAL"),
     `UPDATE musicos SET pct = 30 WHERE pct IS NULL AND casting = 0`,
   ] },
+  // grupo do WhatsApp da banda e o casting já cadastrado (só nome e marca de casting; o resto a equipe preenche)
+  { versao: 10, nome: "grupo do WhatsApp e casting no cadastro", passos: [
+    coluna("musicos", "grupo", "TEXT NOT NULL DEFAULT ''"),
+    coluna("musicos", "slug", "TEXT NOT NULL DEFAULT ''"), // liga o cadastro ao artista do site (shows do casting)
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'Ordem Mor', 'ordem-mor', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'ordem-mor' OR nome = 'Ordem Mor')`,
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'Sub Rosa', 'sub-rosa', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'sub-rosa' OR nome = 'Sub Rosa')`,
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'Ossos do Banquete', 'ossos-do-banquete', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'ossos-do-banquete' OR nome = 'Ossos do Banquete')`,
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'Athos Tibães', 'athos-tibaes', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'athos-tibaes' OR nome = 'Athos Tibães')`,
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'Ænima', 'aenima', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'aenima' OR nome = 'Ænima')`,
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'DJ Ivan Lennon', 'dj-ivan-lennon', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'dj-ivan-lennon' OR nome = 'DJ Ivan Lennon')`,
+    // quem já estava cadastrado com o mesmo nome ganha a ligação com o site
+    `UPDATE musicos SET slug = 'ordem-mor', casting = 1 WHERE slug = '' AND nome = 'Ordem Mor'`,
+    `UPDATE musicos SET slug = 'sub-rosa', casting = 1 WHERE slug = '' AND nome = 'Sub Rosa'`,
+    `UPDATE musicos SET slug = 'ossos-do-banquete', casting = 1 WHERE slug = '' AND nome = 'Ossos do Banquete'`,
+    `UPDATE musicos SET slug = 'athos-tibaes', casting = 1 WHERE slug = '' AND nome = 'Athos Tibães'`,
+    `UPDATE musicos SET slug = 'aenima', casting = 1 WHERE slug = '' AND nome = 'Ænima'`,
+    `UPDATE musicos SET slug = 'dj-ivan-lennon', casting = 1 WHERE slug = '' AND nome = 'DJ Ivan Lennon'`,
+  ] },
 ];
