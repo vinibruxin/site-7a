@@ -183,9 +183,9 @@ a { color: inherit; }
   width: clamp(200px, 22vw, 340px); aspect-ratio: 4 / 5; height: auto; object-fit: cover; object-position: 50% 30%;
   transform: rotate(4deg);
 }
-.adesivo {
-  position: absolute; z-index: 2; width: clamp(150px, 13vw, 210px); height: auto;
-  left: calc(var(--m) + 1vw); top: calc(var(--seam) - 7vw);
+.adesivo { /* logo completa colada na costura preto/vermelho */
+  position: absolute; z-index: 2; width: clamp(180px, 16vw, 270px); height: auto;
+  left: calc(var(--m) + 1vw); top: calc(var(--seam) - clamp(180px, 16vw, 270px) / 2);
 }
 
 /* ---------- Casting ---------- */
@@ -448,7 +448,7 @@ a { color: inherit; }
   </div>
 
   <img class="foto-colada" src="img/v2.jpg" alt="Vocalista de uma banda da 7A cantando, foto em preto e branco" width="800" height="769">
-  <img class="adesivo" src="img/logo-7a-g.png" alt="" width="640" height="751">
+  <img class="adesivo" src="img/logo-7a-completa.png" alt="" width="640" height="640">
   <p class="apoio">Aqui o artista é levado a sério. Somos uma produtora e incubadora de rock em Betim, MG, com seis artistas prontos para o seu palco.</p>
 </div>
 
