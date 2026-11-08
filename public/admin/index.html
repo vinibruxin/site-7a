@@ -161,6 +161,9 @@ a.item:hover { background: var(--grafite-2); }
 .e-pausada { background: var(--cinza); color: var(--preto); }
 .e-concluida { background: var(--offwhite); color: var(--preto); }
 .e-cancelada { background: var(--preto); color: var(--cinza); }
+.e-emitido, .e-emitida { background: var(--offwhite); color: var(--preto); }
+.e-pronta { background: var(--vermelho); }
+.e-rascunho { background: var(--cinza); color: var(--preto); }
 
 /* whatsapp, campanhas, importação */
 .aviso { margin: 0 0 12px; padding: 12px 16px; border-left: 4px solid var(--ouro); background: var(--grafite); max-width: 52em; font-size: 15px; }
@@ -599,6 +602,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     shows: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/>',
     calendario: '<rect x="3" y="5" width="18" height="16"/><path d="M3 10h18M8 3v4M16 3v4"/>',
     financeiro: '<rect x="2" y="6" width="20" height="12"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
+    documentos: '<path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6M9 16h3"/>',
     whatsapp: '<path d="M4 5h16v11H9l-5 4z"/><path d="M8 10h8"/>',
     campanhas: '<path d="M3 10v4h4l8 5V5L7 10z"/><path d="M19 9a4 4 0 0 1 0 6"/>',
     modelos: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
@@ -622,6 +626,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       ["shows", "Shows", "Todos os shows, com cachê, status e proposta"],
       ["calendario", "Calendário", "Os shows mês a mês"],
       ["financeiro", "Financeiro", "Cachês, comissão da 7A e repasses por mês e por artista"],
+      ["documentos", "Recibos e notas", "Recibos de pagamento e notas fiscais preparadas para o Emissor Nacional"],
     ]],
     ["Mensagens", [
       ["whatsapp", "Fila do WhatsApp", "Mensagens prontas para mandar com um toque"],
@@ -631,8 +636,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
     ["Sistema", [["ajustes", "Ajustes", "WhatsApp, planilhas e configurações da gestão"]]],
   ];
   // telas internas acendem o item do menu de onde vieram
-  const MENU_PAI = { contratante: "casas", conversa: "casas", show: "shows", campanha: "campanhas", modelo: "modelos", mensagem: "whatsapp" };
-  const TITULO_INTERNO = { contratante: "Ficha da casa", conversa: "Conversa", show: "Ficha do show", campanha: "Campanha", modelo: "Modelo", mensagem: "Mensagem" };
+  const MENU_PAI = { documento: "documentos", contratante: "casas", conversa: "casas", show: "shows", campanha: "campanhas", modelo: "modelos", mensagem: "whatsapp" };
+  const TITULO_INTERNO = { documento: "Documento", contratante: "Ficha da casa", conversa: "Conversa", show: "Ficha do show", campanha: "Campanha", modelo: "Modelo", mensagem: "Mensagem" };
   function contadores() {
     const h = hoje();
     const c = {};
@@ -715,7 +720,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const telas = {
       hoje: telaHoje, funil: telaFunil, casas: telaCasas, contratantes: telaContratantes, contratante: () => fichaContratante(id), importar: telaImportar,
       campanhas: telaCampanhas, campanha: () => fichaCampanha(id), modelos: telaModelos, modelo: () => fichaModelo(id),
-      shows: telaShows, calendario: telaCalendario, financeiro: telaFinanceiro, show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id), conversa: () => telaConversa(id),
+      shows: telaShows, calendario: telaCalendario, financeiro: telaFinanceiro, documentos: telaDocumentos, documento: () => fichaDocumento(id), show: () => fichaShow(id), ajustes: telaAjustes, whatsapp: telaWhatsapp, mensagem: () => telaMensagem(id), conversa: () => telaConversa(id),
     };
     tela.classList.toggle("largo", nome === "funil");
     (telas[nome] || telaHoje)();
@@ -1691,7 +1696,14 @@ a.item:active { transform: translateX(3px) scale(.99); }
         <label class="c6">Recado extra (opcional)<textarea id="email-msg" rows="3" placeholder="Ex.: Temos datas livres em novembro. Se quiser, respondo ainda hoje."></textarea></label>
         <p class="ajuda c6" style="margin:0">O e-mail já sai com "Olá, nome!", os dados do show, a carta do artista, o botão da proposta e a assinatura. O recado entra antes do fechamento. As respostas vão para contato@7aprodutora.com.br.</p>
         <div class="c6 acoes-rapidas" style="margin:0"><button class="btn" type="button" id="email-enviar">Enviar e-mail</button><button class="texto-btn" type="button" id="email-cancelar">Cancelar</button></div>
-      </div>`}`;
+      </div>
+      <h2 class="display">Recibo e nota fiscal</h2>
+      <p class="ajuda">Recebeu o pagamento? Emita o recibo com o número da 7A e mande o link. A nota fiscal fica preparada aqui e é emitida no Emissor Nacional, com o login da 7A.</p>
+      <div class="acoes-rapidas">
+        <a class="btn" href="#documento/novo?tipo=recibo&show=${s.id}">Emitir recibo</a>
+        <a class="btn btn-sec" href="#documento/novo?tipo=nfse&show=${s.id}">Preparar nota fiscal</a>
+      </div>
+      <ul class="lista" id="docs-show"></ul>`}`;
 
     const form = $("#ficha");
     const ler = () => {
@@ -1756,12 +1768,227 @@ a.item:active { transform: translateX(3px) scale(.99); }
     });
     if (novo) return;
     montarProposta(s);
+    api("gestao/documentos?show=" + s.id).then((l) => { if (Array.isArray(l) && $("#docs-show")) $("#docs-show").innerHTML = l.map(itemDocumento).join(""); });
     $("#apagar").addEventListener("click", () => {
       if (!confirm("Apagar este show? Se ele não aconteceu, prefira marcar como cancelado.")) return;
       api("gestao/shows/" + s.id, "DELETE").then((r) => {
         if (!r.ok) return estado(r.erro || "Não deu para apagar.", "ruim");
         D.shows = D.shows.filter((x) => x.id !== s.id);
         sujo = false; location.hash = "#shows";
+      });
+    });
+  }
+
+  /* ---------- recibos e notas fiscais ---------- */
+  // recibo: emitido aqui, com número da 7A e link para o pagador; nota fiscal: só preparada aqui, emitida no Emissor Nacional
+  const FORMAS = ["Pix", "Transferência bancária", "Dinheiro", "Cartão", "Boleto", "Outro"];
+  const SIT_DOC = { emitido: "Emitido", cancelado: "Cancelado", rascunho: "Faltam dados", pronta: "Pronta para emitir", emitida: "Nota emitida", cancelada: "Cancelada" };
+  const REGIMES = [["", "Não sei ainda"], ["mei", "MEI"], ["simples", "Simples Nacional (ME/EPP)"], ["pf", "Pessoa física (autônomo)"], ["outro", "Outro regime"]];
+  const EMISSOR = "https://www.nfse.gov.br/EmissorNacional";
+  function formatarDoc(d) {
+    d = String(d || "");
+    if (d.length === 11) return `${d.slice(0, 3)}.${d.slice(3, 6)}.${d.slice(6, 9)}-${d.slice(9)}`;
+    if (d.length === 14) return `${d.slice(0, 2)}.${d.slice(2, 5)}.${d.slice(5, 8)}/${d.slice(8, 12)}-${d.slice(12)}`;
+    return d;
+  }
+  const faltaEmit = (tipo) => {
+    const c = D.config, f = [];
+    if (!c.emit_nome) f.push("nome ou razão social");
+    if (!c.emit_doc) f.push("CPF ou CNPJ");
+    if (tipo === "nfse") { if (!c.emit_im) f.push("inscrição municipal"); if (!c.emit_endereco) f.push("endereço"); if (!c.emit_cidade) f.push("cidade"); }
+    return f;
+  };
+  function itemDocumento(d) {
+    const recibo = d.tipo === "recibo";
+    const dt = d.data || d.criado.slice(0, 10);
+    return `<li><a class="item show-item${/cancelad/.test(d.situacao) ? " cancelado" : ""}" href="#documento/${d.id}">
+      <span class="quando"><span class="dia num">${dt.slice(8, 10)}</span><span class="mes">${MESES[Number(dt.slice(5, 7)) - 1].slice(0, 3)}</span></span>
+      <span class="nome">${recibo ? "Recibo " + esc(d.numero_texto) : "Nota fiscal" + (d.numero_texto ? " nº " + esc(d.numero_texto) : "")}</span>
+      <span class="lado"><span class="etiqueta e-${d.situacao}">${SIT_DOC[d.situacao] || d.situacao}</span>${d.valor ? `<span class="valor num">${reais(d.valor)}</span>` : ""}</span>
+      <span class="meta">${esc(d.pagador_nome || "Sem pagador")}${d.referente ? " · " + esc(d.referente) : ""}</span></a></li>`;
+  }
+  const avisoEmit = (tipo) => {
+    const f = faltaEmit(tipo);
+    return f.length ? `<p class="aviso aviso-forte">Faltam dados da 7A: ${f.join(", ")}. Preencha em <a href="#ajustes">Ajustes</a>. ${tipo === "nfse" ? "Sem eles a nota não pode ser emitida." : "Até lá o recibo sai como rascunho, com esses campos marcados."}</p>` : "";
+  };
+
+  let filtroDoc = "";
+  function telaDocumentos() {
+    tela.innerHTML = `
+      <div class="cabeca"><h1 class="display">Recibos e notas</h1><div class="acoes-rapidas" style="margin:0"><a class="btn" href="#documento/novo?tipo=recibo">Novo recibo</a><a class="btn btn-sec" href="#documento/novo?tipo=nfse">Nova nota fiscal</a></div></div>
+      ${avisoEmit("recibo")}
+      <p class="ajuda">O recibo é emitido aqui, numerado em sequência, e o pagador abre pelo link e salva em PDF. A nota fiscal fica preparada aqui com todos os dados; a emissão é no <a href="${EMISSOR}" target="_blank" rel="noopener">Emissor Nacional da NFS-e</a> (Betim usa o padrão nacional), com o login da 7A. Depois é só registrar o número da nota.</p>
+      <div class="filtros" role="group" aria-label="Tipo"><button type="button" data-tipo="" aria-pressed="${!filtroDoc}">Todos</button><button type="button" data-tipo="recibo" aria-pressed="${filtroDoc === "recibo"}">Recibos</button><button type="button" data-tipo="nfse" aria-pressed="${filtroDoc === "nfse"}">Notas fiscais</button></div>
+      <ul class="lista" id="lista-docs"><li class="vazio">Carregando...</li></ul>`;
+    tela.querySelectorAll("[data-tipo]").forEach((b) => b.addEventListener("click", () => { filtroDoc = b.dataset.tipo; telaDocumentos(); }));
+    api("gestao/documentos").then((l) => {
+      const lista = (Array.isArray(l) ? l : []).filter((d) => !filtroDoc || d.tipo === filtroDoc);
+      $("#lista-docs").innerHTML = lista.length ? lista.map(itemDocumento).join("") : '<li class="vazio">Nenhum documento ainda. Emita o primeiro recibo pela ficha do show, quando o pagamento entrar.</li>';
+    });
+  }
+
+  function fichaDocumento(id) {
+    const [chave, query] = String(id || "").split("?");
+    if (chave !== "novo") {
+      tela.innerHTML = '<p class="vazio">Carregando...</p>';
+      return api("gestao/documentos/" + Number(chave)).then((d) => {
+        if (!d.id) { tela.innerHTML = '<a class="voltar" href="#documentos">Voltar</a><p class="vazio">Documento não encontrado.</p>'; return; }
+        if (d.tipo === "recibo") verRecibo(d); else formNota(d);
+      });
+    }
+    const q = new URLSearchParams(query || "");
+    const tipo = q.get("tipo") === "nfse" ? "nfse" : "recibo";
+    const s = D.shows.find((x) => x.id === Number(q.get("show"))) || null;
+    const cid = s ? s.contratante_id : null;
+    const base = { tipo, show_id: s ? s.id : null, contratante_id: cid, pagador_nome: "", pagador_doc: "", pagador_endereco: "", pagador_cidade: s ? s.cidade : "", pagador_email: "", valor: 0, data: hoje(), forma: "Pix", referente: "", nfse: {} };
+    if (s) {
+      const quando = s.data ? " em " + s.data.split("-").reverse().join("/") : "";
+      const onde = [s.local, s.cidade].filter(Boolean).join(", ");
+      base.referente = `${tipo === "nfse" ? "Apresentação musical" : "cachê do show"} de ${nomeArtista(s)}${quando}${onde ? ", " + onde : ""}`;
+      base.valor = tipo === "recibo" ? Math.max(0, s.cache - s.recebido) || s.cache : s.cache;
+      if (tipo === "nfse") base.nfse = { descricao: base.referente + ".", municipio: s.cidade || "" };
+    }
+    const montar = (c) => {
+      if (c) Object.assign(base, { pagador_nome: c.nome, pagador_doc: c.documento || "", pagador_email: c.email || "", pagador_endereco: [c.endereco, c.numero, c.complemento, c.bairro].filter(Boolean).join(", "), pagador_cidade: [c.cidade, c.uf].filter(Boolean).join("/") || base.pagador_cidade });
+      if (tipo === "recibo") formRecibo(base, s); else formNota(base, s);
+    };
+    if (cid) api("gestao/contratantes/" + cid).then((f) => montar(f.contratante)).catch(() => montar(null)); else montar(null);
+  }
+
+  const voltarDoc = (d) => (d.show_id ? `<a class="voltar" href="#show/${d.show_id}">Voltar para o show</a>` : '<a class="voltar" href="#documentos">Voltar para recibos e notas</a>');
+  const camposPagador = (d, rotulo) => `
+    <label class="c6">${rotulo}<input name="pagador_nome" value="${esc(d.pagador_nome)}" autocomplete="off" placeholder="Nome da casa, empresa ou pessoa"></label>
+    <label class="c2">CPF ou CNPJ<input name="pagador_doc" value="${esc(formatarDoc(d.pagador_doc))}" inputmode="text" autocomplete="off" placeholder="Opcional no recibo"></label>
+    <label class="c2">Endereço<input name="pagador_endereco" value="${esc(d.pagador_endereco)}" autocomplete="off"></label>
+    <label class="c2">Cidade<input name="pagador_cidade" value="${esc(d.pagador_cidade)}" autocomplete="off" placeholder="Betim/MG"></label>`;
+
+  function formRecibo(d, s) {
+    const resta = s ? Math.max(0, s.cache - s.recebido) : 0;
+    tela.innerHTML = `${voltarDoc(d)}
+      <div class="cabeca"><h1 class="display">Novo recibo</h1></div>
+      ${avisoEmit("recibo")}
+      <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
+        ${camposPagador(d, "Quem pagou")}
+        <label class="c2 meia">Valor recebido (R$)<input name="valor" inputmode="decimal" value="${campoReais(d.valor)}" placeholder="0,00" autocomplete="off"></label>
+        <label class="c2 meia">Data do pagamento<input name="data" type="date" value="${esc(d.data)}" max="${hoje()}"></label>
+        <label class="c2">Forma de pagamento<select name="forma">${opcoes(FORMAS.map((f) => [f, f]), d.forma)}</select></label>
+        <label class="c6">Referente a<input name="referente" value="${esc(d.referente)}" autocomplete="off"></label>
+        ${s ? `<label class="c6 marcar"><input type="checkbox" name="lancar" ${resta ? "checked" : ""}> Somar este valor no "Recebido" do show (hoje: ${reais(s.recebido)} de ${reais(s.cache)})</label>` : ""}
+        <p class="c6 ajuda" style="margin:0">Depois de emitido, o recibo não muda. Se sair errado, cancele e emita outro: o número cancelado fica registrado.</p>
+      </form>
+      <div class="salvar-barra"><button class="btn" type="button" id="salvar">Emitir recibo</button><p class="estado" id="estado" role="status"></p></div></div>`;
+    const form = $("#ficha");
+    form.addEventListener("input", () => { sujo = true; estado(""); });
+    $("#salvar").addEventListener("click", () => {
+      const f = Object.fromEntries(new FormData(form));
+      const dados = { ...d, ...f, valor: centavos(f.valor), lancar_recebido: !!(form.lancar && form.lancar.checked) };
+      if (!dados.pagador_nome.trim()) { estado("Digite quem pagou.", "ruim"); return form.pagador_nome.focus(); }
+      if (!dados.valor) { estado("Digite o valor recebido.", "ruim"); return form.valor.focus(); }
+      if (!dados.referente.trim()) { estado("Diga a que se refere o pagamento.", "ruim"); return form.referente.focus(); }
+      if (!confirm(`Emitir o recibo de ${reais(dados.valor)} para ${dados.pagador_nome}?`)) return;
+      salvar("gestao/documentos", "POST", dados, (r) => {
+        sujo = false;
+        if (s && dados.lancar_recebido) s.recebido += dados.valor;
+        location.hash = "#documento/" + r.id;
+      });
+    });
+  }
+
+  function verRecibo(d) {
+    const link = location.origin + "/recibo/" + d.token;
+    const cancelado = d.situacao === "cancelado";
+    const c = contratante(d.contratante_id);
+    const w = c ? whats(c.telefone) : "";
+    const texto = `Olá! Segue o recibo ${d.numero_texto} da 7A Produtora, de ${reais(d.valor)}: ${link}`;
+    tela.innerHTML = `${voltarDoc(d)}
+      <div class="cabeca"><h1 class="display">Recibo ${esc(d.numero_texto)}</h1><span class="etiqueta e-${d.situacao}">${SIT_DOC[d.situacao]}</span></div>
+      ${d.faltas_emitente.length && !cancelado ? `<p class="aviso aviso-forte">O recibo está como rascunho: faltam dados da 7A (${esc(d.faltas_emitente.join(", "))}). Preencha em <a href="#ajustes">Ajustes</a> e ele se completa sozinho.</p>` : ""}
+      ${cancelado ? `<p class="aviso">Cancelado: ${esc(d.motivo_cancelamento)}</p>` : ""}
+      <dl class="numeros"><div><dt>Valor</dt><dd class="num">${reais(d.valor)}</dd><small>Pago em ${esc(d.data.split("-").reverse().join("/"))}${d.forma ? " · " + esc(d.forma) : ""}</small></div>
+        <div><dt>Pagador</dt><dd style="font-size:24px">${esc(d.pagador_nome)}</dd><small>${d.pagador_doc ? esc(formatarDoc(d.pagador_doc)) : "Sem CPF/CNPJ"}</small></div></dl>
+      <p class="texto-msg" style="margin-bottom:16px">Referente a ${esc(d.referente)}${d.lancado ? "\nSomado no recebido do show." : ""}</p>
+      <div class="acoes-rapidas">
+        <a class="btn btn-claro" href="${esc(link)}" target="_blank" rel="noopener">Abrir o recibo (PDF)</a>
+        ${cancelado ? "" : `<a class="btn btn-sec" href="${(w || "https://wa.me/") + "?text=" + encodeURIComponent(texto)}" target="_blank" rel="noopener">Enviar no WhatsApp</a>
+        <button class="btn btn-sec" type="button" id="copiar">Copiar link</button>
+        <button class="texto-btn perigo" type="button" id="cancelar">Cancelar recibo</button>`}
+      </div><p class="estado" id="estado" role="status"></p>`;
+    if (cancelado) return;
+    $("#copiar").addEventListener("click", () => navigator.clipboard.writeText(link).then(() => estado("Link copiado.", "ok"), () => prompt("Copie o link:", link)));
+    $("#cancelar").addEventListener("click", () => {
+      const motivo = prompt("Motivo do cancelamento (fica registrado):");
+      if (!motivo || !motivo.trim()) return;
+      api(`gestao/documentos/${d.id}/cancelar`, "POST", { motivo }).then((r) => {
+        if (r.erro) return estado(r.erro, "ruim");
+        const s = D.shows.find((x) => x.id === d.show_id);
+        if (s && d.lancado) s.recebido = Math.max(0, s.recebido - d.valor);
+        verRecibo(r);
+      });
+    });
+  }
+
+  function formNota(d, s) {
+    const novo = !d.id;
+    const nf = d.nfse || {};
+    const travada = d.situacao === "emitida" || d.situacao === "cancelada";
+    tela.innerHTML = `${voltarDoc(d)}
+      <div class="cabeca"><h1 class="display">${novo ? "Nova nota fiscal" : "Nota fiscal" + (nf.numero_nota ? " nº " + esc(nf.numero_nota) : "")}</h1>${novo ? "" : `<span class="etiqueta e-${d.situacao}">${SIT_DOC[d.situacao]}</span>`}</div>
+      <p class="aviso">O sistema não emite a nota. Ele guarda os dados e monta o texto para você colar no <a href="${EMISSOR}" target="_blank" rel="noopener">Emissor Nacional</a>, com o login gov.br ou o certificado da 7A. Código do serviço e alíquota do ISS: confirme com o contador.</p>
+      ${avisoEmit("nfse")}
+      ${d.situacao === "cancelada" ? `<p class="aviso">Cancelada aqui: ${esc(d.motivo_cancelamento)}. Se a nota chegou a ser emitida, o cancelamento também precisa ser feito no Emissor Nacional.</p>` : ""}
+      <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
+        ${camposPagador(d, "Tomador (quem contrata)")}
+        <label class="c6">E-mail do tomador<input name="pagador_email" type="email" value="${esc(d.pagador_email)}" autocomplete="off" placeholder="Para receber a nota"></label>
+        <label class="c2 meia">Valor do serviço (R$)<input name="valor" inputmode="decimal" value="${campoReais(d.valor)}" placeholder="0,00" autocomplete="off"></label>
+        <label class="c2 meia">Data de competência<input name="data" type="date" value="${esc(d.data)}"></label>
+        <label class="c2">Município da prestação<input name="municipio" value="${esc(nf.municipio || "")}" autocomplete="off" placeholder="Onde o show acontece"></label>
+        <label class="c6">Descrição do serviço<textarea name="descricao" rows="3">${esc(nf.descricao || "")}</textarea></label>
+        <label class="c2">Código do serviço<input name="codigo_servico" value="${esc(nf.codigo_servico || "")}" autocomplete="off" placeholder="Pergunte ao contador"></label>
+        <label class="c2 meia">Alíquota do ISS (%)<input name="aliquota" inputmode="decimal" value="${nf.aliquota == null ? "" : String(nf.aliquota).replace(".", ",")}" placeholder="2 a 5" autocomplete="off"></label>
+        <label class="c2 marcar" style="align-self:end"><input type="checkbox" name="iss_retido"${nf.iss_retido ? " checked" : ""}> ISS retido pelo tomador</label>
+      </form>
+      ${travada ? "" : `<div class="salvar-barra"><button class="btn" type="button" id="salvar">${novo ? "Guardar a nota" : "Salvar"}</button><p class="estado" id="estado" role="status"></p>${novo ? "" : '<button class="texto-btn perigo apagar" type="button" id="cancelar">Cancelar nota</button>'}</div>`}</div>
+      ${novo ? "" : `
+      ${d.faltas.length ? `<p class="aviso aviso-forte">Para emitir faltam: ${esc(d.faltas.join(", "))}.</p>` : ""}
+      <h2 class="display">Texto para o Emissor Nacional</h2>
+      <p class="texto-msg" id="texto-emissor">${esc(d.texto_emissor)}</p>
+      <div class="acoes-rapidas"><button class="btn btn-sec" type="button" id="copiar-emissor">Copiar os dados</button><a class="btn btn-claro" href="${EMISSOR}" target="_blank" rel="noopener">Abrir o Emissor Nacional</a></div>
+      ${d.situacao === "cancelada" ? "" : `<h2 class="display">${d.situacao === "emitida" ? "Nota registrada" : "Depois de emitir"}</h2>
+      <p class="ajuda">Emitiu no portal? Registre aqui o número da nota que ele mostrou, para o histórico da casa e o Financeiro.</p>
+      <form class="ficha" id="ficha-emitida" novalidate>
+        <label class="c2">Número da nota<input name="numero_nota" value="${esc(nf.numero_nota || "")}" autocomplete="off"></label>
+        <label class="c2">Emitida em<input name="emitida_em" type="date" value="${esc(nf.emitida_em || hoje())}"></label>
+        <label class="c2">Chave de acesso<input name="chave" value="${esc(nf.chave || "")}" autocomplete="off" placeholder="Opcional"></label>
+        <label class="c6">Link da nota (DANFSe)<input name="link" type="url" value="${esc(nf.link || "")}" autocomplete="off" placeholder="https:// (opcional)"></label>
+      </form>
+      <div class="acoes-rapidas"><button class="btn" type="button" id="registrar">${d.situacao === "emitida" ? "Atualizar registro" : "Registrar nota emitida"}</button><p class="estado" id="estado-emitida" role="status" style="align-self:center;margin:0"></p></div>`}`}`;
+    const form = $("#ficha");
+    if (travada) form.querySelectorAll("input, select, textarea").forEach((x) => (x.disabled = true));
+    form.addEventListener("input", () => { sujo = true; estado(""); });
+    const ler = () => {
+      const f = Object.fromEntries(new FormData(form));
+      return { ...d, ...f, tipo: "nfse", valor: centavos(f.valor), nfse: { ...nf, descricao: f.descricao, codigo_servico: f.codigo_servico, municipio: f.municipio, aliquota: f.aliquota.trim(), iss_retido: form.iss_retido.checked } };
+    };
+    if (!travada) $("#salvar").addEventListener("click", () => salvar(novo ? "gestao/documentos" : "gestao/documentos/" + d.id, novo ? "POST" : "PUT", ler(), (r) => {
+      sujo = false;
+      if (novo) location.hash = "#documento/" + r.id; else { formNota(r); estado(r.situacao === "pronta" ? "Salvo. Pronta para emitir." : "Salvo. Ainda faltam dados.", "ok"); }
+    }));
+    if (novo) return;
+    $("#copiar-emissor").addEventListener("click", () => navigator.clipboard.writeText(d.texto_emissor).then(() => estado("Dados copiados.", "ok"), () => prompt("Copie:", d.texto_emissor)));
+    const canc = $("#cancelar");
+    if (canc) canc.addEventListener("click", () => {
+      const motivo = prompt("Motivo do cancelamento:");
+      if (!motivo || !motivo.trim()) return;
+      api(`gestao/documentos/${d.id}/cancelar`, "POST", { motivo }).then((r) => (r.erro ? estado(r.erro, "ruim") : formNota(r)));
+    });
+    const reg = $("#registrar");
+    if (reg) reg.addEventListener("click", () => {
+      const f = Object.fromEntries(new FormData($("#ficha-emitida")));
+      const msg = $("#estado-emitida");
+      if (sujo) { msg.textContent = "Salve os dados da nota antes."; msg.className = "estado ruim"; return; }
+      api(`gestao/documentos/${d.id}/emitida`, "POST", f).then((r) => {
+        if (r.erro) { msg.textContent = r.erro; msg.className = "estado ruim"; return; }
+        formNota(r);
       });
     });
   }
@@ -2203,6 +2430,18 @@ a.item:active { transform: translateX(3px) scale(.99); }
         <p class="ajuda" style="margin:0">Para treinar e testar: as mensagens ficam registradas como teste, o WhatsApp não abre, os contratantes não mudam de etapa e nada entra nos números. Campanhas iniciadas em simulação continuam como simulação até o fim.</p>
         <div><button class="btn" type="button" id="salvar">Salvar ajustes</button> <span class="estado" id="estado" role="status"></span></div>
       </form>
+      <h2 class="display">Dados da 7A para recibos e notas</h2>
+      <p class="ajuda">Saem no recibo e no texto da nota fiscal. Nada aqui vem preenchido pelo sistema: confira com o cartão do CNPJ e o cadastro na prefeitura de Betim.</p>
+      <form class="ajustes" id="ficha-emit" novalidate>
+        <label>Nome ou razão social<input name="emit_nome" value="${esc(c.emit_nome)}" autocomplete="off"></label>
+        <label>CPF ou CNPJ<input name="emit_doc" value="${esc(formatarDoc(c.emit_doc))}" autocomplete="off"></label>
+        <label>Inscrição municipal (Betim)<input name="emit_im" value="${esc(c.emit_im)}" autocomplete="off" placeholder="Só para a nota fiscal"></label>
+        <label>Endereço<input name="emit_endereco" value="${esc(c.emit_endereco)}" autocomplete="off"></label>
+        <label>Cidade e UF<input name="emit_cidade" value="${esc(c.emit_cidade)}" autocomplete="off" placeholder="Betim, MG"></label>
+        <label>Quem assina o recibo<input name="emit_responsavel" value="${esc(c.emit_responsavel)}" autocomplete="off"></label>
+        <label>Regime<select name="emit_regime">${opcoes(REGIMES, c.emit_regime || "")}</select></label>
+        <div><button class="btn" type="button" id="salvar-emit">Salvar dados da 7A</button> <span class="estado" id="estado-emit" role="status"></span></div>
+      </form>
       <h2 class="display">Planilhas</h2>
       <p class="ajuda">Baixe tudo para abrir no Excel ou no Google Planilhas. Serve de cópia de segurança e para mandar ao contador.</p>
       <div class="acoes-rapidas">
@@ -2216,6 +2455,18 @@ a.item:active { transform: translateX(3px) scale(.99); }
       const v = form.pct_padrao.value.trim().replace(",", ".");
       const dados = { pct_padrao: v === "" ? "" : Number(v), base: form.base.value, limite_diario: Number(form.limite_diario.value), intervalo_dias: Number(form.intervalo_dias.value), simulacao: form.simulacao.checked };
       salvar("gestao/config", "PUT", dados, (r) => { D.config = r; sujo = false; estado("Salvo.", "ok"); });
+    });
+    const fe = $("#ficha-emit");
+    fe.addEventListener("input", () => { sujo = true; $("#estado-emit").textContent = ""; });
+    $("#salvar-emit").addEventListener("click", () => {
+      const msg = $("#estado-emit"), b = $("#salvar-emit");
+      b.disabled = true; msg.textContent = "Salvando..."; msg.className = "estado";
+      api("gestao/emitente", "PUT", Object.fromEntries(new FormData(fe))).then((r) => {
+        b.disabled = false;
+        if (r.erro) { msg.textContent = r.erro; msg.className = "estado ruim"; return; }
+        D.config = r; sujo = false; msg.textContent = "Salvo."; msg.className = "estado ok";
+        fe.emit_doc.value = formatarDoc(r.emit_doc);
+      }).catch(() => { b.disabled = false; msg.textContent = "Sem conexão. Tente de novo."; msg.className = "estado ruim"; });
     });
   }
 

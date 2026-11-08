@@ -5,6 +5,7 @@ import { agora, auditoria, dataBR, dataOk, hojeSP, json, lerConfig, prepararBanc
 import { gravarUltimoCacheDoShow, NOMES_ETAPA, NOMES_PERFIL, rotasContratantes } from "./contratantes.js";
 import { rotasMensagens, rotasModelos } from "./mensagens.js";
 import { indicadores, rotasCampanhas } from "./campanhas.js";
+import { rotasDocumentos, salvarEmitente } from "./documentos.js";
 
 export { prepararBanco };
 export const STATUS = ["consulta", "reservado", "confirmado", "realizado", "cancelado"];
@@ -107,6 +108,9 @@ export async function gestao(req, env, rota, quem = "equipe") {
   if (partes[0] === "mensagens") return rotasMensagens(req, env, partes, corpo);
   if (partes[0] === "modelos") return rotasModelos(req, env, partes, corpo);
   if (partes[0] === "campanhas") return rotasCampanhas(req, env, partes, corpo);
+  // recibos e notas fiscais: só a equipe (o agente é barrado antes, em motivoAgente)
+  if (partes[0] === "documentos") return rotasDocumentos(req, env, partes, corpo, new URL(req.url));
+  if (rota === "emitente" && metodo === "PUT") return salvarEmitente(req, env, corpo);
   // fila de mensagens: rascunhos prontos para abrir e abertas aguardando a confirmação de envio
   if (rota === "fila" && metodo === "GET") {
     const [rascunhos, abertas, enviadas] = await Promise.all([
