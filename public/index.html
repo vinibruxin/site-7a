@@ -251,6 +251,29 @@ a { color: inherit; }
 .programa tr.linha-artista:hover .sobre { color: var(--grafite); }
 .formatos .nota { margin: 48px 0 0; font-size: var(--t-nota); color: var(--cinza-tinta); max-width: 52em; }
 
+/* ---------- Duas portas: palco ou evento particular ---------- */
+.portas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.porta { position: relative; display: flex; flex-direction: column; gap: 28px; min-height: 54svh; padding: 40px var(--m-r) 40px var(--m); text-decoration: none; overflow: hidden; transition: background-color .25s, color .25s; }
+.porta.palco { background: var(--preto); color: var(--offwhite); }
+.porta.festa { background: var(--vermelho); color: var(--preto); }
+.porta .quem-e { margin: 0; max-width: 24em; padding-right: 64px; font-size: var(--t-lead); font-weight: 600; color: var(--offwhite); }
+.porta svg { position: absolute; top: 40px; right: var(--m-r); width: 44px; height: 44px; transition: transform .3s var(--ease); }
+.porta h2 { margin-top: auto; font-size: clamp(64px, 8.4vw, 150px); line-height: 1.12; }
+.porta .faz-o-que { margin: 0; max-width: 28em; font-size: var(--t-texto); font-weight: 500; color: var(--offwhite); }
+.porta .vai { align-self: start; font: 700 15px/1 var(--f-texto); padding: 16px 22px; background: var(--offwhite); color: var(--preto); transition: transform .15s var(--ease); }
+.porta.palco .vai { background: var(--vermelho); color: var(--offwhite); }
+.porta:hover svg, .porta:focus-visible svg { transform: translate(6px, -6px); }
+.porta.palco:hover, .porta.palco:focus-visible { background: var(--grafite); }
+.porta.festa:hover, .porta.festa:focus-visible { background: #9A0F17; }
+.porta:active .vai { transform: scale(.97); }
+@media (max-width: 860px) {
+  .portas { grid-template-columns: minmax(0, 1fr); }
+  .porta { min-height: 0; padding-block: 32px 40px; gap: 22px; }
+  .porta svg { top: 32px; width: 32px; height: 32px; }
+  .porta .quem-e { font-size: 17px; padding-right: 48px; }
+  .porta h2 { margin-top: 24px; font-size: 17vw; }
+}
+
 /* ---------- Pedir data (faixa de fotos + barra) ---------- */
 .pedir-data { background: var(--grafite); padding-block: 56px 140px; overflow: hidden; }
 .faixa-fotos { display: flex; gap: 8px; width: max-content; animation: corre 60s linear infinite; }
@@ -404,7 +427,8 @@ a { color: inherit; }
     <a href="#casting">Casting</a>
     <a href="#agenda">Agenda</a>
     <a href="#formatos">Shows</a>
-    <a href="#pedir">Contratar</a>
+    <a href="#contratar">Contratar</a>
+    <a href="evento-particular.html">Evento particular</a>
   </nav>
   <a class="btn btn-barra" href="#pedir">Pedir data</a>
   <button class="abre-menu" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
@@ -527,6 +551,24 @@ a { color: inherit; }
     <p class="nota">Toque em uma linha para pedir uma data com o artista. Valores, duração e rider técnico vão na proposta.</p>
   </section>
 
+  <!-- CONTRATAR: DUAS PORTAS -->
+  <section class="portas" id="contratar" aria-label="Contratar a 7A">
+    <a class="porta palco" href="#pedir" data-revela>
+      <p class="quem-e">Tem bar, casa de show ou festival?</p>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36 36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="4"/></svg>
+      <h2 class="display">Seu palco</h2>
+      <p class="faz-o-que">Peça uma data com o artista. A proposta vem com formato, rider e valores.</p>
+      <span class="vai">Pedir data</span>
+    </a>
+    <a class="porta festa" href="evento-particular.html" data-revela style="--d:1">
+      <p class="quem-e">Aniversário, casamento, formatura ou empresa?</p>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36 36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="4"/></svg>
+      <h2 class="display">Sua festa</h2>
+      <p class="faz-o-que">Voz e violão, duo acústico de rock, DJ ou banda completa no seu evento particular.</p>
+      <span class="vai">Ver evento particular</span>
+    </a>
+  </section>
+
   <!-- PEDIR DATA -->
   <section class="pedir-data" id="pedir" aria-labelledby="t-pedir">
     <div class="faixa-fotos" aria-hidden="true">
@@ -591,6 +633,7 @@ a { color: inherit; }
       <a href="#casting">Casting</a>
       <a href="#formatos">Formatos</a>
       <a href="#pedir">Pedir data</a>
+      <a href="evento-particular.html">Evento particular</a>
       <a href="#faz">O que a 7A faz</a>
       <a href="#artistas">Para artistas</a>
     </nav>
