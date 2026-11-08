@@ -15,9 +15,9 @@ A senha inicial do painel é verificada pelo hash em `wrangler.jsonc`; trocada n
 Gestão como app: `public/admin/manifest.json` + `sw.js` (instalável pelo navegador do celular, sem cache offline).
 Envio da proposta por e-mail: Resend, remetente `propostas@7aprodutora.com.br`, respostas para o Gmail da 7A. Precisa do secret `RESEND_API_KEY` no Worker (Cloudflare > Workers > site-7a > Settings > Variables and Secrets); sem ele o botão avisa que o envio não está ligado.
 
-## Cadastro de artistas
+## Artistas (cadastro de músicos)
 
-Menu **Artistas > Cadastro de artistas** (`src/musicos.js`, tabela `musicos`, migração v8). Agenda única de todo mundo que toca com a 7A, do casting ou de fora: nome artístico, WhatsApp, chave Pix (tipo e valor, conferidos: CPF/CNPJ pelos dígitos, celular, e-mail ou chave aleatória), cidade, estilo, formação (instrumentos) e observações, com a marca "Casting 7A".
+Menu **Artistas** (`src/musicos.js`, tabela `musicos`, migração v8). Agenda única de todo mundo que toca com a 7A, do casting ou de fora: nome artístico, WhatsApp, chave Pix (tipo e valor, conferidos: CPF/CNPJ pelos dígitos, celular, e-mail ou chave aleatória), cidade, estilo, formação (instrumentos) e observações, com a marca "Casting 7A".
 
 - Busca por nome, instrumento ou cidade, sem ligar para acento ("violao" acha "Violão"); filtros por cidade, instrumento e casting. Botão de WhatsApp e "Copiar Pix" em cada artista.
 - Mesmo WhatsApp não entra duas vezes. A auditoria registra quem foi cadastrado, editado ou excluído, sem gravar telefone nem Pix.

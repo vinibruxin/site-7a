@@ -659,7 +659,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       ["documentos", "Recibos e notas", "Recibos de pagamento e notas fiscais preparadas para o Emissor Nacional"],
     ]],
     ["Artistas", [
-      ["musicos", "Cadastro de artistas", "Músicos do casting e de fora: formação, cidade, WhatsApp e Pix"],
+      ["musicos", "Artistas", "Músicos do casting e de fora: formação, cidade, WhatsApp e Pix"],
     ]],
     ["Mensagens", [
       ["whatsapp", "Fila do WhatsApp", "Mensagens prontas para mandar com um toque"],
@@ -696,7 +696,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     MENU.forEach(([g, itens]) => itens.forEach((i) => { if (i[0] === atual) { grupo = g; item = i; } }));
     if (!item) { grupo = "Visão geral"; item = MENU[0][1][0]; }
     const interno = TITULO_INTERNO[nome];
-    $("#trilha").innerHTML = `<div class="caminho"><span>${grupo}</span><span aria-hidden="true">/</span>${interno ? `<a href="#${item[0]}" style="color:inherit">${item[1]}</a><span aria-hidden="true">/</span><b>${interno}</b>` : `<b>${item[1]}</b>`}</div><p>${interno ? "" : item[2]}</p>`;
+    $("#trilha").innerHTML = `<div class="caminho">${grupo === item[1] ? "" : `<span>${grupo}</span><span aria-hidden="true">/</span>`}${interno ? `<a href="#${item[0]}" style="color:inherit">${item[1]}</a><span aria-hidden="true">/</span><b>${interno}</b>` : `<b>${item[1]}</b>`}</div><p>${interno ? "" : item[2]}</p>`;
     document.title = (interno || item[1]) + " | 7A Gestão";
   }
   const app = $("#tela-app");
@@ -1836,7 +1836,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
   }
   function telaMusicos() {
     tela.innerHTML = `
-      <div class="cabeca"><div><h1 class="display">Cadastro de artistas</h1><p>Todo mundo que toca com a 7A, do casting ou não. Ache pelo instrumento, pela cidade ou pelo nome.</p></div><a class="btn" href="#musico/novo">Novo artista</a></div>
+      <div class="cabeca"><div><h1 class="display">Artistas</h1><p>Todo mundo que toca com a 7A, do casting ou não. Ache pelo instrumento, pela cidade ou pelo nome.</p></div><a class="btn" href="#musico/novo">Novo artista</a></div>
       <div class="filtros" id="mus-casting" role="group" aria-label="Casting"></div>
       <div class="casas-filtros filtros-mus"><input type="search" id="mus-busca" placeholder="Buscar: guitarra, Betim, nome..." value="${esc(filtroMus.busca)}" aria-label="Buscar artista"><select id="mus-cidade" aria-label="Cidade"><option value="">Todas as cidades</option></select><select id="mus-inst" aria-label="Instrumento"><option value="">Todos os instrumentos</option></select></div>
       <div id="mus-lista"><p class="vazio">Carregando...</p></div>`;
@@ -1892,7 +1892,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const outros = m.instrumentos.filter((i) => !INSTRUMENTOS.some((p) => semAcento(p) === semAcento(i)));
     const tem = (p) => m.instrumentos.some((i) => semAcento(i) === semAcento(p));
     const pixCampo = m.pix_tipo === "cpf" || m.pix_tipo === "cnpj" || m.pix_tipo === "celular" ? pixMostrar(m) : m.pix_chave;
-    tela.innerHTML = `<a class="voltar" href="#musicos">Voltar para o cadastro</a>
+    tela.innerHTML = `<a class="voltar" href="#musicos">Voltar para Artistas</a>
       <div class="cabeca"><h1 class="display">${novo ? "Novo artista" : esc(m.nome)}</h1>${m.casting ? '<span class="etiqueta e-confirmado">Casting 7A</span>' : ""}</div>
       <div class="bloco-ficha"><form class="ficha" id="ficha" novalidate>
         <label class="c4">Nome artístico<input name="nome" value="${esc(m.nome)}" autocomplete="off" placeholder="Como o artista é chamado no palco"></label>
@@ -1924,7 +1924,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
       salvar(novo ? "gestao/musicos" : "gestao/musicos/" + m.id, novo ? "POST" : "PUT", dados, (r) => {
         sujo = false;
         if (novo) location.hash = "#musico/" + r.id; else { formMusico(r); estado("Salvo.", "ok"); }
-      }, (r) => { if (r.existente) estado(r.erro + " Abra o cadastro dele em Cadastro de artistas.", "ruim"); });
+      }, (r) => { if (r.existente) estado(r.erro + " Abra o cadastro dele em Artistas.", "ruim"); });
     });
     if (!novo) $("#excluir").addEventListener("click", () => {
       if (!confirm(`Excluir o cadastro de ${m.nome}? Isso não pode ser desfeito.`)) return;
