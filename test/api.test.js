@@ -35,6 +35,16 @@ describe("autorização", () => {
   });
 });
 
+describe("endereço do admin", () => {
+  it("o endereço antigo /admin/gestao leva para o /admin", async () => {
+    for (const caminho of ["/admin/gestao", "/admin/gestao.html"]) {
+      const r = await SELF.fetch(BASE + caminho, { redirect: "manual" });
+      expect(r.status).toBe(301);
+      expect(new URL(r.headers.get("location")).pathname).toBe("/admin/");
+    }
+  });
+});
+
 describe("contratantes", () => {
   it("cadastra com telefone normalizado e perfil", async () => {
     const r = await novo({ telefone: "031 98877-6655", perfil: "autoral", email: "Bar@Exemplo.com" });

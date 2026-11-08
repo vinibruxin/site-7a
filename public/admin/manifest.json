@@ -3,7 +3,7 @@
   "short_name": "7A Gestão",
   "description": "Contratantes, shows, cachês e propostas da 7A Produtora.",
   "lang": "pt-BR",
-  "start_url": "/admin/gestao.html",
+  "start_url": "/admin/",
   "scope": "/admin/",
   "display": "standalone",
   "background_color": "#0A0A0A",
