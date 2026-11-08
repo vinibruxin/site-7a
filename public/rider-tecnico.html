@@ -1,0 +1,1111 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rider técnico e mapa de palco | 7A Produtora</title>
+<meta name="description" content="Ficha para a banda preencher o rider técnico e desenhar o mapa de palco. A 7A Produtora entrega pronto para a casa de show.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="img/logo-7a.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&display=swap">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* Ficha de rider técnico: mesma língua da ficha de press kit (campos chapados, Anton grande).
+   O palco é a peça central: a banda monta o mapa tocando nas peças, e os canais saem do mapa. */
+:root {
+  --preto: #0A0A0A;
+  --vermelho: #B5121B;
+  --offwhite: #F2EFEA;
+  --grafite: #2B2B2B;
+  --grafite-2: #3A3A3A;
+  --palco: #1F1F1F;
+  --ouro: #F2D27C;
+  --cinza: #B8B2AA;
+  --cinza-tinta: #8A847D;
+  --f-display: "Anton", "Impact", "Arial Narrow Bold", sans-serif;
+  --f-texto: "Montserrat", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --t-cartaz: clamp(52px, 6.4vw, 112px);
+  --t-titulo: clamp(36px, 4.2vw, 64px);
+  --t-sub: clamp(24px, 2.2vw, 34px);
+  --t-lead: 20px;
+  --t-texto: 17px;
+  --t-nota: 14px;
+  --m: max(20px, env(safe-area-inset-left, 0px));
+  --m-r: max(20px, env(safe-area-inset-right, 0px));
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--preto); scroll-behavior: smooth; scroll-padding-top: 90px; }
+body { margin: 0; background: var(--preto); color: var(--offwhite); font-family: var(--f-texto); font-size: var(--t-texto); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+img, video { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--ouro); outline-offset: 3px; }
+[hidden] { display: none !important; }
+.margem { padding-left: var(--m); padding-right: var(--m-r); }
+.display { font-family: var(--f-display); font-weight: 400; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1.12; margin: 0; text-wrap: balance; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font: 700 16px/1 var(--f-texto); text-decoration: none; cursor: pointer; border: 0; border-radius: 0; padding: 20px 28px; background: var(--vermelho); color: var(--offwhite); transition: transform .15s var(--ease), background-color .2s; }
+.btn:hover { background: #9A0F17; }
+.btn:active { transform: scale(.97); }
+.btn-preto { background: var(--preto); }
+.btn-preto:hover { background: var(--grafite-2); }
+.btn-claro { background: var(--offwhite); color: var(--preto); }
+.btn-claro:hover { background: #fff; }
+.btn-grafite { background: var(--grafite); }
+.btn-grafite:hover { background: var(--grafite-2); }
+.link { font-weight: 700; font-size: 15px; text-decoration: underline; text-decoration-color: var(--vermelho); text-decoration-thickness: 2px; text-underline-offset: 6px; background: none; border: 0; color: inherit; cursor: pointer; padding: 10px 0; font-family: inherit; }
+
+/* ---------- Barra ---------- */
+.topo-site { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 24px; padding-top: calc(env(safe-area-inset-top, 0px) + 14px); padding-bottom: 14px; background: var(--preto); }
+.topo-site .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--offwhite); margin-right: auto; }
+.topo-site .marca img { width: 38px; height: auto; }
+.topo-site .marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; }
+.progresso { font-weight: 600; font-size: 15px; color: var(--cinza); }
+.progresso b { color: var(--offwhite); }
+.topo-site .btn { padding: 13px 18px; font-size: 14px; }
+
+/* ---------- Abertura ---------- */
+.abertura { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: 40px 56px; align-items: end; padding-block: clamp(48px, 8vh, 110px) 0; }
+.abertura h1 { font-size: var(--t-cartaz); }
+.abertura h1 span { display: block; }
+.abertura .apoio { margin: 32px 0 0; font-size: var(--t-lead); line-height: 1.45; font-weight: 500; max-width: 30em; }
+.abertura .tempo { display: grid; gap: 4px; margin-top: 28px; }
+.abertura .tempo b { font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; }
+.abertura .tempo span { font-weight: 500; font-size: 16px; color: var(--cinza); }
+.abertura .comecar { margin-top: 32px; }
+.abertura figure { margin: 0; position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: var(--grafite); }
+.abertura figure video, .abertura figure img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.08); }
+.abertura figcaption { position: absolute; left: 0; bottom: 0; background: var(--preto); padding: 12px 16px 0 0; font-size: var(--t-nota); font-weight: 600; color: var(--cinza); }
+.abertura figcaption b { color: var(--offwhite); }
+
+/* Faixa vermelha: o que a ficha resolve */
+.faixa { grid-column: 1 / -1; background: var(--vermelho); margin-inline: calc(-1 * var(--m)) calc(-1 * var(--m-r)); padding: 44px var(--m-r) 48px var(--m); display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 24px 56px; align-items: end; margin-top: clamp(40px, 6vh, 72px); }
+.faixa p { margin: 0; font-size: var(--t-lead); font-weight: 600; line-height: 1.45; max-width: 30em; }
+.faixa .casting { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }
+.faixa .casting img { width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(1); transition: transform .5s var(--ease); }
+.faixa .casting img:hover { transform: translateY(-6px); }
+.faixa .credito { grid-column: 1 / -1; font-size: 15px; font-weight: 600; }
+.faixa .grande { font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; max-width: 18em; }
+
+/* ---------- Ficha ---------- */
+.corpo { padding-block: 96px 140px; }
+.ficha { display: grid; gap: 112px; min-width: 0; max-width: 1180px; }
+.bloco { display: grid; gap: 28px; min-width: 0; }
+.bloco > header { display: grid; gap: 12px; }
+.bloco h2 { font-size: var(--t-titulo); }
+.bloco > header p { margin: 0; max-width: 38em; font-size: var(--t-lead); line-height: 1.5; }
+
+.campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.campos.tres { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.celula { position: relative; background: var(--grafite); min-width: 0; transition: background-color .2s; }
+.celula.dupla { grid-column: 1 / -1; }
+.celula:focus-within { background: var(--grafite-2); }
+.celula label, .celula .rotulo { position: absolute; top: 16px; left: 20px; right: 20px; font-size: var(--t-nota); font-weight: 600; color: var(--cinza); pointer-events: none; display: flex; justify-content: space-between; gap: 12px; white-space: nowrap; overflow: hidden; }
+.celula label .op { font-weight: 500; color: var(--cinza-tinta); }
+.celula input, .celula select, .celula textarea { display: block; width: 100%; padding: 44px 20px 18px; background: transparent; border: 0; border-radius: 0; color: var(--offwhite); font: 600 19px/1.4 var(--f-texto); appearance: none; -webkit-appearance: none; }
+.celula input, .celula select { height: 100px; }
+.celula textarea { min-height: 160px; resize: vertical; font-weight: 500; font-size: 17px; line-height: 1.6; padding-top: 48px; }
+.celula input::placeholder, .celula textarea::placeholder { color: #77716A; font-weight: 500; }
+.celula input:focus, .celula select:focus, .celula textarea:focus { outline: none; }
+.celula:has(:focus-visible) { box-shadow: inset 0 0 0 2px var(--ouro); }
+.celula select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23B8B2AA' stroke-width='2'/%3E%3C/svg%3E"); background-position: calc(100% - 22px) 56px; background-repeat: no-repeat; padding-right: 48px; }
+.celula select option { background: var(--grafite); color: var(--offwhite); }
+.dica { margin: 0; font-size: 15px; color: var(--cinza); max-width: 46em; }
+.dica b { color: var(--offwhite); }
+
+/* Linhas compactas (formação e canais) */
+.linhas { display: grid; gap: 8px; }
+.linha { display: grid; gap: 8px; align-items: stretch; }
+.linha .celula input, .linha .celula select { height: 78px; padding: 36px 16px 12px; font-size: 17px; }
+.linha .celula label { top: 12px; left: 16px; right: 16px; font-size: 13px; }
+.linha .celula select { background-position: calc(100% - 16px) 46px; padding-right: 40px; }
+.tirar { background: var(--grafite); border: 0; color: var(--cinza); cursor: pointer; font: 700 14px/1 var(--f-texto); transition: background-color .2s, color .2s; min-height: 48px; }
+.tirar:hover { background: var(--vermelho); color: var(--offwhite); }
+.linha.integrante { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr) 64px; }
+.linha.canal { grid-template-columns: 64px minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) 64px; }
+.linha.canal .num { display: grid; place-items: center; background: var(--offwhite); color: var(--preto); font: 400 30px/1 var(--f-display); }
+.acoes-linha { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+
+/* ---------- Mapa de palco ---------- */
+.mapa { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 24px; align-items: start; }
+.paleta { display: grid; gap: 18px; position: sticky; top: 96px; }
+.paleta h3 { margin: 0; font-size: 15px; font-weight: 700; }
+.paleta .grupo { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.peca-btn { display: flex; align-items: center; gap: 10px; background: var(--grafite); color: var(--offwhite); border: 0; padding: 10px 12px; min-height: 48px; font: 600 14px/1.2 var(--f-texto); text-align: left; cursor: pointer; transition: background-color .2s, transform .15s var(--ease); }
+.peca-btn:hover { background: var(--grafite-2); }
+.peca-btn:active { transform: scale(.97); }
+.peca-btn .ic { flex: 0 0 auto; width: 22px; height: 22px; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; }
+.presets button { background: transparent; color: var(--offwhite); border: 0; padding: 10px 12px; min-height: 44px; font: 700 14px/1 var(--f-texto); cursor: pointer; background: var(--grafite); transition: background-color .2s; }
+.presets button:hover { background: var(--grafite-2); }
+
+.palco-area { display: grid; gap: 0; min-width: 0; }
+.palco-area .fundo, .palco-area .frente { font: 400 15px/1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; padding: 14px 18px; }
+.palco-area .fundo { background: var(--grafite); color: var(--cinza); }
+.palco-area .frente { background: var(--offwhite); color: var(--preto); display: flex; justify-content: space-between; gap: 12px; }
+.palco-area .frente span:last-child { font-family: var(--f-texto); font-weight: 600; font-size: 13px; text-transform: none; letter-spacing: 0; align-self: center; }
+.palco { position: relative; display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); grid-template-rows: repeat(6, minmax(0, 1fr)); aspect-ratio: 10 / 6; background: var(--palco); touch-action: manipulation; user-select: none; -webkit-user-select: none; cursor: crosshair; }
+.palco .ponto { grid-column: var(--x); grid-row: var(--y); display: grid; place-items: center; pointer-events: none; }
+.palco .ponto::after { content: ""; width: 4px; height: 4px; background: #3A3A3A; }
+.palco.movendo .ponto::after { background: #5A5650; }
+.item { position: relative; z-index: 2; grid-column: var(--c) / span var(--w); grid-row: var(--r) / span var(--h); margin: 5px; border: 0; padding: 0; cursor: grab; display: grid; place-items: center; touch-action: none; background: transparent; color: var(--preto); transition: transform .25s var(--ease); }
+.item:active { cursor: grabbing; }
+.item .forma { position: absolute; inset: 0; display: grid; place-items: center; }
+.item .cod { position: relative; font: 400 clamp(12px, 1.3vw, 17px)/1 var(--f-display); text-transform: uppercase; letter-spacing: .01em; }
+.item .quem { position: absolute; left: 50%; top: 100%; transform: translate(-50%, 4px); white-space: nowrap; font: 600 12px/1.2 var(--f-texto); color: var(--offwhite); background: var(--preto); padding: 3px 6px; pointer-events: none; max-width: 160px; overflow: hidden; text-overflow: ellipsis; z-index: 3; }
+.item.musico .forma { background: var(--offwhite); border-radius: 50%; }
+.item.musico.largo .forma { border-radius: 999px; }
+.item.equip .forma { background: var(--cinza); }
+.item.retorno .forma { background: var(--cinza); clip-path: polygon(12% 22%, 88% 22%, 100% 82%, 0 82%); transform: rotate(var(--rot, 0deg)); }
+.item.retorno .cod { font-size: clamp(12px, 1vw, 14px); }
+.item.energia .forma { inset: 27%; background: var(--vermelho); transform: rotate(45deg); }
+.item.energia .cod { color: var(--offwhite); font-size: clamp(12px, .9vw, 13px); }
+.item.sel { z-index: 4; }
+.item.na-frente .quem { top: auto; bottom: 100%; transform: translate(-50%, -4px); }
+.item.sel::after { content: ""; position: absolute; inset: -6px; box-shadow: 0 0 0 3px var(--vermelho); border-radius: inherit; pointer-events: none; }
+.item.musico.sel::after { border-radius: 999px; }
+.item.arrastando { opacity: .85; transform: scale(1.08); z-index: 6; }
+.item.nasce { animation: nasce .45s var(--ease); }
+@keyframes nasce { from { transform: scale(.4); opacity: 0; } to { transform: none; opacity: 1; } }
+.palco .vazio { grid-column: 2 / span 8; grid-row: 2 / span 4; display: grid; place-items: center; text-align: center; font-weight: 600; font-size: 16px; color: var(--cinza); pointer-events: none; padding: 0 12px; }
+.fantasma { grid-column: var(--c) / span var(--w); grid-row: var(--r) / span var(--h); margin: 5px; background: rgba(181, 18, 27, .28); pointer-events: none; z-index: 1; }
+
+.editor { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: stretch; background: var(--grafite); padding: 8px; }
+.editor .celula { background: var(--preto); }
+.editor .celula input { height: 72px; padding: 32px 14px 10px; font-size: 17px; }
+.editor .celula label { top: 10px; left: 14px; font-size: 13px; }
+.editor button { border: 0; font: 700 14px/1 var(--f-texto); padding: 0 18px; cursor: pointer; min-height: 48px; transition: background-color .2s; }
+.editor .girar { background: var(--grafite-2); color: var(--offwhite); }
+.editor .girar:hover { background: #4A4A4A; }
+.editor .tirar-item { background: var(--vermelho); color: var(--offwhite); }
+.editor .tirar-item:hover { background: #9A0F17; }
+.aviso-palco { margin: 0; min-height: 1.5em; font-size: 15px; font-weight: 600; color: var(--cinza); }
+.no-palco { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.no-palco li { background: var(--grafite); padding: 8px 12px; font-size: 14px; font-weight: 600; }
+.no-palco li b { font-family: var(--f-display); font-weight: 400; text-transform: uppercase; margin-right: 6px; }
+.mapa-acoes { display: flex; flex-wrap: wrap; gap: 12px 28px; align-items: center; }
+
+/* Backline: três estados por item */
+.backline { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.bl { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; background: var(--grafite); padding: 16px 16px 12px 20px; }
+.bl > span { font-weight: 700; font-size: 16px; }
+.bl .opcoes { display: flex; gap: 4px; }
+.bl label { position: relative; flex: 1 1 0; cursor: pointer; }
+.bl input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.bl label span { display: block; text-align: center; padding: 12px 6px; background: var(--preto); font-weight: 700; font-size: 13px; color: var(--cinza); transition: background-color .2s, color .2s; }
+.bl label:hover span { color: var(--offwhite); }
+.bl input:checked + span { background: var(--offwhite); color: var(--preto); }
+.bl input[value="casa"]:checked + span { background: var(--vermelho); color: var(--offwhite); }
+.bl input:focus-visible + span { outline: 3px solid var(--ouro); outline-offset: 2px; }
+
+/* Passagem: bloco claro, é o que a casa mais pergunta */
+.bloco.claro { background: var(--offwhite); color: var(--preto); padding: 48px 40px; margin-inline: -40px; }
+.bloco.claro .celula { background: #E4DFD7; }
+.bloco.claro .celula:focus-within { background: #D9D3CA; }
+.bloco.claro .celula label { color: #5E5852; }
+.bloco.claro .celula label .op { color: #8A847D; }
+.bloco.claro .celula input, .bloco.claro .celula select, .bloco.claro .celula textarea { color: var(--preto); }
+.bloco.claro .celula select option { background: var(--offwhite); color: var(--preto); }
+.bloco.claro .celula input::placeholder, .bloco.claro .celula textarea::placeholder { color: #8A847D; }
+.bloco.claro .dica { color: #3d3934; }
+.bloco.claro .dica b { color: var(--preto); }
+
+/* Enviar */
+.enviar { background: var(--vermelho); color: var(--offwhite); padding: 56px 40px 48px; margin-inline: -40px; display: grid; gap: 24px; }
+.enviar h2 { font-size: var(--t-titulo); }
+.enviar p { margin: 0; font-size: var(--t-lead); font-weight: 600; max-width: 36em; line-height: 1.45; }
+.enviar .faltam { font-size: 17px; }
+.enviar .acoes { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.enviar .passo2 { font-size: 16px; font-weight: 600; max-width: 42em; }
+.enviar .link { color: var(--offwhite); text-decoration-color: var(--preto); }
+.salvo { font-size: 14px; font-weight: 500; }
+
+/* ---------- Rodapé ---------- */
+.fim { background: var(--grafite); padding-block: 72px 56px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 24px 40px; align-items: end; }
+.fim img { width: 120px; }
+.fim .nome-casa { font: 400 var(--t-titulo)/1.12 var(--f-display); text-transform: uppercase; margin: 0; }
+.fim .casa-linha { margin: 8px 0 0; font-weight: 600; font-size: 16px; color: var(--cinza); }
+.fim dl { margin: 0; display: grid; grid-template-columns: auto auto; gap: 6px 18px; font-size: 15px; }
+.fim dt { color: var(--cinza); font-weight: 500; }
+.fim dd { margin: 0; font-weight: 700; }
+.fim dd a { text-decoration: none; }
+.fim dd a:hover { text-decoration: underline; text-decoration-color: var(--vermelho); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+/* ---------- Entrada (só com JS; sem JS tudo aparece) ---------- */
+.js [data-revela] { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: calc(var(--d, 0) * 80ms); }
+.js [data-revela].visto { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js [data-revela] { opacity: 1; transform: none; transition: none; }
+  .item, .item.nasce { animation: none; transition: none; }
+  .btn:active, .peca-btn:active { transform: none; }
+}
+
+/* ---------- Telas menores ---------- */
+@media (max-width: 1080px) {
+  .abertura { grid-template-columns: minmax(0, 1fr) minmax(0, 300px); }
+  .faixa { grid-template-columns: minmax(0, 1fr); }
+  .mapa { grid-template-columns: minmax(0, 1fr); }
+  .paleta { position: static; order: -1; }
+  .paleta .grupo { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .linha.canal { grid-template-columns: 56px minmax(0, 1fr) minmax(0, 1fr) 56px; }
+  .linha.canal .num { grid-row: span 2; }
+  .linha.canal .tirar { grid-row: span 2; grid-column: 4; grid-row-start: 1; }
+  .fim { grid-template-columns: auto minmax(0, 1fr); }
+  .fim dl { grid-column: 1 / -1; }
+  .fim .nome-casa { font-size: 30px; }
+  .bloco.claro, .enviar { margin-inline: calc(-1 * var(--m)); padding-inline: var(--m); }
+}
+@media (max-width: 640px) {
+  :root { --t-lead: 18px; --t-cartaz: 46px; }
+  .abertura { grid-template-columns: minmax(0, 1fr); }
+  .abertura figure { aspect-ratio: 4 / 3; margin-inline: calc(-1 * var(--m)) calc(-1 * var(--m-r)); }
+  .faixa .casting { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .topo-site .marca span { display: none; }
+  .topo-site .btn { display: none; }
+  .ficha { gap: 88px; }
+  .campos, .campos.tres, .backline { grid-template-columns: minmax(0, 1fr); }
+  .celula input, .celula select { height: 86px; padding: 40px 18px 14px; font-size: 17px; }
+  .celula label, .celula .rotulo { top: 14px; left: 18px; right: 18px; }
+  .celula select { background-position: calc(100% - 18px) 50px; }
+  .paleta .grupo { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .palco-area { margin-inline: calc(-1 * var(--m)) calc(-1 * var(--m-r)); }
+  .item { margin: 2px; }
+  .item .quem { display: none; }
+  .palco-area .frente span:last-child { display: none; }
+  .editor { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .editor .celula { grid-column: 1 / -1; }
+  .linha.integrante { grid-template-columns: minmax(0, 1fr) 56px; }
+  .linha.integrante .celula:nth-child(2), .linha.integrante .celula:nth-child(3) { grid-column: 1; }
+  .linha.integrante .tirar { grid-row: 1 / span 3; grid-column: 2; }
+  .linha.canal { grid-template-columns: 40px minmax(0, 1fr) minmax(0, 1fr) 48px; gap: 6px; }
+  .linha.canal .num { grid-row: 1 / span 3; grid-column: 1; font-size: 24px; }
+  .linha.canal .celula:nth-of-type(1), .linha.canal .celula:nth-of-type(4) { grid-column: 2 / span 2; }
+  .linha.canal .celula input, .linha.canal .celula select { height: 68px; padding: 32px 12px 10px; font-size: 16px; }
+  .linha.canal .celula label { top: 10px; left: 12px; right: 12px; font-size: 12px; }
+  .linha.canal .celula select { background-position: calc(100% - 10px) 40px; padding-right: 28px; }
+  .linha.canal .tirar { grid-column: 4; grid-row: 1 / span 3; }
+  .linhas { gap: 14px; }
+  .enviar .acoes .btn { width: 100%; }
+  .fim { grid-template-columns: minmax(0, 1fr); }
+  .fim img { width: 90px; }
+}
+
+/* ---------- Impressão: o rider vira PDF para a casa ---------- */
+#impressao { display: none; }
+@media print {
+  @page { size: A4; margin: 14mm; }
+  body { background: #fff; color: #0A0A0A; }
+  body > *:not(#impressao) { display: none !important; }
+  #impressao { display: block; font: 10pt/1.45 var(--f-texto); color: #0A0A0A; }
+  #impressao h1 { font: 400 26pt/1.12 var(--f-display); text-transform: uppercase; margin: 0; }
+  #impressao h2 { font: 400 13pt/1.12 var(--f-display); text-transform: uppercase; margin: 6mm 0 2mm; padding-top: 2mm; border-top: 2pt solid #B5121B; break-after: avoid; }
+  #impressao .cab { display: flex; justify-content: space-between; align-items: center; gap: 8mm; }
+  #impressao .cab img { width: 16mm; }
+  #impressao .mapa-img { width: 100%; height: auto; break-inside: avoid; }
+  #impressao table { width: 100%; border-collapse: collapse; }
+  #impressao th, #impressao td { text-align: left; padding: 1.4mm 2mm; border-bottom: .5pt solid #B8B2AA; vertical-align: top; }
+  #impressao th { font-weight: 700; font-size: 9pt; }
+  #impressao td.n { font-weight: 700; width: 9mm; }
+  #impressao dl { display: grid; grid-template-columns: 40mm 1fr; gap: 1mm 4mm; margin: 0; }
+  #impressao dt { color: #5E5852; }
+  #impressao dd { margin: 0; font-weight: 600; white-space: pre-wrap; }
+  #impressao .pe { margin-top: 8mm; font-size: 9pt; color: #5E5852; }
+}
+</style>
+</head>
+<body>
+
+<header class="topo-site margem">
+  <a class="marca" href="/" aria-label="7A Produtora, início"><img src="img/logo-7a.png" alt="Logo 7A" width="38" height="45"><span>7A Produtora</span></a>
+  <span class="progresso" id="progresso" aria-live="polite"><b>0 de 7</b> partes prontas</span>
+  <a class="btn" href="#enviar">Revisar e enviar</a>
+</header>
+
+<main>
+  <section class="abertura margem" aria-labelledby="t-abertura">
+    <div>
+      <h1 class="display" id="t-abertura"><span data-revela>Rider técnico</span><span data-revela style="--d:1">e mapa de palco</span></h1>
+      <p class="apoio" data-revela style="--d:2">Diga como a banda sobe no palco: quem fica onde, quantos canais, o que vai no retorno e o que vocês levam. A 7A entrega isso pronto para a casa antes do show.</p>
+      <div class="tempo" data-revela style="--d:3"><b>Uns 10 minutos</b><span>A ficha fica salva neste aparelho. Dá para parar e voltar depois.</span></div>
+      <a class="btn comecar" href="#b-banda" data-revela style="--d:4">Começar o rider</a>
+    </div>
+    <figure data-revela style="--d:2">
+      <video id="video-abertura" src="img/ossos-ao-vivo.mp4" poster="img/ossos-ao-vivo.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Ossos do Banquete ao vivo"></video>
+      <figcaption><b>Ossos do Banquete</b> ao vivo</figcaption>
+    </figure>
+    <div class="faixa">
+      <p class="grande" data-revela>Passagem de som curta começa no papel</p>
+      <p data-revela style="--d:1">Com o rider na mão, o técnico da casa já chega com os canais montados, os pedestais no lugar e os retornos certos. Vocês ganham tempo de passagem e tocam com o som do jeito que ensaiaram.</p>
+      <div class="casting" data-revela style="--d:2">
+        <img src="img/galeria/ossos-2.jpg" alt="Vocalista da Ossos do Banquete com o microfone" width="765" height="1000" loading="lazy">
+        <img src="img/galeria/ordem-2.jpg" alt="Vocalista da Ordem Mor" width="666" height="1000" loading="lazy">
+        <img src="img/galeria/ordem-3.jpg" alt="Guitarrista da Ordem Mor" width="666" height="1000" loading="lazy">
+        <img src="img/galeria/ossos-4.jpg" alt="Ossos do Banquete" width="1000" height="667" loading="lazy">
+      </div>
+      <p class="credito" data-revela style="--d:3">Ossos do Banquete e Ordem Mor, do casting da 7A. Cada um no seu lugar do palco.</p>
+    </div>
+  </section>
+
+  <div class="corpo margem">
+    <form class="ficha" id="ficha" novalidate>
+
+      <section class="bloco" id="b-banda" aria-labelledby="t-banda">
+        <header data-revela>
+          <h2 class="display" id="t-banda">A banda</h2>
+          <p>Para o rider sair com o nome certo no topo.</p>
+        </header>
+        <div class="campos" data-revela style="--d:1">
+          <div class="celula"><label for="f-nome">Nome da banda</label><input id="f-nome" name="nome" type="text" required autocomplete="organization" placeholder="Como aparece no cartaz"></div>
+          <div class="celula"><label for="f-cidade">Cidade</label><input id="f-cidade" name="cidade" type="text" autocomplete="address-level2" placeholder="Betim, MG"></div>
+        </div>
+      </section>
+
+      <section class="bloco" id="b-formacao" aria-labelledby="t-formacao">
+        <header data-revela>
+          <h2 class="display" id="t-formacao">Formação e retorno</h2>
+          <p>Quem toca, o que toca e o que cada um precisa ouvir no retorno.</p>
+        </header>
+        <div class="campos" data-revela style="--d:1">
+          <div class="celula"><label for="f-retorno">Tipo de retorno</label>
+            <select id="f-retorno" name="retorno">
+              <option value="">Escolha</option>
+              <option>Caixa de retorno no chão</option>
+              <option>In-ear</option>
+              <option>Misto: caixa e in-ear</option>
+              <option>Não usamos retorno</option>
+            </select>
+          </div>
+          <div class="celula"><label for="f-vias">Vias de retorno <span class="op">mixes separadas</span></label>
+            <select id="f-vias" name="vias">
+              <option value="">Escolha</option>
+              <option>1 via para todos</option>
+              <option>2 vias</option>
+              <option>3 vias</option>
+              <option>4 vias</option>
+              <option>5 vias</option>
+              <option>6 vias ou mais</option>
+            </select>
+          </div>
+        </div>
+        <div class="linhas" id="integrantes" data-revela style="--d:2"></div>
+        <div class="acoes-linha"><button class="link" type="button" id="mais-integrante">Adicionar integrante</button></div>
+      </section>
+
+      <section class="bloco" id="b-mapa" aria-labelledby="t-mapa">
+        <header data-revela>
+          <h2 class="display" id="t-mapa">Mapa de palco</h2>
+          <p>Toque numa peça para pôr no palco. Depois arraste, ou toque na peça e no lugar novo. O público fica embaixo, como a casa vê.</p>
+        </header>
+        <div class="mapa" data-revela style="--d:1">
+          <div class="palco-area">
+            <div class="fundo">Fundo do palco</div>
+            <div class="palco" id="palco" role="application" aria-label="Mapa de palco. Selecione uma peça e use as setas para mover."></div>
+            <div class="frente"><span>Frente do palco · público</span><span>Vista de quem está na plateia</span></div>
+          </div>
+          <div class="paleta" aria-label="Peças para o palco">
+            <div class="grupo" id="paleta-musicos"><h3 style="grid-column:1/-1">Músicos</h3></div>
+            <div class="grupo" id="paleta-equip"><h3 style="grid-column:1/-1">Equipamento</h3></div>
+            <div>
+              <h3 style="margin-bottom:8px">Começar de um modelo</h3>
+              <div class="presets" id="presets">
+                <button type="button" data-preset="quarteto">Rock, 4</button>
+                <button type="button" data-preset="quinteto">Rock, 5</button>
+                <button type="button" data-preset="trio">Trio</button>
+                <button type="button" data-preset="acustico">Voz e violão</button>
+                <button type="button" data-preset="dupla">Dupla acústica</button>
+                <button type="button" data-preset="dj">DJ</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="editor" id="editor" hidden>
+          <div class="celula"><label for="e-quem" id="e-rotulo">Quem toca aqui</label><input id="e-quem" type="text" list="lista-nomes" placeholder="Nome do músico"></div>
+          <button type="button" class="girar" id="e-girar">Girar</button>
+          <button type="button" class="tirar-item" id="e-tirar">Tirar do palco</button>
+        </div>
+        <datalist id="lista-nomes"></datalist>
+        <p class="aviso-palco" id="aviso-palco" aria-live="polite"></p>
+        <ul class="no-palco" id="no-palco" aria-label="Peças no palco"></ul>
+        <div class="mapa-acoes">
+          <button class="btn btn-grafite" type="button" id="baixar-mapa">Salvar o mapa em imagem</button>
+          <button class="link" type="button" id="limpar-mapa">Limpar o palco</button>
+        </div>
+      </section>
+
+      <section class="bloco" id="b-canais" aria-labelledby="t-canais">
+        <header data-revela>
+          <h2 class="display" id="t-canais">Canais de som</h2>
+          <p>A lista que o técnico monta na mesa, um canal por linha. Comece pelo mapa e ajuste o que for diferente.</p>
+        </header>
+        <div class="acoes-linha" data-revela style="--d:1">
+          <button class="btn" type="button" id="do-mapa">Montar os canais pelo mapa</button>
+          <span class="dica" id="dica-canais">Usa as peças que estão no palco.</span>
+        </div>
+        <div class="linhas" id="canais" data-revela style="--d:2"></div>
+        <div class="acoes-linha"><button class="link" type="button" id="mais-canal">Adicionar canal</button></div>
+        <datalist id="lista-mics">
+          <option value="SM58"><option value="SM57"><option value="Beta 52"><option value="Beta 91"><option value="e604"><option value="Condensador"><option value="Microfone sem fio"><option value="DI ativa"><option value="DI passiva"><option value="Linha direta (P10)"><option value="Linha estéreo (L/R)">
+        </datalist>
+        <p class="dica" data-revela style="--d:3"><b>Se a banda leva microfone próprio,</b> escreva na observação do canal. Bateria completa costuma usar de 6 a 8 canais.</p>
+      </section>
+
+      <section class="bloco" id="b-backline" aria-labelledby="t-backline">
+        <header data-revela>
+          <h2 class="display" id="t-backline">Backline</h2>
+          <p>Para cada item, diga se a banda leva ou se precisa da casa. O que ficar em vermelho é o que a 7A negocia com o contratante.</p>
+        </header>
+        <div class="backline" id="backline" data-revela style="--d:1"></div>
+        <div class="campos" data-revela style="--d:2">
+          <div class="celula dupla"><label for="f-backline-obs">Detalhes do equipamento <span class="op">opcional</span></label><textarea id="f-backline-obs" name="backlineObs" maxlength="600" placeholder="Ex.: bateria com 2 tons e 1 surdo, pratos próprios, amp de guitarra valvulado, pedal duplo"></textarea></div>
+        </div>
+      </section>
+
+      <section class="bloco claro" id="b-passagem" aria-labelledby="t-passagem">
+        <header data-revela>
+          <h2 class="display" id="t-passagem">Passagem e horários</h2>
+          <p>É a primeira coisa que a casa pergunta. Seja realista: tempo apertado vira som ruim.</p>
+        </header>
+        <div class="campos tres" data-revela style="--d:1">
+          <div class="celula"><label for="f-montagem">Montagem</label>
+            <select id="f-montagem" name="montagem"><option value="">Escolha</option><option>10 min</option><option>15 min</option><option>20 min</option><option>30 min</option><option>45 min</option><option>1 hora</option></select>
+          </div>
+          <div class="celula"><label for="f-passagem">Passagem de som</label>
+            <select id="f-passagem" name="passagem"><option value="">Escolha</option><option>15 min</option><option>20 min</option><option>30 min</option><option>45 min</option><option>1 hora</option><option>1h30</option><option>Não precisamos</option></select>
+          </div>
+          <div class="celula"><label for="f-desmontagem">Desmontagem</label>
+            <select id="f-desmontagem" name="desmontagem"><option value="">Escolha</option><option>10 min</option><option>15 min</option><option>20 min</option><option>30 min</option></select>
+          </div>
+          <div class="celula"><label for="f-tecnico">Técnico de som</label>
+            <select id="f-tecnico" name="tecnico"><option value="">Escolha</option><option>Levamos técnico próprio</option><option>Usamos o técnico da casa</option></select>
+          </div>
+          <div class="celula"><label for="f-tomadas">Tomadas no palco</label>
+            <select id="f-tomadas" name="tomadas"><option value="">Escolha</option><option>2 pontos</option><option>3 pontos</option><option>4 pontos</option><option>6 pontos</option><option>8 pontos ou mais</option></select>
+          </div>
+          <div class="celula"><label for="f-voltagem">Voltagem</label>
+            <select id="f-voltagem" name="voltagem"><option value="">Escolha</option><option>110 V</option><option>220 V</option><option>Tanto faz (bivolt)</option></select>
+          </div>
+          <div class="celula dupla" style="grid-column:1/-1"><label for="f-obs">Outras necessidades <span class="op">opcional</span></label><textarea id="f-obs" name="obs" maxlength="600" placeholder="Camarim, água no palco, toalha, espaço para merch, acesso para descarregar"></textarea></div>
+        </div>
+        <p class="dica" data-revela style="--d:2"><b>Contratante dá água e comida, a banda leva transporte.</b> Se o show for sem som da casa, a 7A combina a estrutura antes.</p>
+      </section>
+
+      <section class="bloco" id="b-contato" aria-labelledby="t-contato">
+        <header data-revela>
+          <h2 class="display" id="t-contato">Contato</h2>
+          <p>Quem fala pela banda e, se tiver, quem cuida do som. O técnico da casa liga direto para ele.</p>
+        </header>
+        <div class="campos" data-revela style="--d:1">
+          <div class="celula dupla"><label for="f-responsavel">Responsável pela banda</label><input id="f-responsavel" name="responsavel" type="text" required autocomplete="name"></div>
+          <div class="celula"><label for="f-whats">WhatsApp</label><input id="f-whats" name="whats" type="tel" required inputmode="tel" autocomplete="tel" placeholder="(31) 9 0000-0000"></div>
+          <div class="celula"><label for="f-email">E-mail <span class="op">opcional</span></label><input id="f-email" name="email" type="email" autocomplete="email" placeholder="banda@email.com"></div>
+          <div class="celula"><label for="f-tec-nome">Técnico de som <span class="op">opcional</span></label><input id="f-tec-nome" name="tecNome" type="text" placeholder="Nome"></div>
+          <div class="celula"><label for="f-tec-whats">WhatsApp do técnico <span class="op">opcional</span></label><input id="f-tec-whats" name="tecWhats" type="tel" inputmode="tel" placeholder="(31) 9 0000-0000"></div>
+        </div>
+      </section>
+
+      <section class="enviar" id="enviar" aria-labelledby="t-enviar">
+        <h2 class="display" id="t-enviar">Pronto para mandar</h2>
+        <p id="resumo-falta" class="faltam" aria-live="polite"></p>
+        <p>O rider vai em texto pelo WhatsApp da 7A. O mapa vai logo depois, como imagem, na mesma conversa.</p>
+        <div class="acoes">
+          <a class="btn btn-preto" id="enviar-whats" href="https://wa.me/5531992233295" target="_blank" rel="noopener">Enviar o rider no WhatsApp</a>
+          <button class="btn btn-claro" type="button" id="enviar-mapa">Enviar o mapa em imagem</button>
+          <a class="link" id="enviar-email" href="mailto:contato@7aprodutora.com.br">Mandar por e-mail</a>
+          <button class="link" type="button" id="baixar-pdf">Salvar o rider em PDF</button>
+        </div>
+        <p class="passo2"><b>Como fica:</b> a 7A confere, monta o rider com a marca e manda para a casa junto com o press kit. Mudou a formação? É só abrir esta ficha de novo, ajustar e mandar.</p>
+        <span class="salvo" id="salvo"></span>
+      </section>
+    </form>
+  </div>
+</main>
+
+<footer class="fim margem">
+  <img src="img/logo-7a.png" alt="7A Produtora">
+  <div><p class="nome-casa">Aqui o artista é levado a sério</p><p class="casa-linha">7A Produtora · Betim, MG · Criar, produzir, transformar</p></div>
+  <dl>
+    <dt>WhatsApp</dt><dd><a href="https://wa.me/5531992233295">(31) 99223-3295</a></dd>
+    <dt>E-mail</dt><dd><a href="mailto:contato@7aprodutora.com.br">contato@7aprodutora.com.br</a></dd>
+    <dt>Instagram</dt><dd><a href="https://instagram.com/7a_produtora">@7a_produtora</a></dd>
+  </dl>
+</footer>
+
+<div id="impressao" aria-hidden="true"></div>
+
+<script>
+(function () {
+  var NUMERO = "5531992233295", EMAIL = "contato@7aprodutora.com.br", CHAVE = "7a-ficha-rider";
+  var COLS = 10, ROWS = 6;
+  var $ = function (id) { return document.getElementById(id); };
+  var form = $("ficha");
+
+  /* ---------- Peças do palco ---------- */
+  // x, y: coluna e linha (0 = esquerda da plateia / fundo). pref: onde a peça nasce.
+  var TIPOS = {
+    voz:  { nome: "Voz", cod: "Voz", cls: "musico", w: 1, h: 1, pref: [4, 4] },
+    bv:   { nome: "Backing vocal", cod: "BV", cls: "musico", w: 1, h: 1, pref: [6, 4] },
+    gtr:  { nome: "Guitarra", cod: "Gtr", cls: "musico", w: 1, h: 1, pref: [2, 3] },
+    bx:   { nome: "Baixo", cod: "Bx", cls: "musico", w: 1, h: 1, pref: [7, 3] },
+    bat:  { nome: "Bateria", cod: "Bat", cls: "musico", w: 2, h: 2, pref: [4, 0] },
+    tec:  { nome: "Teclado", cod: "Tec", cls: "musico largo", w: 2, h: 1, pref: [7, 1] },
+    vio:  { nome: "Violão", cod: "Vio", cls: "musico", w: 1, h: 1, pref: [5, 4] },
+    perc: { nome: "Percussão", cod: "Perc", cls: "musico", w: 1, h: 1, pref: [7, 1] },
+    sop:  { nome: "Sopro", cod: "Sop", cls: "musico", w: 1, h: 1, pref: [8, 3] },
+    dj:   { nome: "DJ", cod: "DJ", cls: "musico largo", w: 2, h: 1, pref: [4, 2] },
+    ampg: { nome: "Amp de guitarra", cod: "Amp G", cls: "equip", w: 1, h: 1, pref: [1, 1] },
+    ampb: { nome: "Amp de baixo", cod: "Amp B", cls: "equip", w: 1, h: 1, pref: [8, 1] },
+    ret:  { nome: "Retorno", cod: "Ret", cls: "retorno", w: 1, h: 1, pref: [4, 5] },
+    ac:   { nome: "Tomada", cod: "AC", cls: "energia", w: 1, h: 1, pref: [0, 0] }
+  };
+  var MUSICOS = ["voz", "bv", "gtr", "bx", "bat", "tec", "vio", "perc", "sop", "dj"];
+  var EQUIP = ["ampg", "ampb", "ret", "ac"];
+  var PRESETS = {
+    quarteto: [["bat",4,0],["ampg",1,1],["ampb",8,1],["ac",0,0],["ac",9,0],["gtr",2,3],["bx",7,3],["voz",4,4],["ret",2,5],["ret",4,5],["ret",7,5]],
+    quinteto: [["bat",4,0],["ampg",1,1],["ampg",7,0],["ampb",8,1],["ac",0,0],["ac",9,0],["gtr",2,3],["gtr",6,3],["bx",8,3],["voz",4,4],["ret",2,5],["ret",4,5],["ret",6,5],["ret",8,5]],
+    trio: [["bat",4,0],["ampg",1,1],["ampb",8,1],["ac",0,0],["ac",9,0],["gtr",3,3],["bx",6,3],["ret",3,5],["ret",6,5]],
+    acustico: [["vio",4,3],["voz",5,3],["ac",9,1],["ret",4,5]],
+    dupla: [["vio",3,3],["voz",3,4],["vio",6,3],["bv",6,4],["ac",9,1],["ret",3,5],["ret",6,5]],
+    dj: [["dj",4,2],["ac",6,2],["ret",3,3],["ret",6,3]]
+  };
+  var itens = [], sel = null, seq = 0, ultimoSolto = 0;
+
+  function ic(tipo) {
+    var t = TIPOS[tipo], f = "#F2EFEA";
+    if (t.cls.indexOf("musico") === 0) return '<svg class="ic" viewBox="0 0 22 22" aria-hidden="true"><circle cx="11" cy="11" r="10" fill="' + f + '"/></svg>';
+    if (t.cls === "equip") return '<svg class="ic" viewBox="0 0 22 22" aria-hidden="true"><rect x="2" y="2" width="18" height="18" fill="#B8B2AA"/></svg>';
+    if (t.cls === "retorno") return '<svg class="ic" viewBox="0 0 22 22" aria-hidden="true"><polygon points="4,6 18,6 21,17 1,17" fill="#B8B2AA"/></svg>';
+    return '<svg class="ic" viewBox="0 0 22 22" aria-hidden="true"><rect x="5" y="5" width="12" height="12" transform="rotate(45 11 11)" fill="#B5121B"/></svg>';
+  }
+  function montarPaleta() {
+    [["paleta-musicos", MUSICOS], ["paleta-equip", EQUIP]].forEach(function (g) {
+      var box = $(g[0]);
+      g[1].forEach(function (tipo) {
+        var b = document.createElement("button");
+        b.type = "button"; b.className = "peca-btn";
+        b.innerHTML = ic(tipo) + "<span>" + TIPOS[tipo].nome + "</span>";
+        b.addEventListener("click", function () { adicionar(tipo); });
+        box.appendChild(b);
+      });
+    });
+  }
+
+  var palco = $("palco");
+  function montarPontos() {
+    for (var y = 0; y < ROWS; y++) for (var x = 0; x < COLS; x++) {
+      var p = document.createElement("span"); p.className = "ponto";
+      p.style.setProperty("--x", x + 1); p.style.setProperty("--y", y + 1);
+      palco.appendChild(p);
+    }
+  }
+  function ocupa(it, x, y, ignorar) {
+    var t = TIPOS[it.tipo];
+    if (x < 0 || y < 0 || x + t.w > COLS || y + t.h > ROWS) return true;
+    return itens.some(function (o) {
+      if (o === it || o === ignorar) return false;
+      var ot = TIPOS[o.tipo];
+      return x < o.x + ot.w && x + t.w > o.x && y < o.y + ot.h && y + t.h > o.y;
+    });
+  }
+  function lugarLivre(it, px, py) {
+    var melhor = null, dist = 1e9;
+    for (var y = 0; y < ROWS; y++) for (var x = 0; x < COLS; x++) {
+      if (ocupa(it, x, y)) continue;
+      var d = Math.abs(x - px) + Math.abs(y - py) * 1.2;
+      if (d < dist) { dist = d; melhor = [x, y]; }
+    }
+    return melhor;
+  }
+  function adicionar(tipo, x, y, quem, rot, silencioso) {
+    var it = { id: ++seq, tipo: tipo, x: 0, y: 0, quem: quem || "", rot: rot || 0 };
+    var pos = (x != null && !ocupa(it, x, y)) ? [x, y] : lugarLivre(it, x != null ? x : TIPOS[tipo].pref[0], y != null ? y : TIPOS[tipo].pref[1]);
+    if (!pos) { aviso("Não cabe mais nada no palco. Tire uma peça ou junte as que estão."); return null; }
+    it.x = pos[0]; it.y = pos[1];
+    itens.push(it);
+    if (!silencioso) { selecionar(it); aviso(TIPOS[tipo].nome + " no palco. Arraste ou toque no lugar onde fica."); }
+    desenhar(silencioso ? null : it);
+    if (!silencioso) atualizar();
+    return it;
+  }
+  function aviso(t) { $("aviso-palco").textContent = t || ""; }
+
+  function zona(it) {
+    var t = TIPOS[it.tipo], cx = it.x + t.w / 2, cy = it.y + t.h / 2;
+    var lado = cx < COLS / 3 ? "esquerda" : cx > COLS * 2 / 3 ? "direita" : "centro";
+    var prof = cy < ROWS / 3 ? "fundo" : cy > ROWS * 2 / 3 ? "frente" : "meio";
+    return prof + ", " + lado;
+  }
+
+  function desenhar(novo) {
+    Array.prototype.slice.call(palco.querySelectorAll(".item, .fantasma")).forEach(function (e) { e.remove(); });
+    itens.forEach(function (it) {
+      var t = TIPOS[it.tipo];
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "item " + t.cls + (it === sel ? " sel" : "") + (it === novo ? " nasce" : "") + (it.y + t.h >= ROWS ? " na-frente" : "");
+      b.style.setProperty("--c", it.x + 1); b.style.setProperty("--r", it.y + 1);
+      b.style.setProperty("--w", t.w); b.style.setProperty("--h", t.h);
+      b.style.setProperty("--rot", (it.rot || 0) + "deg");
+      b.dataset.id = it.id;
+      b.setAttribute("aria-label", t.nome + (it.quem ? ", " + it.quem : "") + ", " + zona(it));
+      b.innerHTML = '<span class="forma"></span><span class="cod">' + t.cod + "</span>" + (it.quem ? '<span class="quem">' + esc(it.quem) + "</span>" : "");
+      ligarArraste(b, it);
+      palco.appendChild(b);
+    });
+    var vz = palco.querySelector(".vazio");
+    if (!itens.length && !vz) { vz = document.createElement("p"); vz.className = "vazio"; vz.textContent = "Palco vazio. Toque numa peça ou comece de um modelo."; palco.appendChild(vz); }
+    if (itens.length && vz) vz.remove();
+    var ul = $("no-palco");
+    ul.innerHTML = itens.length ? itens.slice().sort(ordemCanal).map(function (it) {
+      return "<li><b>" + TIPOS[it.tipo].cod + "</b>" + esc(TIPOS[it.tipo].nome + (it.quem ? " · " + it.quem : "")) + "</li>";
+    }).join("") : "";
+    var ed = $("editor");
+    ed.hidden = !sel;
+    if (sel) {
+      var ts = TIPOS[sel.tipo];
+      $("e-rotulo").textContent = ts.cls.indexOf("musico") === 0 ? "Quem toca aqui (" + ts.nome.toLowerCase() + ")" : "Nome ou detalhe (" + ts.nome.toLowerCase() + ")";
+      if (document.activeElement !== $("e-quem")) $("e-quem").value = sel.quem || "";
+      $("e-girar").hidden = sel.tipo !== "ret";
+    }
+  }
+  function selecionar(it) { sel = it; desenhar(); }
+
+  // Toque/clique no palco vazio: move a peça selecionada para lá
+  function celulaDoPonto(cx, cy) {
+    var r = palco.getBoundingClientRect();
+    return [Math.floor((cx - r.left) / r.width * COLS), Math.floor((cy - r.top) / r.height * ROWS)];
+  }
+  palco.addEventListener("click", function (e) {
+    if (e.target.closest(".item") || Date.now() - ultimoSolto < 450) return;
+    if (!sel) { aviso("Escolha uma peça ao lado para pôr no palco."); return; }
+    var c = celulaDoPonto(e.clientX, e.clientY), t = TIPOS[sel.tipo];
+    var x = Math.min(Math.max(c[0], 0), COLS - t.w), y = Math.min(Math.max(c[1], 0), ROWS - t.h);
+    if (ocupa(sel, x, y)) { aviso("Esse lugar já tem peça."); return; }
+    sel.x = x; sel.y = y; aviso(""); desenhar(); atualizar();
+  });
+
+  function ligarArraste(el, it) {
+    var ini = null, moveu = false, fantasma = null, alvo = null;
+    el.addEventListener("pointerdown", function (e) {
+      if (e.button !== 0) return;
+      ini = { x: e.clientX, y: e.clientY }; moveu = false;
+      el.setPointerCapture(e.pointerId);
+    });
+    el.addEventListener("pointermove", function (e) {
+      if (!ini) return;
+      if (!moveu && Math.abs(e.clientX - ini.x) + Math.abs(e.clientY - ini.y) < 8) return;
+      if (!moveu) { moveu = true; sel = it; el.classList.add("arrastando", "sel"); palco.classList.add("movendo"); }
+      var r = palco.getBoundingClientRect(), t = TIPOS[it.tipo];
+      var cw = r.width / COLS, ch = r.height / ROWS;
+      var x = Math.round((e.clientX - r.left) / cw - t.w / 2), y = Math.round((e.clientY - r.top) / ch - t.h / 2);
+      x = Math.min(Math.max(x, 0), COLS - t.w); y = Math.min(Math.max(y, 0), ROWS - t.h);
+      el.style.transform = "translate(" + (e.clientX - ini.x) + "px," + (e.clientY - ini.y) + "px) scale(1.08)";
+      if (!fantasma) { fantasma = document.createElement("span"); fantasma.className = "fantasma"; palco.appendChild(fantasma); }
+      alvo = ocupa(it, x, y) ? null : [x, y];
+      fantasma.hidden = !alvo;
+      if (alvo) { fantasma.style.setProperty("--c", x + 1); fantasma.style.setProperty("--r", y + 1); fantasma.style.setProperty("--w", t.w); fantasma.style.setProperty("--h", t.h); }
+    });
+    function fim() {
+      if (!ini) return;
+      ini = null; ultimoSolto = Date.now(); palco.classList.remove("movendo");
+      if (moveu) {
+        if (alvo) { it.x = alvo[0]; it.y = alvo[1]; aviso(""); } else aviso("Não coube ali. A peça voltou para onde estava.");
+        sel = it; desenhar(); atualizar();
+      } else {
+        selecionar(it);
+        aviso("Toque no palco onde ela fica, ou arraste.");
+      }
+    }
+    el.addEventListener("pointerup", fim);
+    el.addEventListener("pointercancel", function () { ini = null; moveu = false; palco.classList.remove("movendo"); desenhar(); });
+    el.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); });
+    el.addEventListener("keydown", function (e) {
+      var d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selecionar(it); return; }
+      if (e.key === "Delete" || e.key === "Backspace") { e.preventDefault(); tirar(it); return; }
+      if (!d) return;
+      e.preventDefault();
+      if (!ocupa(it, it.x + d[0], it.y + d[1])) { it.x += d[0]; it.y += d[1]; }
+      sel = it; desenhar(); atualizar();
+      var novo = palco.querySelector('.item[data-id="' + it.id + '"]'); if (novo) novo.focus();
+    });
+  }
+  function tirar(it) {
+    itens = itens.filter(function (o) { return o !== it; });
+    if (sel === it) sel = null;
+    aviso(TIPOS[it.tipo].nome + " saiu do palco.");
+    desenhar(); atualizar();
+  }
+  $("e-tirar").addEventListener("click", function () { if (sel) tirar(sel); });
+  $("e-girar").addEventListener("click", function () { if (sel) { sel.rot = ((sel.rot || 0) + 90) % 360; desenhar(); atualizar(); } });
+  $("e-quem").addEventListener("input", function (e) { if (sel) { sel.quem = e.target.value.slice(0, 30); desenhar(); atualizar(); } });
+  $("limpar-mapa").addEventListener("click", function () {
+    if (itens.length && !confirm("Tirar todas as peças do palco?")) return;
+    itens = []; sel = null; aviso(""); desenhar(); atualizar();
+  });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-preset]"), function (b) {
+    b.addEventListener("click", function () {
+      if (itens.length && !confirm("Trocar o palco atual pelo modelo?")) return;
+      itens = []; sel = null;
+      var nomes = integrantes().filter(function (i) { return i.nome; });
+      PRESETS[b.dataset.preset].forEach(function (p) { adicionar(p[0], p[1], p[2], "", p[0] === "ret" && p[2] < 5 ? 0 : 0, true); });
+      // Se a formação já tem nomes, encaixa pelo instrumento
+      nomes.forEach(function (i) {
+        var tipo = tipoDoInstrumento(i.funcao);
+        var livre = tipo && itens.filter(function (o) { return o.tipo === tipo && !o.quem; })[0];
+        if (livre) livre.quem = i.nome;
+      });
+      aviso("Modelo no palco. Ajuste do jeito que a banda toca.");
+      desenhar(); atualizar();
+    });
+  });
+  function tipoDoInstrumento(s) {
+    s = (s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "");
+    if (/bater/.test(s)) return "bat";
+    if (/baix/.test(s)) return "bx";
+    if (/viol/.test(s)) return "vio";
+    if (/guit/.test(s)) return "gtr";
+    if (/tecl|piano|synth|sint/.test(s)) return "tec";
+    if (/perc/.test(s)) return "perc";
+    if (/sax|trompete|sopro|flauta|trombone/.test(s)) return "sop";
+    if (/\bdj\b/.test(s)) return "dj";
+    if (/backing|coro/.test(s)) return "bv";
+    if (/voz|vocal|cant/.test(s)) return "voz";
+    return null;
+  }
+
+  /* ---------- Formação ---------- */
+  var lista = $("integrantes"), nInt = 0;
+  function novoIntegrante(nome, funcao, ret) {
+    nInt++;
+    var div = document.createElement("div");
+    div.className = "linha integrante";
+    div.innerHTML =
+      '<div class="celula"><label for="i-nome-' + nInt + '">Nome</label><input id="i-nome-' + nInt + '" data-int="nome" type="text" placeholder="Nome artístico"></div>' +
+      '<div class="celula"><label for="i-func-' + nInt + '">Toca</label><input id="i-func-' + nInt + '" data-int="funcao" type="text" placeholder="Guitarra e backing"></div>' +
+      '<div class="celula"><label for="i-ret-' + nInt + '">No retorno quer ouvir</label><input id="i-ret-' + nInt + '" data-int="ret" type="text" placeholder="Voz e bumbo, pouca guitarra"></div>' +
+      '<button class="tirar" type="button" aria-label="Tirar integrante">Tirar</button>';
+    div.querySelector('[data-int="nome"]').value = nome || "";
+    div.querySelector('[data-int="funcao"]').value = funcao || "";
+    div.querySelector('[data-int="ret"]').value = ret || "";
+    div.querySelector(".tirar").addEventListener("click", function () { div.remove(); atualizar(); });
+    lista.appendChild(div);
+    return div;
+  }
+  $("mais-integrante").addEventListener("click", function () { novoIntegrante().querySelector("input").focus(); });
+  function integrantes() {
+    return Array.prototype.map.call(lista.children, function (d) {
+      return { nome: d.querySelector('[data-int="nome"]').value.trim(), funcao: d.querySelector('[data-int="funcao"]').value.trim(), ret: d.querySelector('[data-int="ret"]').value.trim() };
+    }).filter(function (i) { return i.nome || i.funcao || i.ret; });
+  }
+
+  /* ---------- Canais ---------- */
+  var canais = $("canais"), nCan = 0;
+  var PEDESTAIS = ["", "Girafa grande", "Girafa pequena", "Reto", "Garra", "Não precisa"];
+  function novoCanal(c) {
+    c = c || {}; nCan++;
+    var div = document.createElement("div");
+    div.className = "linha canal";
+    div.innerHTML =
+      '<span class="num" aria-hidden="true"></span>' +
+      '<div class="celula"><label for="c-fonte-' + nCan + '">Instrumento</label><input id="c-fonte-' + nCan + '" data-c="fonte" type="text" placeholder="Bumbo"></div>' +
+      '<div class="celula"><label for="c-mic-' + nCan + '">Microfone ou DI</label><input id="c-mic-' + nCan + '" data-c="mic" type="text" list="lista-mics" placeholder="Beta 52"></div>' +
+      '<div class="celula"><label for="c-ped-' + nCan + '">Pedestal</label><select id="c-ped-' + nCan + '" data-c="ped">' + PEDESTAIS.map(function (p) { return '<option value="' + p + '">' + (p || "Escolha") + "</option>"; }).join("") + "</select></div>" +
+      '<div class="celula"><label for="c-obs-' + nCan + '">Observação <span class="op">opcional</span></label><input id="c-obs-' + nCan + '" data-c="obs" type="text" placeholder="Mic próprio"></div>' +
+      '<button class="tirar" type="button" aria-label="Tirar canal">Tirar</button>';
+    ["fonte", "mic", "ped", "obs"].forEach(function (k) { div.querySelector('[data-c="' + k + '"]').value = c[k] || ""; });
+    div.querySelector(".tirar").addEventListener("click", function () { div.remove(); numerar(); atualizar(); });
+    canais.appendChild(div);
+    numerar();
+    return div;
+  }
+  function numerar() { Array.prototype.forEach.call(canais.children, function (d, i) { d.querySelector(".num").textContent = i + 1; }); }
+  function listaCanais() {
+    return Array.prototype.map.call(canais.children, function (d) {
+      var o = {}; ["fonte", "mic", "ped", "obs"].forEach(function (k) { o[k] = d.querySelector('[data-c="' + k + '"]').value.trim(); }); return o;
+    }).filter(function (c) { return c.fonte || c.mic; });
+  }
+  $("mais-canal").addEventListener("click", function () { novoCanal().querySelector("input").focus(); });
+
+  var CANAIS_DE = {
+    bat: [["Bumbo", "Beta 52", "Girafa pequena"], ["Caixa", "SM57", "Girafa pequena"], ["Chimbal", "Condensador", "Girafa pequena"], ["Tom 1", "e604", "Garra"], ["Tom 2", "e604", "Garra"], ["Surdo", "e604", "Garra"], ["Overhead E", "Condensador", "Girafa grande"], ["Overhead D", "Condensador", "Girafa grande"]],
+    bx: [["Baixo", "DI ativa", "Não precisa"]],
+    gtr: [["Guitarra", "SM57", "Girafa pequena"]],
+    tec: [["Teclado E", "DI ativa", "Não precisa"], ["Teclado D", "DI ativa", "Não precisa"]],
+    vio: [["Violão", "DI passiva", "Não precisa"]],
+    perc: [["Percussão", "SM57", "Girafa pequena"]],
+    sop: [["Sopro", "SM57", "Girafa grande"]],
+    dj: [["DJ E", "Linha direta (P10)", "Não precisa"], ["DJ D", "Linha direta (P10)", "Não precisa"]],
+    voz: [["Voz principal", "SM58", "Girafa grande"]],
+    bv: [["Backing vocal", "SM58", "Girafa grande"]]
+  };
+  var ORDEM = ["bat", "bx", "gtr", "tec", "vio", "perc", "sop", "dj", "voz", "bv", "ampg", "ampb", "ret", "ac"];
+  function ordemCanal(a, b) { return (ORDEM.indexOf(a.tipo) - ORDEM.indexOf(b.tipo)) || (a.x - b.x); }
+  $("do-mapa").addEventListener("click", function () {
+    var fontes = itens.filter(function (it) { return CANAIS_DE[it.tipo]; }).sort(ordemCanal);
+    if (!fontes.length) { $("dica-canais").textContent = "O palco está vazio. Ponha os músicos no mapa primeiro."; location.hash = "#b-mapa"; return; }
+    if (listaCanais().length && !confirm("Trocar a lista de canais pela do mapa?")) return;
+    canais.innerHTML = "";
+    var conta = {}; fontes.forEach(function (it) { conta[it.tipo] = (conta[it.tipo] || 0) + 1; });
+    var vistos = {};
+    fontes.forEach(function (it) {
+      vistos[it.tipo] = (vistos[it.tipo] || 0) + 1;
+      var num = conta[it.tipo] > 1 ? " " + vistos[it.tipo] : "";
+      CANAIS_DE[it.tipo].forEach(function (c) {
+        var fonte = c[0] + (it.tipo === "bat" ? (num) : num);
+        novoCanal({ fonte: fonte, mic: c[1], ped: c[2], obs: it.quem || "" });
+      });
+    });
+    $("dica-canais").textContent = listaCanais().length + " canais montados pelo mapa. Confira os microfones.";
+    atualizar();
+  });
+
+  /* ---------- Backline ---------- */
+  var BACKLINE = ["Bateria (cascos)", "Pratos", "Ferragens e banco", "Pedal de bumbo", "Amp de guitarra", "Amp de baixo", "Teclado e estante", "Microfones", "Pedestais", "Cabos", "Mesa e PA", "Iluminação"];
+  var bl = $("backline");
+  BACKLINE.forEach(function (nome, i) {
+    var d = document.createElement("div"); d.className = "bl";
+    d.setAttribute("role", "group"); d.setAttribute("aria-label", nome);
+    d.innerHTML = "<span>" + nome + '</span><div class="opcoes">' +
+      [["banda", "Banda leva"], ["casa", "Precisa da casa"], ["nao", "Não usa"]].map(function (o) {
+        return '<label><input type="radio" name="bl-' + i + '" value="' + o[0] + '" data-bl="' + nome + '"><span>' + o[1] + "</span></label>";
+      }).join("") + "</div>";
+    bl.appendChild(d);
+  });
+  function backline() {
+    var r = { banda: [], casa: [] };
+    Array.prototype.forEach.call(bl.querySelectorAll("input:checked"), function (c) { if (r[c.value]) r[c.value].push(c.dataset.bl); });
+    return r;
+  }
+
+  /* ---------- Leitura ---------- */
+  function v(id) { var el = $(id); return el ? el.value.trim() : ""; }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+  var partes = [
+    { id: "b-banda", nome: "o nome da banda", ok: function () { return v("f-nome"); } },
+    { id: "b-formacao", nome: "a formação", ok: function () { return integrantes().some(function (i) { return i.nome && i.funcao; }); } },
+    { id: "b-mapa", nome: "o mapa de palco", ok: function () { return itens.length >= 2; } },
+    { id: "b-canais", nome: "os canais", ok: function () { return listaCanais().length > 0; } },
+    { id: "b-backline", nome: "o backline", ok: function () { var b = backline(); return b.banda.length + b.casa.length > 0; } },
+    { id: "b-passagem", nome: "a passagem de som", ok: function () { return v("f-passagem"); } },
+    { id: "b-contato", nome: "o contato", ok: function () { return v("f-responsavel") && v("f-whats").replace(/\D/g, "").length >= 10; } }
+  ];
+
+  /* ---------- Texto que vai para a 7A ---------- */
+  function montarTexto() {
+    var L = [];
+    L.push("♦ RIDER TÉCNICO · 7A PRODUTORA", "");
+    L.push("Banda: " + (v("f-nome") || "-") + (v("f-cidade") ? " (" + v("f-cidade") + ")" : ""));
+    L.push("", "FORMAÇÃO E RETORNO");
+    if (v("f-retorno")) L.push("Retorno: " + v("f-retorno") + (v("f-vias") ? ", " + v("f-vias") : ""));
+    var ints = integrantes();
+    if (ints.length) ints.forEach(function (i) { L.push("- " + (i.nome || "?") + (i.funcao ? ": " + i.funcao : "") + (i.ret ? " · retorno: " + i.ret : "")); }); else L.push("-");
+    L.push("", "MAPA DE PALCO (vista da plateia)");
+    if (itens.length) itens.slice().sort(function (a, b) { return a.y - b.y || a.x - b.x; }).forEach(function (it) { L.push("- " + TIPOS[it.tipo].nome + (it.quem ? " (" + it.quem + ")" : "") + ": " + zona(it)); });
+    else L.push("-");
+    L.push("", "CANAIS");
+    var cs = listaCanais();
+    if (cs.length) cs.forEach(function (c, i) { L.push((i + 1) + ". " + (c.fonte || "?") + " · " + (c.mic || "-") + (c.ped ? " · " + c.ped : "") + (c.obs ? " · " + c.obs : "")); }); else L.push("-");
+    var b = backline();
+    L.push("", "BACKLINE");
+    L.push("Banda leva: " + (b.banda.join(", ") || "-"));
+    L.push("Precisa da casa: " + (b.casa.join(", ") || "-"));
+    if (v("f-backline-obs")) L.push("Detalhes: " + v("f-backline-obs"));
+    L.push("", "PASSAGEM E HORÁRIOS");
+    L.push("Montagem: " + (v("f-montagem") || "-") + " · Passagem: " + (v("f-passagem") || "-") + " · Desmontagem: " + (v("f-desmontagem") || "-"));
+    if (v("f-tecnico")) L.push("Técnico: " + v("f-tecnico"));
+    if (v("f-tomadas") || v("f-voltagem")) L.push("Energia: " + [v("f-tomadas"), v("f-voltagem")].filter(Boolean).join(", "));
+    if (v("f-obs")) L.push("Outras necessidades: " + v("f-obs"));
+    L.push("", "CONTATO");
+    L.push((v("f-responsavel") || "-") + " · " + (v("f-whats") || "-") + (v("f-email") ? " · " + v("f-email") : ""));
+    if (v("f-tec-nome") || v("f-tec-whats")) L.push("Técnico de som: " + [v("f-tec-nome"), v("f-tec-whats")].filter(Boolean).join(" · "));
+    L.push("", "O mapa de palco vai em imagem logo depois, nesta conversa.");
+    return L.join("\n");
+  }
+
+  /* ---------- Imagem do mapa (canvas) ---------- */
+  var logo = new Image(); logo.src = "img/logo-7a.png";
+  function desenharMapa() {
+    var W = 1600, P = 64, sw = W - P * 2, sh = sw * ROWS / COLS, top = 220, H = top + 52 + sh + 60 + 150;
+    var cv = document.createElement("canvas"); cv.width = W; cv.height = H;
+    var g = cv.getContext("2d");
+    g.fillStyle = "#0A0A0A"; g.fillRect(0, 0, W, H);
+    g.fillStyle = "#F2EFEA"; g.font = "400 76px Anton, Impact, sans-serif"; g.textBaseline = "alphabetic";
+    g.fillText(((v("f-nome") || "Banda") + "").toUpperCase(), P, 118);
+    g.fillStyle = "#B8B2AA"; g.font = "600 30px Montserrat, Arial, sans-serif";
+    g.fillText("Mapa de palco · vista da plateia" + (v("f-cidade") ? " · " + v("f-cidade") : ""), P, 168);
+    if (logo.complete && logo.naturalWidth) { var lh = 120, lw = lh * logo.naturalWidth / logo.naturalHeight; g.drawImage(logo, W - P - lw, 50, lw, lh); }
+    // faixa do fundo
+    g.fillStyle = "#2B2B2B"; g.fillRect(P, top, sw, 52);
+    g.fillStyle = "#B8B2AA"; g.font = "400 26px Anton, Impact, sans-serif"; g.fillText("FUNDO DO PALCO", P + 22, top + 36);
+    var sy = top + 52;
+    g.fillStyle = "#1F1F1F"; g.fillRect(P, sy, sw, sh);
+    var cw = sw / COLS, ch = sh / ROWS;
+    g.fillStyle = "#3A3A3A";
+    for (var y = 0; y < ROWS; y++) for (var x = 0; x < COLS; x++) g.fillRect(P + cw * (x + .5) - 3, sy + ch * (y + .5) - 3, 6, 6);
+    itens.forEach(function (it) {
+      var t = TIPOS[it.tipo], m = 10;
+      var x0 = P + it.x * cw + m, y0 = sy + it.y * ch + m, w = t.w * cw - m * 2, h = t.h * ch - m * 2, cx = x0 + w / 2, cy = y0 + h / 2;
+      g.save();
+      if (t.cls.indexOf("musico") === 0) {
+        g.fillStyle = "#F2EFEA"; g.beginPath();
+        if (t.w === t.h) g.arc(cx, cy, Math.min(w, h) / 2, 0, Math.PI * 2);
+        else { var rr = h / 2; g.moveTo(x0 + rr, y0); g.lineTo(x0 + w - rr, y0); g.arc(x0 + w - rr, cy, rr, -Math.PI / 2, Math.PI / 2); g.lineTo(x0 + rr, y0 + h); g.arc(x0 + rr, cy, rr, Math.PI / 2, Math.PI * 1.5); }
+        g.fill(); g.fillStyle = "#0A0A0A";
+      } else if (t.cls === "equip") {
+        g.fillStyle = "#B8B2AA"; g.fillRect(x0, y0, w, h); g.fillStyle = "#0A0A0A";
+      } else if (t.cls === "retorno") {
+        g.translate(cx, cy); g.rotate((it.rot || 0) * Math.PI / 180); g.translate(-cx, -cy);
+        g.fillStyle = "#B8B2AA"; g.beginPath();
+        g.moveTo(x0 + w * .12, y0 + h * .22); g.lineTo(x0 + w * .88, y0 + h * .22); g.lineTo(x0 + w, y0 + h * .82); g.lineTo(x0, y0 + h * .82); g.closePath(); g.fill();
+        g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = "#0A0A0A";
+      } else {
+        g.translate(cx, cy); g.rotate(Math.PI / 4); g.fillStyle = "#B5121B"; var s = w * .5; g.fillRect(-s / 2, -s / 2, s, s); g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = "#F2EFEA";
+      }
+      g.font = "400 " + (t.cls === "energia" ? 20 : 30) + "px Anton, Impact, sans-serif"; g.textAlign = "center"; g.textBaseline = "middle";
+      g.fillText(t.cod.toUpperCase(), cx, cy + (t.cls === "retorno" ? 4 : 0));
+      if (it.quem) {
+        g.font = "600 20px Montserrat, Arial, sans-serif";
+        var tw = g.measureText(it.quem).width + 16;
+        var ly = it.y + t.h >= ROWS ? y0 - 34 : y0 + h + 2;
+        g.fillStyle = "#0A0A0A"; g.fillRect(cx - tw / 2, ly, tw, 30);
+        g.fillStyle = "#F2EFEA"; g.fillText(it.quem, cx, ly + 16);
+      }
+      g.restore();
+    });
+    var fy = sy + sh;
+    g.fillStyle = "#F2EFEA"; g.fillRect(P, fy, sw, 60);
+    g.fillStyle = "#0A0A0A"; g.font = "400 28px Anton, Impact, sans-serif"; g.textAlign = "left"; g.textBaseline = "alphabetic";
+    g.fillText("FRENTE DO PALCO · PÚBLICO", P + 22, fy + 41);
+    g.fillStyle = "#B5121B"; g.fillRect(P, H - 86, 60, 6);
+    g.fillStyle = "#B8B2AA"; g.font = "600 24px Montserrat, Arial, sans-serif";
+    g.fillText("7A Produtora · (31) 99223-3295 · contato@7aprodutora.com.br", P, H - 44);
+    return cv;
+  }
+  function nomeArquivo() { return "mapa-de-palco-" + ((v("f-nome") || "banda").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "banda") + ".png"; }
+  function comImagem(fn) {
+    var pronto = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    pronto.then(function () { desenharMapa().toBlob(function (blob) { fn(blob); }, "image/png"); });
+  }
+  function baixar(blob) {
+    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nomeArquivo();
+    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+  }
+  $("baixar-mapa").addEventListener("click", function () {
+    if (!itens.length) { aviso("O palco está vazio. Ponha as peças antes de salvar."); return; }
+    comImagem(baixar);
+  });
+  $("enviar-mapa").addEventListener("click", function () {
+    if (!itens.length) { $("resumo-falta").textContent = "O palco está vazio. Monte o mapa antes de mandar a imagem."; return; }
+    comImagem(function (blob) {
+      var arq = new File([blob], nomeArquivo(), { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [arq] })) {
+        navigator.share({ files: [arq], title: "Mapa de palco", text: "Mapa de palco · " + (v("f-nome") || "banda") }).catch(function () {});
+      } else {
+        baixar(blob);
+        $("salvo").textContent = "Imagem do mapa salva. Anexe na conversa com a 7A depois do texto.";
+      }
+    });
+  });
+
+  /* ---------- PDF (impressão do navegador) ---------- */
+  $("baixar-pdf").addEventListener("click", function () {
+    var linhas = function (pares) { pares = pares.filter(function (p) { return p[1]; }); return pares.length ? "<dl>" + pares.map(function (p) { return "<dt>" + esc(p[0]) + "</dt><dd>" + esc(p[1]) + "</dd>"; }).join("") + "</dl>" : "<p>-</p>"; };
+    var cs = listaCanais(), b = backline();
+    var faz = function () {
+      var mapa = itens.length ? '<img class="mapa-img" src="' + desenharMapa().toDataURL("image/png") + '" alt="">' : "<p>-</p>";
+      $("impressao").innerHTML =
+        '<div class="cab"><div><h1>' + esc(v("f-nome") || "Banda") + "</h1>Rider técnico · 7A Produtora" + (v("f-cidade") ? " · " + esc(v("f-cidade")) : "") + '</div><img src="img/logo-7a.png" alt=""></div>' +
+        "<h2>Mapa de palco</h2>" + mapa +
+        "<h2>Canais</h2>" + (cs.length ? "<table><thead><tr><th>#</th><th>Instrumento</th><th>Microfone / DI</th><th>Pedestal</th><th>Obs.</th></tr></thead><tbody>" + cs.map(function (c, i) { return '<tr><td class="n">' + (i + 1) + "</td><td>" + esc(c.fonte) + "</td><td>" + esc(c.mic) + "</td><td>" + esc(c.ped) + "</td><td>" + esc(c.obs) + "</td></tr>"; }).join("") + "</tbody></table>" : "<p>-</p>") +
+        "<h2>Formação e retorno</h2>" + linhas([["Retorno", [v("f-retorno"), v("f-vias")].filter(Boolean).join(", ")]].concat(integrantes().map(function (i) { return [i.nome || "?", (i.funcao || "-") + (i.ret ? "\nRetorno: " + i.ret : "")]; }))) +
+        "<h2>Backline</h2>" + linhas([["Banda leva", b.banda.join(", ")], ["Precisa da casa", b.casa.join(", ")], ["Detalhes", v("f-backline-obs")]]) +
+        "<h2>Passagem e horários</h2>" + linhas([["Montagem", v("f-montagem")], ["Passagem de som", v("f-passagem")], ["Desmontagem", v("f-desmontagem")], ["Técnico", v("f-tecnico")], ["Energia", [v("f-tomadas"), v("f-voltagem")].filter(Boolean).join(", ")], ["Outras necessidades", v("f-obs")]]) +
+        "<h2>Contato</h2>" + linhas([["Responsável", v("f-responsavel")], ["WhatsApp", v("f-whats")], ["E-mail", v("f-email")], ["Técnico de som", [v("f-tec-nome"), v("f-tec-whats")].filter(Boolean).join(" · ")]]) +
+        '<p class="pe">Produção: 7A Produtora · (31) 99223-3295 · contato@7aprodutora.com.br · @7a_produtora</p>';
+      window.print();
+    };
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(faz);
+  });
+
+  /* ---------- Atualização geral ---------- */
+  function atualizar() {
+    var prontas = 0, falta = [];
+    partes.forEach(function (p) { if (p.ok()) prontas++; else falta.push(p); });
+    $("progresso").innerHTML = "<b>" + prontas + " de " + partes.length + "</b> partes prontas";
+    var r = $("resumo-falta");
+    if (falta.length) r.innerHTML = "Falta " + falta.map(function (p) { return '<a href="#' + p.id + '">' + p.nome + "</a>"; }).join(", ").replace(/, ([^,]*)$/, " e $1") + ". Dá para mandar assim mesmo e completar na conversa.";
+    else r.textContent = "Tudo preenchido. Agora é só mandar.";
+    var texto = montarTexto();
+    $("enviar-whats").href = "https://wa.me/" + NUMERO + "?text=" + encodeURIComponent(texto);
+    $("enviar-email").href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Rider técnico: " + (v("f-nome") || "banda")) + "&body=" + encodeURIComponent(texto);
+    $("lista-nomes").innerHTML = integrantes().filter(function (i) { return i.nome; }).map(function (i) { return '<option value="' + esc(i.nome) + '">'; }).join("");
+    salvar();
+  }
+
+  /* ---------- Rascunho no aparelho ---------- */
+  var tSalvar;
+  function salvar() {
+    clearTimeout(tSalvar);
+    tSalvar = setTimeout(function () {
+      var dados = {};
+      Array.prototype.forEach.call(form.querySelectorAll("input[id^='f-'], select[id^='f-'], textarea[id^='f-']"), function (el) { dados[el.id] = el.value; });
+      dados.__int = integrantes();
+      dados.__can = listaCanais();
+      dados.__mapa = itens.map(function (it) { return [it.tipo, it.x, it.y, it.quem, it.rot]; });
+      dados.__bl = Array.prototype.map.call(bl.querySelectorAll("input:checked"), function (c) { return c.name + "=" + c.value; });
+      try { localStorage.setItem(CHAVE, JSON.stringify(dados)); $("salvo").textContent = "Rider salvo neste aparelho."; } catch (e) {}
+    }, 400);
+  }
+  function carregar() {
+    var dados = null;
+    try { dados = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
+    if (dados) {
+      Object.keys(dados).forEach(function (k) { var el = $(k); if (el && k.indexOf("__") !== 0) el.value = dados[k]; });
+      (dados.__int || []).forEach(function (i) { novoIntegrante(i.nome, i.funcao, i.ret); });
+      (dados.__can || []).forEach(function (c) { novoCanal(c); });
+      (dados.__mapa || []).forEach(function (m) { if (TIPOS[m[0]]) adicionar(m[0], m[1], m[2], m[3], m[4], true); });
+      (dados.__bl || []).forEach(function (s) { var p = s.split("="), c = bl.querySelector('input[name="' + p[0] + '"][value="' + p[1] + '"]'); if (c) c.checked = true; });
+    }
+    while (lista.children.length < 4) novoIntegrante();
+    if (!canais.children.length) { novoCanal(); novoCanal(); }
+  }
+
+  /* ---------- Máscaras ---------- */
+  function mascaraTel(e) {
+    var d = e.target.value.replace(/\D/g, "").slice(0, 11);
+    e.target.value = d.length > 10 ? "(" + d.slice(0, 2) + ") " + d.slice(2, 7) + "-" + d.slice(7) : d.length > 6 ? "(" + d.slice(0, 2) + ") " + d.slice(2, 6) + "-" + d.slice(6) : d.length > 2 ? "(" + d.slice(0, 2) + ") " + d.slice(2) : d;
+  }
+  $("f-whats").addEventListener("input", mascaraTel);
+  $("f-tec-whats").addEventListener("input", mascaraTel);
+
+  form.addEventListener("input", function (e) { if (e.target.id !== "e-quem") atualizar(); });
+  form.addEventListener("change", atualizar);
+  form.addEventListener("submit", function (e) { e.preventDefault(); });
+
+  /* ---------- Vídeo da abertura: para quando sai da tela ou com movimento reduzido ---------- */
+  var vid = $("video-abertura");
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { vid.removeAttribute("autoplay"); vid.pause(); }
+  else if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { var p = vid.play(); if (p && p.catch) p.catch(function () {}); } else vid.pause(); }); }).observe(vid);
+
+  /* ---------- Entradas ---------- */
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("visto"); io.unobserve(en.target); } }); }, { rootMargin: "0px 0px -8% 0px" });
+    document.querySelectorAll("[data-revela]").forEach(function (el) { io.observe(el); });
+  } else {
+    document.querySelectorAll("[data-revela]").forEach(function (el) { el.classList.add("visto"); });
+  }
+
+  montarPaleta();
+  montarPontos();
+  carregar();
+  desenhar();
+  atualizar();
+})();
+</script>
+</body>
+</html>
