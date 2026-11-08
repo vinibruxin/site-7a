@@ -294,4 +294,35 @@ export const MIGRACOES = [
   ] },
   // hora de fim do show: a duração sai da conta entre início e fim, em vez de ser escrita à mão
   { versao: 6, nome: "hora de fim do show", passos: [coluna("shows", "hora_fim", "TEXT NOT NULL DEFAULT ''")] },
+  // recibos e notas fiscais (NFS-e). O recibo é emitido pelo sistema; a nota só é preparada aqui e emitida no Emissor Nacional.
+  { versao: 7, nome: "recibos e notas fiscais", passos: [
+    coluna("contratantes", "documento", "TEXT NOT NULL DEFAULT ''"), // CPF ou CNPJ do contratante (só dígitos), guardado no primeiro recibo ou nota
+    `CREATE TABLE IF NOT EXISTS documentos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tipo TEXT NOT NULL,
+      numero INTEGER,
+      token TEXT NOT NULL UNIQUE,
+      show_id INTEGER REFERENCES shows(id) ON DELETE SET NULL,
+      contratante_id INTEGER REFERENCES contratantes(id) ON DELETE SET NULL,
+      situacao TEXT NOT NULL,
+      valor INTEGER NOT NULL DEFAULT 0,
+      data TEXT NOT NULL DEFAULT '',
+      forma TEXT NOT NULL DEFAULT '',
+      referente TEXT NOT NULL DEFAULT '',
+      pagador_nome TEXT NOT NULL DEFAULT '',
+      pagador_doc TEXT NOT NULL DEFAULT '',
+      pagador_endereco TEXT NOT NULL DEFAULT '',
+      pagador_cidade TEXT NOT NULL DEFAULT '',
+      pagador_email TEXT NOT NULL DEFAULT '',
+      emitente TEXT NOT NULL DEFAULT '{}',
+      nfse TEXT NOT NULL DEFAULT '{}',
+      lancado INTEGER NOT NULL DEFAULT 0,
+      obs TEXT NOT NULL DEFAULT '',
+      motivo_cancelamento TEXT NOT NULL DEFAULT '',
+      criado TEXT NOT NULL,
+      atualizado TEXT NOT NULL
+    )`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS documentos_numero ON documentos(tipo, numero) WHERE numero IS NOT NULL`,
+    `CREATE INDEX IF NOT EXISTS documentos_show ON documentos(show_id)`,
+  ] },
 ];

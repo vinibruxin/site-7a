@@ -5,6 +5,8 @@
 
 import { CASTING, gestao, pedidoDoSite, propostaPublica, showsPublicos } from "./gestao.js";
 import { agenteAutorizado, motivoAgente, rotasAgente } from "./agente.js";
+import { reciboPublico } from "./documentos.js";
+import { prepararBanco } from "./banco.js";
 
 const CHAVE = "conteudo";
 const SESSAO_DIAS = 7;
@@ -29,9 +31,10 @@ export default {
     // a Gestão virou a página principal do /admin; o endereço antigo continua valendo (o navegador mantém o #seção)
     if (p === "/admin/gestao" || p === "/admin/gestao.html") return Response.redirect(new URL("/admin/" + url.search, req.url).toString(), 301);
 
-    // proposta enviada ao contratante: a página é fixa e busca os dados pelo token do endereço
-    if (/^\/proposta\/[a-f0-9]{24}$/.test(p)) {
-      const r = await env.ASSETS.fetch(new Request(new URL("/proposta", req.url)));
+    // recibo e proposta: a página é fixa e busca os dados pelo token do endereço
+    const fixa = p.match(/^\/(proposta|recibo)\/[a-f0-9]{24}$/);
+    if (fixa) {
+      const r = await env.ASSETS.fetch(new Request(new URL("/" + fixa[1], req.url)));
       const h = new Headers(r.headers);
       h.set("x-robots-tag", "noindex");
       h.set("cache-control", "no-cache");
@@ -266,6 +269,10 @@ async function api(req, env, url) {
   if (rota === "entrar" && metodo === "POST") return entrar(req, env);
   if (rota === "pedido" && metodo === "POST") return pedidoDoSite(req, env);
   if (rota.startsWith("proposta/") && metodo === "GET") return propostaPublica(req, env, rota.slice("proposta/".length));
+  if (rota.startsWith("recibo/") && metodo === "GET") {
+    await prepararBanco(env);
+    return reciboPublico(env, rota.slice("recibo/".length));
+  }
   if (rota === "sair" && metodo === "POST") {
     const t = token(req);
     if (t) await env.CONTEUDO.delete("sessao:" + t);

@@ -15,6 +15,15 @@ A senha inicial do painel é verificada pelo hash em `wrangler.jsonc`; trocada n
 Gestão como app: `public/admin/manifest.json` + `sw.js` (instalável pelo navegador do celular, sem cache offline).
 Envio da proposta por e-mail: Resend, remetente `propostas@7aprodutora.com.br`, respostas para o Gmail da 7A. Precisa do secret `RESEND_API_KEY` no Worker (Cloudflare > Workers > site-7a > Settings > Variables and Secrets); sem ele o botão avisa que o envio não está ligado.
 
+## Recibos e notas fiscais
+
+Menu **Agenda > Recibos e notas** e a seção "Recibo e nota fiscal" na ficha de cada show (`src/documentos.js`, tabela `documentos`, migração v7).
+
+- **Recibo**: emitido pelo sistema, número em sequência (`7A-R-0001`), valor por extenso, opção de somar no "Recebido" do show. O pagador abre em `/recibo/<token>` (`public/recibo.html`) e salva em PDF (uma folha A4). Recibo emitido não muda: se sair errado, cancela (o valor sai do "Recebido") e emite outro.
+- **Nota fiscal (NFS-e)**: o sistema **não emite**. Guarda tomador, serviço, valor e ISS, avisa o que falta e monta o texto para colar no [Emissor Nacional](https://www.nfse.gov.br/EmissorNacional) (Betim usa o padrão nacional desde 01/01/2026). Depois da emissão no portal, registra o número da nota. Situações: faltam dados, pronta para emitir, emitida, cancelada.
+- **Dados da 7A** (nome, CPF/CNPJ, inscrição municipal, endereço, quem assina): em Ajustes, começam vazios. Sem eles o recibo sai como rascunho, com os campos marcados, e se completa sozinho quando forem preenchidos. CPF e CNPJ (inclusive o alfanumérico) são conferidos pelos dígitos.
+- O agente Évora não acessa recibos nem notas.
+
 ## Relacionamento pelo WhatsApp (versão gratuita)
 
 Custo zero: não usa a API paga da Meta, nem intermediários (Twilio, Z-API...), nem robôs de WhatsApp Web. O sistema monta cada mensagem e abre o WhatsApp do operador pelo link oficial `https://wa.me/<número>?text=<mensagem>`; quem confere e toca em enviar é sempre uma pessoa.
