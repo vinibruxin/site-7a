@@ -602,7 +602,7 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
         <label class="aceite" id="aceite-caixa"><input type="checkbox" id="f-aceite"><span class="caixa" aria-hidden="true"></span><span>Autorizo a 7A a usar o nome, as fotos e as músicas da banda para montar as peças do pedido. <span class="ob">*</span></span></label>
 
         <div class="enviar" id="enviar">
-          <p class="resumo" id="resumo-pedido">Kit completo · R$ 790</p>
+          <p class="resumo" id="resumo-pedido">Kit completo · R$ 697</p>
           <p id="resumo-falta" aria-live="polite"></p>
           <div class="acoes">
             <a class="btn btn-preto" id="enviar-whats" href="https://wa.me/5531992233295" target="_blank" rel="noopener">Enviar a ficha no WhatsApp</a>
@@ -615,7 +615,7 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
           <ol class="passos">
             <li>A ficha chega no WhatsApp da 7A em texto.</li>
             <li>Na mesma conversa, mandem as fotos e a logo como documento<span data-para="rd">, além da imagem do mapa de palco</span>.</li>
-            <li>A 7A confirma o pedido e manda o Pix da entrada. O prazo começa a contar daí.</li>
+            <li>A 7A confirma o pedido e manda o Pix da entrada<span data-kit-parcela> ou o link do cartão em 10x</span>. O prazo começa a contar daí.</li>
           </ol>
         </div>
       </section>
@@ -644,11 +644,11 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
 (function () {
   var NUMERO = "5531992233295", EMAIL = "contato@7aprodutora.com.br", CHAVE = "7a-kit-estrada";
   var SERV = {
-    id: { nome: "Identidade da marca", preco: 450, prazo: 12 },
-    pk: { nome: "Press kit", preco: 300, prazo: 7 },
-    rd: { nome: "Rider técnico e mapa de palco", preco: 150, prazo: 3 }
+    id: { nome: "Identidade da marca", preco: 447, prazo: 12 },
+    pk: { nome: "Press kit", preco: 297, prazo: 7 },
+    rd: { nome: "Rider técnico e mapa de palco", preco: 147, prazo: 3 }
   };
-  var KIT = { preco: 790, prazo: 15 };
+  var KIT = { preco: 697, prazo: 15, parcela: "10x de R$ 70 no cartão" };
   /* Ficha em página própria: só as perguntas das peças escolhidas. */
   var $ = function (id) { return document.getElementById(id); };
   var $$ = function (sel, raiz) { return Array.prototype.slice.call((raiz || document).querySelectorAll(sel)); };
@@ -668,7 +668,7 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   function pedido() {
     var e = escolhidos();
     if (!e.length) return null;
-    if (e.length === 3) return { lista: e, nome: "Kit completo", preco: KIT.preco, prazo: KIT.prazo, separado: 900 };
+    if (e.length === 3) return { lista: e, nome: "Kit completo", preco: KIT.preco, prazo: KIT.prazo, separado: 891 };
     var preco = 0, prazo = 0;
     e.forEach(function (k) { preco += SERV[k].preco; prazo = Math.max(prazo, SERV[k].prazo); });
     if (e.indexOf("id") >= 0 && e.indexOf("pk") >= 0) prazo = 15;
@@ -691,6 +691,7 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
     $("tempo").textContent = "Preenchimento: uns " + t + " minutos, em " + partes.length + " partes";
     $("escolha-curta").innerHTML = p ? "<b>" + esc(p.lista.length === 3 ? "Kit completo" : p.lista.length + (p.lista.length > 1 ? " peças" : " peça")) + "</b> · " + reais(p.preco) : "<b>Kit de Estrada</b>";
     $$("[data-para], [data-sem]", form).forEach(function (el) { if (!el.classList.contains("etapa")) el.hidden = !vale(el); });
+    document.querySelectorAll("[data-kit-parcela]").forEach(function (el) { el.hidden = !(p && p.lista.length === 3); });
     if (atual >= ativas().length) atual = ativas().length - 1;
     trilha(); mostrarEtapa(false);
   }
@@ -866,7 +867,7 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
 
   function montarTexto() {
     var p = pedido() || { nome: "-", preco: 0, prazo: 0, lista: [] };
-    var L = ["♦ KIT DE ESTRADA · 7A PRODUTORA", "", "Pedido: " + p.nome + " · " + reais(p.preco) + " · " + p.prazo + " dias úteis"];
+    var L = ["♦ KIT DE ESTRADA · 7A PRODUTORA", "", "Pedido: " + p.nome + " · " + reais(p.preco) + (p.lista.length === 3 ? " (ou " + KIT.parcela + ")" : "") + " · " + p.prazo + " dias úteis"];
     ativas().forEach(function (et) {
       var nome = et.dataset.etapa;
       if (nome === "rider") {
