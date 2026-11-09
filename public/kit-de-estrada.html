@@ -96,6 +96,18 @@ a { color: inherit; }
 .paginas img { width: 100%; height: auto; aspect-ratio: 210 / 297; object-fit: cover; transition: transform .5s var(--ease); }
 .paginas img:hover { transform: translateY(-6px); }
 
+/* ---------- Vantagens: lista grande, como "O que a 7A faz" na home ---------- */
+.vantagens { padding-block: clamp(96px, 14vh, 168px) 0; display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px 56px; align-items: start; }
+.vantagens > header { position: sticky; top: 96px; display: grid; gap: 18px; }
+.vantagens h2 { font-size: var(--t-titulo); }
+.vantagens > header p { margin: 0; font-size: var(--t-lead); line-height: 1.5; max-width: 22em; }
+.vantagens > header .btn { justify-self: start; }
+.lista-vale { list-style: none; margin: 0; padding: 0; display: grid; gap: 56px; }
+.lista-vale li { display: grid; gap: 12px; transition: color .25s; }
+.lista-vale h3 { margin: 0; font: 400 clamp(32px, 3.4vw, 54px)/1.12 var(--f-display); text-transform: uppercase; letter-spacing: -0.01em; }
+.lista-vale p { margin: 0; font-size: var(--t-lead); line-height: 1.5; max-width: 34em; }
+.lista-vale li.preco-musico h3 { color: var(--vermelho); }
+
 /* ---------- Serviços e preços ---------- */
 .servicos { padding-block: clamp(96px, 14vh, 168px) 0; display: grid; gap: 40px; }
 .servicos > header { display: grid; gap: 14px; max-width: 46em; }
@@ -306,6 +318,9 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   .abertura figure { max-width: 520px; }
   .exemplo { grid-template-columns: minmax(0, 1fr); }
   .tabela { grid-template-columns: minmax(0, 1fr); }
+  .vantagens { grid-template-columns: minmax(0, 1fr); }
+  .vantagens > header { position: static; }
+  .lista-vale { gap: 40px; }
   .estilos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cores { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .cores .celula { grid-column: 1 / -1; }
@@ -381,6 +396,22 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
       <img src="img/press-kit/ossos-5.jpg" alt="Página de integrantes e conquistas" width="794" height="1123" loading="lazy">
     </div>
   </div>
+
+  <section class="vantagens margem" id="vantagens" aria-labelledby="t-vantagens">
+    <header data-revela>
+      <h2 class="display" id="t-vantagens">Por que vale a pena</h2>
+      <p>Banda boa existe aos montes. Quem fecha data é quem chega pronta: com cara própria, material na mão e o palco resolvido antes do show.</p>
+      <a class="btn" href="#servicos">Montar o meu kit</a>
+    </header>
+    <ul class="lista-vale">
+      <li data-revela><h3>A casa decide rápido</h3><p>Quem contrata recebe banda toda semana. Um press kit com release, fotos, discos e links num PDF só responde tudo antes da primeira pergunta.</p></li>
+      <li data-revela><h3>Passagem de som sem sufoco</h3><p>Com o rider e o mapa de palco, o técnico da casa chega com os canais montados e os retornos no lugar. Vocês ganham tempo e tocam com o som do ensaio.</p></li>
+      <li data-revela><h3>Uma marca que fica na cabeça</h3><p>Logo, cores e fontes iguais no post, na camiseta, no bumbo e no cartaz. Banda com identidade parece maior e é lembrada depois do show.</p></li>
+      <li data-revela><h3>Feito por quem vende show</h3><p>A 7A usa este mesmo material para fechar as datas do próprio casting. Cada peça é pensada para convencer quem contrata, não só para ficar bonita.</p></li>
+      <li data-revela><h3>Os arquivos são de vocês</h3><p>Vocês recebem tudo em PDF e imagem para mandar, imprimir e postar quantas vezes quiserem.</p></li>
+      <li class="preco-musico" data-revela><h3>Preço de músico</h3><p>Kit completo por R$ 790, R$ 110 a menos que as peças separadas. Metade no Pix para começar, metade na entrega, tudo pronto em 15 dias úteis.</p></li>
+    </ul>
+  </section>
 
   <section class="servicos margem" id="servicos" aria-labelledby="t-servicos">
     <header data-revela>

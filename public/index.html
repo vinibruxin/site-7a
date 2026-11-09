@@ -417,6 +417,23 @@ a { color: inherit; }
 .lista-faz:hover li:not(:first-child) .item { color: var(--cinza); }
 .lista-faz li:not(:first-child):hover .item { color: var(--offwhite); }
 
+/* ---------- Kit de Estrada: serviço para bandas de fora ---------- */
+.kit-chamada { background: var(--offwhite); color: var(--preto); padding: 14vh var(--m-r) 14vh var(--m); display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 48px 72px; align-items: end; }
+.kit-chamada h2 { font: 400 clamp(64px, 9vw, 156px)/1 var(--f-display); text-transform: uppercase; letter-spacing: -0.015em; margin: 0; }
+.kit-chamada .lead { margin: 28px 0 0; max-width: 30em; font-size: var(--t-lead); line-height: 1.5; font-weight: 500; }
+.kit-chamada .lead b { font-weight: 700; }
+.kit-precos { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.kit-precos li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; background: #E4DFD7; padding: 18px 22px; font-weight: 700; font-size: 17px; }
+.kit-precos li b { font: 400 30px/1 var(--f-display); white-space: nowrap; }
+.kit-precos li.completo { background: var(--vermelho); color: var(--offwhite); padding-block: 24px; font-size: 19px; }
+.kit-precos li.completo span small { display: block; font-weight: 600; font-size: 14px; margin-top: 4px; }
+.kit-precos li.completo b { font-size: 46px; }
+.kit-chamada .acao { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 18px; }
+.kit-chamada .acao .btn { background: var(--preto); color: var(--offwhite); }
+.kit-chamada .acao .btn:hover { background: var(--grafite); }
+.kit-chamada .acao span { font-weight: 600; font-size: 15px; color: var(--cinza-tinta); }
+@media (max-width: 900px) { .kit-chamada { grid-template-columns: minmax(0, 1fr); padding-block: 72px; } .kit-chamada .acao .btn { width: 100%; } }
+
 /* ---------- Uma palavra é o botão ---------- */
 .mande {
   position: relative; display: flex; flex-direction: column; gap: 40px; min-height: 60svh; padding: 28px var(--m-r) 24px var(--m);
@@ -707,6 +724,23 @@ a { color: inherit; }
       <li data-revela><h3 class="item">Cuidar do palco</h3><p>Contrato, logística, rider e passagem de som, do convite ao último acorde.</p></li>
       <li data-revela><h3 class="item">Divulgar</h3><p>Cartazes, posts e contato com a imprensa para encher a casa.</p></li>
     </ul>
+  </section>
+
+  <!-- KIT DE ESTRADA -->
+  <section class="kit-chamada" id="kit" aria-labelledby="t-kit">
+    <div data-revela>
+      <h2 id="t-kit">Kit de Estrada</h2>
+      <p class="lead">Sua banda pronta para ser contratada. A 7A cria a <b>marca</b>, monta o <b>press kit</b> e faz o <b>rider com mapa de palco</b>, do mesmo jeito que faz para o próprio casting.</p>
+    </div>
+    <div data-revela style="--d:1">
+      <ul class="kit-precos">
+        <li><span>Identidade da marca</span><b>R$ 450</b></li>
+        <li><span>Press kit</span><b>R$ 300</b></li>
+        <li><span>Rider e mapa de palco</span><b>R$ 150</b></li>
+        <li class="completo"><span>Kit completo<small>Recomendado. R$ 110 a menos que separado.</small></span><b>R$ 790</b></li>
+      </ul>
+      <div class="acao"><a class="btn" href="kit-de-estrada.html">Ver o Kit de Estrada</a><span>Pronto em 15 dias úteis</span></div>
+    </div>
   </section>
 
   <!-- MANDE -->
