@@ -425,9 +425,22 @@ a { color: inherit; }
 .kit-precos { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 .kit-precos li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; background: #E4DFD7; padding: 18px 22px; font-weight: 700; font-size: 17px; }
 .kit-precos li b { font: 400 30px/1 var(--f-display); white-space: nowrap; }
-.kit-precos li.completo { background: var(--vermelho); color: var(--offwhite); padding-block: 24px; font-size: 19px; }
+.kit-precos li.completo { position: relative; margin-top: 18px; background: var(--vermelho); color: var(--offwhite); padding-block: 24px; font-size: 19px; }
+.kit-precos li.completo { padding-top: 58px; }
+.kit-precos li.completo .carimbo { top: -20px; right: 18px; }
+.kit-precos li.completo .carimbo b { font-size: 20px; }
+.carimbo { position: absolute; z-index: 2; display: grid; justify-items: center; gap: 4px; padding: 12px 16px 10px; background: var(--vermelho); color: var(--offwhite); border: 3px solid currentColor; box-shadow: inset 0 0 0 3px var(--vermelho), inset 0 0 0 5px var(--offwhite); transform: rotate(-9deg); pointer-events: none; }
+.carimbo b { font: 400 26px/1 var(--f-display); text-transform: uppercase; letter-spacing: .08em; }
+.carimbo i { font-style: normal; font-weight: 700; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.js .carimbo.bate { animation: carimbar .5s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes carimbar { from { opacity: 0; transform: rotate(-2deg) scale(1.7); } to { opacity: 1; transform: rotate(-9deg) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .js .carimbo.bate { animation: none; } }
+
 .kit-precos li.completo span small { display: block; font-weight: 600; font-size: 14px; margin-top: 4px; }
 .kit-precos li.completo b { font-size: 46px; }
+.kit-precos li.completo .de-por { display: grid; justify-items: end; gap: 6px; }
+.kit-precos li.completo .de-por small { font: 600 15px/1 Montserrat, sans-serif; }
+.kit-precos li.completo .de-por s { font: 400 22px/1 var(--f-display); opacity: .75; text-decoration-thickness: 2px; }
 .kit-chamada .acao { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 18px; }
 .kit-chamada .acao .btn { background: var(--preto); color: var(--offwhite); }
 .kit-chamada .acao .btn:hover { background: var(--grafite); }
@@ -737,7 +750,7 @@ a { color: inherit; }
         <li><span>Identidade da marca</span><b>R$ 450</b></li>
         <li><span>Press kit</span><b>R$ 300</b></li>
         <li><span>Rider e mapa de palco</span><b>R$ 150</b></li>
-        <li class="completo"><span>Kit completo<small>Recomendado. R$ 110 a menos que separado.</small></span><b>R$ 790</b></li>
+        <li class="completo"><span>Kit completo<small>Marca, press kit e rider juntos.</small></span><span class="carimbo" aria-label="Recomendado pela 7A"><b>Recomendado</b><i>pela 7A</i></span><b class="de-por"><small>de <s>R$ 900</s> por</small>R$ 790</b></li>
       </ul>
       <div class="acao"><a class="btn" href="kit-de-estrada.html">Ver o Kit de Estrada</a><span>Pronto em 15 dias úteis</span></div>
     </div>
@@ -868,5 +881,15 @@ a { color: inherit; }
 })();
 </script>
 
+<script>
+(function () {
+
+
+    var cs = document.querySelectorAll(".carimbo");
+    if (!("IntersectionObserver" in window)) return;
+    var ob = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("bate"); ob.unobserve(en.target); } }); }, { threshold: .6 });
+    Array.prototype.forEach.call(cs, function (c) { ob.observe(c); });
+  })();
+</script>
 </body>
 </html>
