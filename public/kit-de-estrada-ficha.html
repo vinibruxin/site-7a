@@ -140,7 +140,9 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
 .ficha-area > header { display: grid; gap: 14px; max-width: 46em; }
 .ficha-area > header h1 { font-size: clamp(48px, 6vw, 96px); }
 .ficha-area .pedido { font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; color: var(--offwhite); }
-.ficha-area .pedido b { color: var(--vermelho); font-weight: 400; }
+.ficha-area .tempo-total { font-weight: 700; font-size: var(--t-lead); color: var(--offwhite); display: inline-flex; align-items: center; gap: 12px; }
+.ficha-area .tempo-total::before { content: ""; width: 10px; height: 10px; background: var(--vermelho); transform: rotate(45deg); }
+.ficha-area .pedido b { color: var(--vermelho); font-weight: 400; white-space: nowrap; }
 .ficha-area > header p { margin: 0; font-size: var(--t-lead); line-height: 1.5; }
 .trilha { display: grid; gap: 14px; }
 .trilha .onde { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; font-size: 16px; color: var(--cinza); }
@@ -361,7 +363,8 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
     <header>
       <h1 class="display" id="t-ficha">A ficha da banda</h1>
       <p class="pedido" id="pedido-linha" aria-live="polite">Kit de Estrada</p>
-      <p>Respondam com calma: <span id="tempo">o kit completo leva uns 25 minutos</span>. Dá para parar e voltar depois, porque a ficha fica salva neste aparelho. Os campos com <b class="ob">*</b> são obrigatórios. <a class="link" id="mudar" href="kit-de-estrada.html#servicos">Mudar a escolha</a></p>
+      <p class="tempo-total" id="tempo">Preenchimento: uns 25 minutos, em 8 partes</p>
+      <p>Respondam com calma. Dá para parar e voltar depois, porque a ficha fica salva neste aparelho. Os campos com <b class="ob">*</b> são obrigatórios. <a class="link" id="mudar" href="kit-de-estrada.html#servicos">Mudar a escolha</a></p>
     </header>
 
     <div class="trilha" data-revela style="--d:1">
@@ -683,9 +686,9 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   function mostrarEscolha() {
     var p = pedido();
     $("pedido-linha").innerHTML = p ? esc(p.nome) + " · <b>" + reais(p.preco) + "</b> · " + p.prazo + " dias úteis" : "Kit de Estrada";
-    var min = { id: 12, pk: 10, rd: 10 }, t = 4;
-    escolhidos().forEach(function (k) { t += min[k]; });
-    $("tempo").textContent = escolhidos().length === 3 ? "o kit completo leva uns 25 minutos" : "leva uns " + Math.min(25, t) + " minutos";
+    var MIN = { quem: 2, formacao: 2, historia: 5, identidade: 6, fotos: 1, rider: 6, logistica: 2, envio: 1 }, t = 0, partes = ativas();
+    partes.forEach(function (et) { t += MIN[et.dataset.etapa] || 1; });
+    $("tempo").textContent = "Preenchimento: uns " + t + " minutos, em " + partes.length + " partes";
     $("escolha-curta").innerHTML = p ? "<b>" + esc(p.lista.length === 3 ? "Kit completo" : p.lista.length + (p.lista.length > 1 ? " peças" : " peça")) + "</b> · " + reais(p.preco) : "<b>Kit de Estrada</b>";
     $$("[data-para], [data-sem]", form).forEach(function (el) { if (!el.classList.contains("etapa")) el.hidden = !vale(el); });
     if (atual >= ativas().length) atual = ativas().length - 1;
@@ -975,9 +978,8 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
       Object.keys(d.cores || {}).forEach(function (k) { var c = form.querySelector('.cor[data-cor="' + k + '"]'); if (c) { c.querySelector("input").value = d.cores[k]; c.classList.add("usada"); } });
       (d.int || []).forEach(function (i) { linha("integrantes", C_INT, i); });
       (d.discos || []).forEach(function (x) { linha("discos", C_DISCO, x); });
-      var mesmo = !q || (d.serv || []).slice().sort().join() === q.slice().sort().join();
       ESC = q || d.serv || [];
-      atual = mesmo ? Math.max(0, d.atual || 0) : 0;
+      atual = 0; /* abre sempre na primeira parte; as respostas salvas continuam lá */
     } else if (q) ESC = q;
     ESC = ESC.filter(function (k, i) { return SERV[k] && ESC.indexOf(k) === i; });
     while ($("integrantes").children.length < 4) linha("integrantes", C_INT);
@@ -1003,7 +1005,9 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
     $$("[data-revela]").forEach(function (el) { io.observe(el); });
   } else $$("[data-revela]").forEach(function (el) { el.classList.add("visto"); });
 
+  if ("scrollRestoration" in history) history.scrollRestoration = "manual";
   carregar();
+  window.scrollTo(0, 0);
   if (!ESC.length) { location.replace(VITRINE); return; }
   mostrarEscolha();
 })();
