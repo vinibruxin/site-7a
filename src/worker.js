@@ -43,12 +43,13 @@ export default {
 
     const resp = await env.ASSETS.fetch(req);
     const tipo = resp.headers.get("content-type") || "";
-    if (!tipo.includes("text/html") || p.startsWith("/admin")) return resp;
+    if (!tipo.includes("text/html") || p.startsWith("/admin")) return comCache(resp, p);
 
+    // conteúdo do /admin (KV) e shows da gestão (D1) são buscados ao mesmo tempo, não um depois do outro
+    const [salvo, doSistema] = await Promise.all([lerConteudo(env), showsPublicos(env, hojeSP()).catch(() => [])]);
     // antes do primeiro salvar no /admin vale o conteúdo padrão (dados/padrao.json)
-    let conteudo = { ...((await lerConteudo(env)) || (await conteudoPadrao(env, req))) };
+    let conteudo = { ...(salvo || (await conteudoPadrao(env, req))) };
     // shows confirmados no sistema de gestão entram na agenda do site junto com os da aba Agenda
-    const doSistema = await showsPublicos(env, hojeSP()).catch(() => []);
     if (doSistema.length) conteudo.agenda = [...(conteudo.agenda || []), ...doSistema];
     const slug = p === "/" || p === "/index.html" || p === "/index" ? "" : p.replace(/^\//, "").replace(/\.html$/, "");
     const r = slug ? reescreverArtista(resp, conteudo, slug) : reescreverInicio(resp, conteudo);
@@ -57,6 +58,18 @@ export default {
     return new Response(r.body, { status: r.status, headers: h });
   },
 };
+
+/* ---------------- cache dos arquivos ---------------- */
+
+// fotos, logos, vídeos e fontes ficam guardados no navegador por 1 dia (antes o navegador conferia cada um a cada visita);
+// trocar uma imagem com o mesmo nome aparece para quem já visitou em até 1 dia
+const ESTATICO = /\.(jpe?g|png|webp|gif|svg|ico|mp4|mp3|webm|woff2?|ttf|css|js)$/i;
+export function comCache(resp, p) {
+  if (resp.status !== 200 || p.startsWith("/admin") || !ESTATICO.test(p)) return resp;
+  const h = new Headers(resp.headers);
+  h.set("cache-control", "public, max-age=86400, stale-while-revalidate=604800");
+  return new Response(resp.body, { status: resp.status, headers: h });
+}
 
 /* ---------------- conteúdo ---------------- */
 

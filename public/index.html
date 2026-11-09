@@ -547,7 +547,7 @@ a { color: inherit; }
 
 
 <header class="topo-site sobre margem" data-barra>
-  <a class="marca" href="#inicio" aria-label="7A Produtora, início"><img src="img/logo-7a.png" srcset="img/logo-7a.png 1x, img/logo-7a-g.png 3x" alt="Logo 7A" width="40" height="47"><span>7A Produtora</span></a>
+  <a class="marca" href="#inicio" aria-label="7A Produtora, início"><img src="img/logo-7a.png" alt="Logo 7A" width="40" height="47"><span>7A Produtora</span></a>
   <nav class="menu" id="menu" aria-label="Principal">
     <a href="#casting">Casting</a>
     <a href="#agenda">Agenda</a>
@@ -766,7 +766,7 @@ a { color: inherit; }
 
 <footer class="fim">
   <div class="filme">
-    <video src="img/ossos-ao-vivo.mp4" poster="img/ossos-ao-vivo.jpg" autoplay muted loop playsinline aria-label="Ossos do Banquete tocando ao vivo"></video>
+    <video data-src="img/ossos-ao-vivo.mp4" poster="img/ossos-ao-vivo.jpg" preload="none" muted loop playsinline aria-label="Ossos do Banquete tocando ao vivo"></video>
   </div>
   <div class="menu-fim">
     <a class="marca" href="#inicio" aria-label="Voltar ao início">
@@ -890,6 +890,17 @@ a { color: inherit; }
     var ob = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("bate"); ob.unobserve(en.target); } }); }, { threshold: .6 });
     Array.prototype.forEach.call(cs, function (c) { ob.observe(c); });
   })();
+</script>
+<script>
+// vídeo do rodapé: só baixa quando o visitante chega perto dele (antes baixava 1,9 MB junto com a página)
+(function () {
+  var v = document.querySelector("video[data-src]");
+  if (!v) return;
+  var liga = function () { if (v.src) return; v.src = v.getAttribute("data-src"); v.autoplay = true; var p = v.play(); if (p && p.catch) p.catch(function () {}); };
+  if (!("IntersectionObserver" in window)) { liga(); return; }
+  var ob = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { liga(); ob.disconnect(); } }, { rootMargin: "400px 0px" });
+  ob.observe(v);
+})();
 </script>
 </body>
 </html>
