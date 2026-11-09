@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Kit de Estrada | 7A Produtora</title>
-<meta name="description" content="Identidade da marca, press kit e rider técnico com mapa de palco para a sua banda. Feito pela 7A Produtora, de Betim, MG.">
+<meta name="description" content="Identidade da marca, press kit e rider técnico com mapa de palco para a sua banda. Feito pela 7A Produtora.">
 <meta name="robots" content="noindex">
 <link rel="icon" href="img/logo-7a.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -358,7 +358,7 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   <section class="abertura margem" aria-labelledby="t-abertura">
     <div>
       <h1 class="display" id="t-abertura"><span data-revela>Kit de</span><span data-revela style="--d:1">Estrada</span></h1>
-      <p class="apoio" data-revela style="--d:2">Tudo que a sua banda precisa para ser contratada: uma marca com cara própria, um press kit que convence a casa e um rider que faz a passagem de som andar. Feito pela 7A, de Betim, para artistas de qualquer canto.</p>
+      <p class="apoio" data-revela style="--d:2">Tudo de que a sua banda precisa para ser contratada: uma marca com cara própria, um press kit que convence a casa e um rider que faz a passagem de som andar. Feito pela 7A para artistas de qualquer lugar do Brasil.</p>
       <ul class="tres" data-revela style="--d:3"><li>Marca</li><li>Press kit</li><li>Rider e palco</li></ul>
       <div class="acao" data-revela style="--d:4"><a class="btn" href="#servicos">Escolher o que a banda precisa</a><span>Kit completo por R$ 790, em 15 dias úteis</span></div>
     </div>
@@ -380,8 +380,8 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
 
   <section class="servicos margem" id="servicos" aria-labelledby="t-servicos">
     <header data-revela>
-      <h2 class="display" id="t-servicos">Escolha o que a banda precisa</h2>
-      <p>Dá para levar uma peça só ou as três juntas. A ficha logo abaixo se ajusta e pergunta só o que importa para o que você escolheu.</p>
+      <h2 class="display" id="t-servicos">Monte o seu kit</h2>
+      <p>Dá para levar uma peça só ou as três juntas. Depois de escolher, a ficha abre numa página própria, só com as perguntas do que você pediu.</p>
     </header>
 
     <div class="tabela" data-revela style="--d:1">
@@ -423,284 +423,17 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
     </div>
 
     <div class="conta" id="conta" aria-live="polite" data-revela style="--d:2">
-      <div><p class="linha1" id="conta-1">Nada escolhido ainda</p><p class="linha2" id="conta-2">Marque o kit completo ou as peças que a banda precisa.</p></div>
-      <a class="btn" href="#ficha-area" id="ir-ficha">Começar a ficha</a>
+      <div><p class="linha1" id="conta-1">Nada escolhido ainda</p><p class="linha2" id="conta-2">Marque o kit completo ou as peças de que a banda precisa.</p></div>
+      <a class="btn" href="#servicos" id="ir-ficha">Abrir a ficha</a>
     </div>
     <p class="condicoes" data-revela style="--d:3">Pagamento em Pix: metade para começar e metade na entrega. O prazo conta a partir do dia em que a 7A recebe a ficha completa, as fotos e a entrada. Artistas do casting da 7A não pagam por essas peças.</p>
   </section>
 
-  <section class="ficha-area margem" id="ficha-area" aria-labelledby="t-ficha">
-    <header data-revela>
-      <h2 class="display" id="t-ficha">A ficha da banda</h2>
-      <p>Responda com calma, uns 25 minutos para o kit completo. Dá para parar e voltar depois: a ficha fica salva neste aparelho. Os campos com <b class="ob">*</b> são obrigatórios.</p>
-    </header>
-
-    <div class="trilha" data-revela style="--d:1">
-      <div class="onde"><span id="onde-nome"><b>Quem é você</b></span><span id="onde-conta">Parte 1 de 7</span></div>
-      <ol id="trilha"></ol>
-    </div>
-
-    <form class="ficha" id="ficha" novalidate>
-
-      <!-- 1. Quem é você -->
-      <section class="etapa" data-etapa="quem" data-nome="Quem é você" data-para="*" aria-labelledby="t-quem">
-        <header><h3 id="t-quem">Quem é você</h3><p>O básico, escrito do jeito que vocês querem ver no material.</p></header>
-        <div class="campos">
-          <div class="celula dupla"><label for="f-nome">Nome artístico <span class="ob">*</span></label><input id="f-nome" name="nome" type="text" required autocomplete="organization" placeholder="Como aparece no cartaz"></div>
-          <div class="celula"><label for="f-formato">Formato <span class="ob">*</span></label>
-            <select id="f-formato" name="formato" required><option value="">Escolha</option><option>Banda</option><option>Dupla</option><option>Artista solo</option><option>DJ</option></select></div>
-          <div class="celula"><label for="f-cidade">Cidade e estado <span class="ob">*</span></label><input id="f-cidade" name="cidade" type="text" required autocomplete="address-level2" placeholder="Betim, MG"></div>
-          <div class="celula"><label for="f-ano">Ano em que começou <span class="ob">*</span></label><input id="f-ano" name="ano" type="text" required inputmode="numeric" maxlength="4" placeholder="2015"></div>
-          <div class="celula"><label for="f-estilo">Estilo em poucas palavras <span class="ob">*</span></label><input id="f-estilo" name="estilo" type="text" required maxlength="50" placeholder="Rock clássico autoral"></div>
-          <div class="celula"><label for="f-repertorio">Repertório <span class="ob">*</span></label>
-            <select id="f-repertorio" name="repertorio" required><option value="">Escolha</option><option>Só autoral</option><option>Autoral e covers</option><option>Só covers</option></select></div>
-          <div class="celula"><label for="f-instagram">Instagram do artista <span class="ob">*</span></label><input id="f-instagram" name="instagram" type="text" required autocapitalize="off" placeholder="@suabanda"></div>
-        </div>
-        <h4>Quem fala com a 7A</h4>
-        <div class="campos">
-          <div class="celula dupla"><label for="f-responsavel">Nome do responsável <span class="ob">*</span></label><input id="f-responsavel" name="responsavel" type="text" required autocomplete="name"></div>
-          <div class="celula"><label for="f-whats">WhatsApp <span class="ob">*</span></label><input id="f-whats" name="whats" type="tel" required inputmode="tel" autocomplete="tel" placeholder="(31) 9 0000-0000"></div>
-          <div class="celula"><label for="f-email">E-mail <span class="ob">*</span></label><input id="f-email" name="email" type="email" required autocomplete="email" placeholder="banda@email.com"></div>
-          <div class="celula" data-para="rd"><label for="f-tec-nome">Técnico de som <span class="op">se tiver</span></label><input id="f-tec-nome" name="tecNome" type="text" placeholder="Nome"></div>
-          <div class="celula" data-para="rd"><label for="f-tec-whats">WhatsApp do técnico <span class="op">se tiver</span></label><input id="f-tec-whats" name="tecWhats" type="tel" inputmode="tel" placeholder="(31) 9 0000-0000"></div>
-        </div>
-      </section>
-
-      <!-- 2. Formação -->
-      <section class="etapa" data-etapa="formacao" data-nome="Formação" data-para="pk,rd" aria-labelledby="t-formacao">
-        <header><h3 id="t-formacao">Formação</h3><p>Quem toca hoje, com o nome que vai no material e o que cada um faz no palco. Canhoto muda o lado do instrumento no mapa de palco.</p></header>
-        <div class="linhas" id="integrantes"></div>
-        <button class="link mais" type="button" id="mais-integrante">Adicionar integrante</button>
-      </section>
-
-      <!-- 3. História e som -->
-      <section class="etapa" data-etapa="historia" data-nome="História e som" data-para="id,pk" aria-labelledby="t-historia">
-        <header><h3 id="t-historia">História e som</h3><p>Escreva como se contasse para quem nunca ouviu vocês. A 7A revisa o texto e devolve para vocês aprovarem.</p></header>
-        <div class="campos">
-          <div class="celula dupla"><label for="f-historia">História curta <span class="ob">*</span> <span class="op" id="c-historia">0 de 900</span></label><textarea id="f-historia" name="historia" required maxlength="900" placeholder="De onde vêm, como começou, o que o som junta, o que já fizeram"></textarea></div>
-          <div class="celula dupla"><label for="f-diferente">O que diferencia vocês, em uma frase <span class="ob">*</span></label><input id="f-diferente" name="diferente" type="text" required maxlength="140" placeholder="O que ninguém mais na cena faz igual"></div>
-          <div class="celula"><label for="f-nome-origem">Por que esse nome? <span class="op">opcional</span></label><textarea class="curta" id="f-nome-origem" name="nomeOrigem" maxlength="400"></textarea></div>
-          <div class="celula"><label for="f-referencias">3 artistas que são referência de som <span class="ob">*</span></label><textarea class="curta" id="f-referencias" name="referencias" required maxlength="300" placeholder="Um por linha"></textarea></div>
-          <div class="celula dupla"><label for="f-influencias">Influências fora da música <span class="op">opcional</span></label><input id="f-influencias" name="influencias" type="text" maxlength="200" placeholder="Filmes, quadrinhos, livros, lugares"></div>
-          <div class="celula dupla" data-para="pk"><label for="f-destaques">Destaques <span class="op">opcional</span></label><textarea class="curta" id="f-destaques" name="destaques" maxlength="600" placeholder="Palcos e festivais, bandas com quem dividiram palco, prêmios, imprensa"></textarea></div>
-          <div class="celula"><label for="f-musica">A música que melhor apresenta vocês <span class="ob">*</span></label><input id="f-musica" name="musica" type="text" required maxlength="80" placeholder="Nome da música"></div>
-          <div class="celula"><label for="f-musica-link">Link dessa música <span class="op">opcional</span></label><input id="f-musica-link" name="musicaLink" type="url" inputmode="url" placeholder="https://"></div>
-          <div class="celula"><label for="f-spotify">Spotify <span class="op">opcional</span></label><input id="f-spotify" name="spotify" type="url" inputmode="url" placeholder="https://open.spotify.com/..."></div>
-          <div class="celula"><label for="f-youtube">YouTube <span class="op">opcional</span></label><input id="f-youtube" name="youtube" type="url" inputmode="url" placeholder="https://youtube.com/..."></div>
-          <div class="celula"><label for="f-publico">Quem vai ao show de vocês <span class="op">opcional</span></label><input id="f-publico" name="publico" type="text" maxlength="160" placeholder="Idade, cena, cidade"></div>
-          <div class="celula"><label for="f-meta">Meta para os próximos 12 meses <span class="op">opcional</span></label><input id="f-meta" name="meta" type="text" maxlength="160" placeholder="Tocar em festival, gravar EP, rodar MG"></div>
-        </div>
-        <h4 data-para="pk">Discografia</h4>
-        <p class="dica" data-para="pk">Um lançamento por linha: singles, EPs, discos e clipes. Se ainda não lançaram nada, pode pular.</p>
-        <div class="linhas" id="discos" data-para="pk"></div>
-        <button class="link mais" type="button" id="mais-disco" data-para="pk">Adicionar lançamento</button>
-      </section>
-
-      <!-- 4. Identidade -->
-      <section class="etapa" data-etapa="identidade" data-nome="Identidade da marca" data-para="id" aria-labelledby="t-identidade">
-        <header><h3 id="t-identidade">Identidade da marca</h3><p>A parte mais importante para a marca. Aqui quase tudo é tocar e escolher. Não existe resposta errada: existe a cara de vocês.</p></header>
-        <div class="campos">
-          <fieldset class="grupo dupla" data-obrig="1"><legend>Vocês já têm logo? <span class="ob">*</span></legend>
-            <div class="opcoes" data-k="logoHoje"><label><input type="radio" name="logoHoje" value="Sim, e quero manter"><span>Sim, e quero manter</span></label><label><input type="radio" name="logoHoje" value="Sim, mas quero refazer"><span>Sim, mas quero refazer</span></label><label><input type="radio" name="logoHoje" value="Não temos"><span>Não temos</span></label></div>
-          </fieldset>
-          <div class="celula dupla"><label for="f-palavras">3 palavras que descrevem a banda <span class="ob">*</span></label><input id="f-palavras" name="palavras" type="text" required maxlength="80" placeholder="Pesada, mineira, debochada"></div>
-        </div>
-
-        <h4>O jeito da banda</h4>
-        <p class="dica">Arraste para o lado que tem mais a ver com vocês. No meio é meio a meio.</p>
-        <div class="reguas" id="reguas">
-          <div class="regua"><span>Clássico</span><input type="range" min="1" max="5" value="3" data-regua="Clássico|Moderno" aria-label="De clássico a moderno"><span>Moderno</span></div>
-          <div class="regua"><span>Sujo</span><input type="range" min="1" max="5" value="3" data-regua="Sujo|Limpo" aria-label="De sujo a limpo"><span>Limpo</span></div>
-          <div class="regua"><span>Sombrio</span><input type="range" min="1" max="5" value="3" data-regua="Sombrio|Colorido" aria-label="De sombrio a colorido"><span>Colorido</span></div>
-          <div class="regua"><span>Sério</span><input type="range" min="1" max="5" value="3" data-regua="Sério|Bem-humorado" aria-label="De sério a bem-humorado"><span>Bem-humorado</span></div>
-          <div class="regua"><span>Minimalista</span><input type="range" min="1" max="5" value="3" data-regua="Minimalista|Carregado" aria-label="De minimalista a carregado"><span>Carregado</span></div>
-        </div>
-
-        <fieldset class="grupo" data-obrig="1" data-max="2"><legend>Estilo visual, até 2 <span class="ob">*</span></legend>
-          <div class="estilos" data-k="estiloVisual">
-            <label><input type="checkbox" name="estiloVisual" value="Vintage anos 70"><span><b>Vintage anos 70</b><i>Cartaz de show antigo, letras gordas, papel gasto</i></span></label>
-            <label><input type="checkbox" name="estiloVisual" value="Punk xerox"><span><b>Punk xerox</b><i>Recorte, colagem, preto e branco estourado</i></span></label>
-            <label><input type="checkbox" name="estiloVisual" value="Metal e gótico"><span><b>Metal e gótico</b><i>Letra desenhada, símbolo forte, escuro</i></span></label>
-            <label><input type="checkbox" name="estiloVisual" value="Indie minimalista"><span><b>Indie minimalista</b><i>Pouca coisa, muito espaço, tipo limpo</i></span></label>
-            <label><input type="checkbox" name="estiloVisual" value="Brasileiro e regional"><span><b>Brasileiro e regional</b><i>Xilogravura, cores de feira, cultura mineira</i></span></label>
-            <label><input type="checkbox" name="estiloVisual" value="Psicodélico"><span><b>Psicodélico</b><i>Cor forte, forma que ondula, viagem</i></span></label>
-            <label><input type="checkbox" name="estiloVisual" value="Rock de estrada"><span><b>Rock de estrada</b><i>Couro, moto, placa de beira de estrada</i></span></label>
-            <label><input type="checkbox" name="estiloVisual" value="Outro"><span><b>Outro</b><i>Explica nas referências logo abaixo</i></span></label>
-          </div>
-        </fieldset>
-
-        <h4>Cores</h4>
-        <p class="dica">Toque no quadrado para escolher até três cores que vocês já usam ou querem usar. Se não souberem o tom, escrevam ao lado.</p>
-        <div class="cores" id="cores">
-          <div class="cor" data-cor="1"><span>Cor 1</span><input type="color" value="#0A0A0A" aria-label="Cor 1"><button class="link tirar-cor" type="button">Tirar</button></div>
-          <div class="cor" data-cor="2"><span>Cor 2</span><input type="color" value="#F2EFEA" aria-label="Cor 2"><button class="link tirar-cor" type="button">Tirar</button></div>
-          <div class="cor" data-cor="3"><span>Cor 3</span><input type="color" value="#B5121B" aria-label="Cor 3"><button class="link tirar-cor" type="button">Tirar</button></div>
-          <div class="celula"><label for="f-cores-texto">Cores em palavras <span class="op">opcional</span></label><input id="f-cores-texto" name="coresTexto" type="text" maxlength="120" placeholder="Preto, vermelho sangue, dourado velho"></div>
-        </div>
-        <div class="campos">
-          <div class="celula dupla"><label for="f-cores-nao">Cores que vocês não querem de jeito nenhum <span class="op">opcional</span></label><input id="f-cores-nao" name="coresNao" type="text" maxlength="120" placeholder="Rosa, verde-limão"></div>
-        </div>
-
-        <h4>Referências e o que evitar</h4>
-        <div class="campos">
-          <div class="celula dupla"><label for="f-ref-visual">3 links de capas, bandas ou marcas que vocês acham bonitas <span class="ob">*</span></label><textarea class="curta" id="f-ref-visual" name="refVisual" required maxlength="600" placeholder="Um link por linha. Pode ser Instagram, Pinterest, capa no Spotify"></textarea></div>
-          <fieldset class="grupo dupla" data-obrig="1"><legend>O que vocês NÃO querem na marca <span class="ob">*</span> <span class="op">marque pelo menos um</span></legend>
-            <div class="opcoes nao" data-k="evitar">
-              <label><input type="checkbox" name="evitar" value="Caveira"><span>Caveira</span></label>
-              <label><input type="checkbox" name="evitar" value="Chamas e fogo"><span>Chamas e fogo</span></label>
-              <label><input type="checkbox" name="evitar" value="Letra gótica"><span>Letra gótica</span></label>
-              <label><input type="checkbox" name="evitar" value="Guitarra no logo"><span>Guitarra no logo</span></label>
-              <label><input type="checkbox" name="evitar" value="Cara de inteligência artificial"><span>Cara de IA</span></label>
-              <label><input type="checkbox" name="evitar" value="Muito colorido"><span>Muito colorido</span></label>
-              <label><input type="checkbox" name="evitar" value="Muito infantil"><span>Muito infantil</span></label>
-              <label><input type="checkbox" name="evitar" value="Muito sério e corporativo"><span>Corporativo demais</span></label>
-              <label><input type="checkbox" name="evitar" value="Nada disso, explico abaixo"><span>Outra coisa</span></label>
-            </div>
-          </fieldset>
-          <div class="celula dupla"><label for="f-evitar-mais">Mais alguma coisa que não pode aparecer <span class="op">opcional</span></label><input id="f-evitar-mais" name="evitarMais" type="text" maxlength="200"></div>
-          <div class="celula dupla"><label for="f-simbolos">Um símbolo que representa vocês <span class="op">opcional</span></label><input id="f-simbolos" name="simbolos" type="text" maxlength="200" placeholder="Um animal, um objeto, um lugar, uma história da banda"></div>
-        </div>
-
-        <h4>Como vocês falam</h4>
-        <div class="campos">
-          <fieldset class="grupo dupla" data-obrig="1"><legend>Tom de voz com o público <span class="ob">*</span> <span class="op">até 2</span></legend>
-            <div class="opcoes" data-k="tom" data-max="2">
-              <label><input type="checkbox" name="tom" value="Direto"><span>Direto</span></label>
-              <label><input type="checkbox" name="tom" value="Debochado"><span>Debochado</span></label>
-              <label><input type="checkbox" name="tom" value="Poético"><span>Poético</span></label>
-              <label><input type="checkbox" name="tom" value="Engajado"><span>Engajado</span></label>
-              <label><input type="checkbox" name="tom" value="Festeiro"><span>Festeiro</span></label>
-              <label><input type="checkbox" name="tom" value="Sombrio"><span>Sombrio</span></label>
-            </div>
-          </fieldset>
-          <div class="celula dupla"><label for="f-post-cara">Um post de vocês que tem a cara da banda <span class="op">link, opcional</span></label><input id="f-post-cara" name="postCara" type="url" inputmode="url" placeholder="https://instagram.com/p/..."></div>
-          <fieldset class="grupo dupla"><legend>Onde a marca vai aparecer <span class="op">marque tudo que valer</span></legend>
-            <div class="opcoes" data-k="ondeMarca">
-              <label><input type="checkbox" name="ondeMarca" value="Instagram"><span>Instagram</span></label>
-              <label><input type="checkbox" name="ondeMarca" value="Capa de música"><span>Capa de música</span></label>
-              <label><input type="checkbox" name="ondeMarca" value="Camiseta"><span>Camiseta</span></label>
-              <label><input type="checkbox" name="ondeMarca" value="Bumbo da bateria"><span>Bumbo da bateria</span></label>
-              <label><input type="checkbox" name="ondeMarca" value="Banner de palco"><span>Banner de palco</span></label>
-              <label><input type="checkbox" name="ondeMarca" value="Adesivo"><span>Adesivo</span></label>
-              <label><input type="checkbox" name="ondeMarca" value="Cartaz de show"><span>Cartaz de show</span></label>
-            </div>
-          </fieldset>
-        </div>
-      </section>
-
-      <!-- 5. Fotos -->
-      <section class="etapa" data-etapa="fotos" data-nome="Fotos e material" data-para="id,pk" aria-labelledby="t-fotos">
-        <header><h3 id="t-fotos">Fotos e material</h3><p>Foto boa vende show. Conte o que vocês já têm; os arquivos vão depois, pelo WhatsApp, como documento, para não perder qualidade.</p></header>
-        <div class="campos">
-          <fieldset class="grupo dupla" data-obrig="1"><legend>Vocês têm fotos de divulgação? <span class="ob">*</span></legend>
-            <div class="opcoes" data-k="fotosHoje"><label><input type="radio" name="fotosHoje" value="Sim, boas"><span>Sim, boas</span></label><label><input type="radio" name="fotosHoje" value="Sim, mas fracas"><span>Sim, mas fracas</span></label><label><input type="radio" name="fotosHoje" value="Não temos"><span>Não temos</span></label></div>
-          </fieldset>
-          <div class="celula"><label for="f-fotos-qtd">Quantas e de quando <span class="op">opcional</span></label><input id="f-fotos-qtd" name="fotosQtd" type="text" maxlength="80" placeholder="Umas 10, de março de 2026"></div>
-          <div class="celula"><label for="f-fotografo">Crédito do fotógrafo <span class="op">vai no press kit</span></label><input id="f-fotografo" name="fotografo" type="text" maxlength="80" placeholder="Nome ou @"></div>
-          <div class="celula dupla"><label for="f-drive">Link de pasta com fotos, logo e vídeos <span class="op">opcional</span></label><input id="f-drive" name="drive" type="url" inputmode="url" placeholder="Google Drive, Dropbox, WeTransfer"></div>
-          <div class="celula dupla"><label for="f-videos">Vídeos ao vivo <span class="op">links, opcional</span></label><textarea class="curta" id="f-videos" name="videos" maxlength="400" placeholder="Um link por linha"></textarea></div>
-        </div>
-        <p class="dica"><b>Foto grande, sem filtro e sem texto por cima.</b> O ideal é a partir de 2000 pixels no lado maior. Sem foto boa, a 7A indica um fotógrafo parceiro antes de começar.</p>
-      </section>
-
-      <!-- 6. Rider -->
-      <section class="etapa" data-etapa="rider" data-nome="Rider e mapa de palco" data-para="rd" aria-labelledby="t-rider">
-        <header><h3 id="t-rider">Rider e mapa de palco</h3><p>Monte o palco do jeito que vocês tocam: toque numa peça e depois no lugar, ou arraste. Os canais saem do mapa com um toque.</p></header>
-        <div class="campos tres">
-          <div class="celula"><label for="f-palco-larg">Palco mínimo, largura <span class="ob">*</span></label><input id="f-palco-larg" name="palcoLarg" type="text" required inputmode="decimal" maxlength="8" placeholder="Em metros, ex.: 6"></div>
-          <div class="celula"><label for="f-palco-prof">Palco mínimo, fundo <span class="ob">*</span></label><input id="f-palco-prof" name="palcoProf" type="text" required inputmode="decimal" maxlength="8" placeholder="Em metros, ex.: 4"></div>
-          <div class="celula"><label for="f-praticavel">Praticável para bateria <span class="op">opcional</span></label>
-            <select id="f-praticavel" name="praticavel"><option value="">Escolha</option><option>Precisa</option><option>Se tiver, melhor</option><option>Não precisa</option></select></div>
-          <div class="celula dupla"><label for="f-luz">Luz, telão ou efeito <span class="op">opcional</span></label><input id="f-luz" name="luz" type="text" maxlength="160" placeholder="Luz de palco básica, sem fumaça"></div>
-        </div>
-        <p class="rider-carregando" id="rider-carregando">Abrindo o mapa de palco...</p>
-        <iframe class="rider-quadro" id="rider-quadro" title="Rider técnico e mapa de palco" loading="lazy"></iframe>
-      </section>
-
-      <!-- 7. Logística -->
-      <section class="etapa" data-etapa="logistica" data-nome="Logística do show" data-para="pk,rd" aria-labelledby="t-logistica">
-        <header><h3 id="t-logistica">Logística do show</h3><p>O que a casa precisa saber antes de fechar. Isso entra no press kit e no rider, e evita surpresa no dia.</p></header>
-        <div class="campos tres">
-          <div class="celula"><label for="f-dur-min">Show mais curto <span class="ob">*</span></label>
-            <select id="f-dur-min" name="durMin" required><option value="">Escolha</option><option>30 min</option><option>45 min</option><option>1 hora</option><option>1h30</option><option>2 horas</option></select></div>
-          <div class="celula"><label for="f-dur-ideal">Show ideal <span class="ob">*</span></label>
-            <select id="f-dur-ideal" name="durIdeal" required><option value="">Escolha</option><option>45 min</option><option>1 hora</option><option>1h30</option><option>2 horas</option><option>Mais de 2 horas</option></select></div>
-          <div class="celula"><label for="f-dur-max">Show mais longo <span class="op">opcional</span></label>
-            <select id="f-dur-max" name="durMax"><option value="">Escolha</option><option>1 hora</option><option>1h30</option><option>2 horas</option><option>3 horas</option><option>4 horas ou mais</option></select></div>
-        </div>
-        <div class="campos">
-          <div class="celula"><label for="f-blocos">Tocam em blocos? <span class="op">opcional</span></label>
-            <select id="f-blocos" name="blocos"><option value="">Escolha</option><option>Não, show corrido</option><option>Sim, 2 blocos</option><option>Sim, 3 blocos ou mais</option></select></div>
-          <div class="celula"><label for="f-pessoas">Quantas pessoas viajam, com equipe <span class="ob">*</span></label><input id="f-pessoas" name="pessoas" type="text" required inputmode="numeric" maxlength="3" placeholder="5"></div>
-          <div class="celula" data-sem="rd"><label for="f-passagem-sem">Tempo de passagem de som <span class="op">opcional</span></label>
-            <select id="f-passagem-sem" name="passagem"><option value="">Escolha</option><option>15 min</option><option>30 min</option><option>45 min</option><option>1 hora</option><option>Não fazemos</option></select></div>
-          <div class="celula"><label for="f-transporte">Transporte <span class="op">opcional</span></label>
-            <select id="f-transporte" name="transporte"><option value="">Escolha</option><option>Próprio, cabe tudo</option><option>Próprio, mas precisamos de ajuda com equipamento</option><option>Não temos, precisamos de transporte</option></select></div>
-          <div class="celula"><label for="f-km">Até quantos km topam viajar <span class="op">opcional</span></label>
-            <select id="f-km" name="km"><option value="">Escolha</option><option>Só na cidade</option><option>Até 50 km</option><option>Até 150 km</option><option>Todo o estado</option><option>Qualquer lugar</option></select></div>
-          <div class="celula"><label for="f-camarim">Camarim, comida e bebida <span class="op">opcional</span></label><input id="f-camarim" name="camarim" type="text" maxlength="160" placeholder="Água, lanche para 5"></div>
-          <div class="celula dupla"><label for="f-exigencias">Exigências que vocês não abrem mão <span class="op">opcional</span></label><input id="f-exigencias" name="exigencias" type="text" maxlength="200" placeholder="Carga e descarga perto do palco, estacionamento"></div>
-          <fieldset class="grupo dupla"><legend>Dias que costumam ter livres <span class="op">opcional</span></legend>
-            <div class="opcoes" data-k="dias">
-              <label><input type="checkbox" name="dias" value="Segunda"><span>Segunda</span></label><label><input type="checkbox" name="dias" value="Terça"><span>Terça</span></label><label><input type="checkbox" name="dias" value="Quarta"><span>Quarta</span></label><label><input type="checkbox" name="dias" value="Quinta"><span>Quinta</span></label><label><input type="checkbox" name="dias" value="Sexta"><span>Sexta</span></label><label><input type="checkbox" name="dias" value="Sábado"><span>Sábado</span></label><label><input type="checkbox" name="dias" value="Domingo"><span>Domingo</span></label>
-            </div>
-          </fieldset>
-        </div>
-      </section>
-
-      <!-- 8. Envio -->
-      <section class="etapa" data-etapa="envio" data-nome="Pedido e envio" data-para="*" aria-labelledby="t-envio">
-        <header><h3 id="t-envio">Pedido e envio</h3><p>Última parte. Confira o pedido e mande para a 7A.</p></header>
-        <div class="campos">
-          <fieldset class="grupo dupla" data-obrig="1"><legend>Para que vocês vão usar primeiro? <span class="ob">*</span></legend>
-            <div class="opcoes" data-k="uso">
-              <label><input type="checkbox" name="uso" value="Fechar shows em casas"><span>Fechar shows em casas</span></label>
-              <label><input type="checkbox" name="uso" value="Festival"><span>Festival</span></label>
-              <label><input type="checkbox" name="uso" value="Edital ou lei de incentivo"><span>Edital ou lei de incentivo</span></label>
-              <label><input type="checkbox" name="uso" value="Imprensa e rádio"><span>Imprensa e rádio</span></label>
-              <label><input type="checkbox" name="uso" value="Lançamento de música"><span>Lançamento de música</span></label>
-              <label><input type="checkbox" name="uso" value="Redes sociais"><span>Redes sociais</span></label>
-            </div>
-          </fieldset>
-          <div class="celula"><label for="f-quando">Precisam para quando? <span class="op">opcional</span></label><input id="f-quando" name="quando" type="text" maxlength="80" placeholder="Show em 12/12, edital até 30/11"></div>
-          <div class="celula"><label for="f-conheceu">Como conheceram a 7A <span class="op">opcional</span></label>
-            <select id="f-conheceu" name="conheceu"><option value="">Escolha</option><option>Instagram</option><option>Indicação de banda</option><option>Num show</option><option>Google</option><option>Outro</option></select></div>
-          <div class="celula dupla"><label for="f-obs">Algo mais que a 7A precisa saber <span class="op">opcional</span></label><textarea class="curta" id="f-obs" name="obs" maxlength="600"></textarea></div>
-        </div>
-        <label class="aceite" id="aceite-caixa"><input type="checkbox" id="f-aceite"><span class="caixa" aria-hidden="true"></span><span>Autorizo a 7A a usar o nome, as fotos e as músicas da banda para montar as peças do pedido. <span class="ob">*</span></span></label>
-
-        <div class="enviar" id="enviar">
-          <p class="resumo" id="resumo-pedido">Kit completo · R$ 790</p>
-          <p id="resumo-falta" aria-live="polite"></p>
-          <div class="acoes">
-            <a class="btn btn-preto" id="enviar-whats" href="https://wa.me/5531992233295" target="_blank" rel="noopener">Enviar a ficha no WhatsApp</a>
-            <button class="btn btn-claro" type="button" id="enviar-mapa" data-para="rd">Enviar o mapa em imagem</button>
-            <a class="link" id="enviar-email" href="mailto:contato@7aprodutora.com.br">Mandar por e-mail</a>
-            <button class="link" type="button" id="copiar">Copiar o texto</button>
-            <button class="link" type="button" id="baixar-json">Baixar arquivo de respostas</button>
-          </div>
-          <p class="aviso-envio" id="aviso-envio" aria-live="polite"></p>
-          <ol class="passos">
-            <li>A ficha chega no WhatsApp da 7A em texto.</li>
-            <li>Na mesma conversa, mandem as fotos e a logo como documento<span data-para="rd"> e a imagem do mapa de palco</span>.</li>
-            <li>A 7A confirma o pedido e manda o Pix da entrada. O prazo começa a contar daí.</li>
-          </ol>
-        </div>
-      </section>
-
-      <div class="navega">
-        <button class="btn btn-grafite" type="button" id="voltar">Voltar</button>
-        <button class="btn" type="button" id="avancar">Avançar</button>
-        <p class="falta" id="falta" aria-live="polite"></p>
-        <span class="salvo" id="salvo"></span>
-      </div>
-    </form>
-  </section>
 </main>
 
 <footer class="fim margem">
   <img src="img/logo-7a.png" alt="7A Produtora">
-  <div><p class="nome-casa">Aqui o artista é levado a sério</p><p class="casa-linha">7A Produtora · Betim, MG · Criar, produzir, transformar</p></div>
+  <div><p class="nome-casa">Aqui o artista é levado a sério</p><p class="casa-linha">7A Produtora · Criar, produzir, transformar</p></div>
   <dl>
     <dt>WhatsApp</dt><dd><a href="https://wa.me/5531992233295">(31) 99223-3295</a></dd>
     <dt>E-mail</dt><dd><a href="mailto:contato@7aprodutora.com.br">contato@7aprodutora.com.br</a></dd>
@@ -710,23 +443,15 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
 
 <script>
 (function () {
-  var NUMERO = "5531992233295", EMAIL = "contato@7aprodutora.com.br", CHAVE = "7a-kit-estrada";
-  var SERV = {
-    id: { nome: "Identidade da marca", preco: 450, prazo: 12 },
-    pk: { nome: "Press kit", preco: 300, prazo: 7 },
-    rd: { nome: "Rider técnico e mapa de palco", preco: 150, prazo: 3 }
-  };
+  var SERV = { id: { nome: "Identidade da marca", preco: 450, prazo: 12 }, pk: { nome: "Press kit", preco: 300, prazo: 7 }, rd: { nome: "Rider técnico e mapa de palco", preco: 150, prazo: 3 } };
   var KIT = { preco: 790, prazo: 15 };
   var $ = function (id) { return document.getElementById(id); };
-  var $$ = function (sel, raiz) { return Array.prototype.slice.call((raiz || document).querySelectorAll(sel)); };
-  var form = $("ficha");
-  var etapas = $$(".etapa", form);
-  var atual = 0;
-
+  var $$ = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+  var noSite = /(^|\.)7aprodutora\.com\.br$|\.workers\.dev$/.test(location.hostname);
+  var FICHA = noSite ? "/kit-de-estrada-ficha" : "kit-de-estrada-ficha.html";
+  var NOMES = { id: "identidade", pk: "presskit", rd: "rider" };
   function reais(n) { return "R$ " + n.toLocaleString("pt-BR"); }
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
-  /* ---------- Escolha dos serviços ---------- */
   var caixas = $$("[data-serv]");
   function escolhidos() { return caixas.filter(function (c) { return c.checked; }).map(function (c) { return c.dataset.serv; }); }
   function pedido() {
@@ -738,347 +463,34 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
     if (e.indexOf("id") >= 0 && e.indexOf("pk") >= 0) prazo = 15;
     return { lista: e, nome: e.map(function (k) { return SERV[k].nome; }).join(" + "), preco: preco, prazo: prazo };
   }
-  function vale(el) {
-    var e = escolhidos(); if (!e.length) e = ["id", "pk", "rd"];
-    var para = el.getAttribute("data-para"), sem = el.getAttribute("data-sem");
-    if (para && para !== "*" && !para.split(",").some(function (k) { return e.indexOf(k) >= 0; })) return false;
-    if (sem && sem.split(",").some(function (k) { return e.indexOf(k) >= 0; })) return false;
-    return true;
-  }
-  function ativas() { return etapas.filter(vale); }
-
-  function mostrarEscolha() {
+  function mostrar(animar) {
     var p = pedido(), conta = $("conta");
     $("s-kit").checked = escolhidos().length === 3;
     if (!p) {
       $("conta-1").textContent = "Nada escolhido ainda";
-      $("conta-2").textContent = "Marque o kit completo ou as peças que a banda precisa.";
+      $("conta-2").textContent = "Marque o kit completo ou as peças de que a banda precisa.";
       $("escolha-curta").innerHTML = "<b>Kit de Estrada</b>";
+      $("ir-ficha").href = "#servicos";
     } else {
       $("conta-1").textContent = p.nome + " · " + reais(p.preco);
       $("conta-2").innerHTML = (p.separado ? "Economia de <b>" + reais(p.separado - p.preco) + "</b> sobre as peças separadas. " : (p.lista.length === 2 ? "Com a terceira peça, o kit completo sai por " + reais(KIT.preco) + ". " : "")) + "Entrega em " + p.prazo + " dias úteis.";
-      $("escolha-curta").innerHTML = "<b>" + esc(p.lista.length === 3 ? "Kit completo" : p.lista.length + (p.lista.length > 1 ? " peças" : " peça")) + "</b> · " + reais(p.preco);
+      $("escolha-curta").innerHTML = "<b>" + (p.lista.length === 3 ? "Kit completo" : p.lista.length + (p.lista.length > 1 ? " peças" : " peça")) + "</b> · " + reais(p.preco);
+      $("ir-ficha").href = FICHA + "?servico=" + (p.lista.length === 3 ? "kit" : p.lista.map(function (k) { return NOMES[k]; }).join(","));
     }
-    conta.classList.remove("mudou"); void conta.offsetWidth; conta.classList.add("mudou");
-    $$("[data-para], [data-sem]", form).forEach(function (el) { if (!el.classList.contains("etapa")) el.hidden = !vale(el); });
-    $$("#enviar [data-para]").forEach(function (el) { el.hidden = !vale(el); });
-    if (atual >= ativas().length) atual = ativas().length - 1;
-    trilha(); mostrarEtapa(false);
+    if (animar) { conta.classList.remove("mudou"); void conta.offsetWidth; conta.classList.add("mudou"); }
   }
-  caixas.forEach(function (c) { c.addEventListener("change", function () { mostrarEscolha(); salvar(); }); });
+  caixas.forEach(function (c) { c.addEventListener("change", function () { mostrar(true); }); });
   $("s-kit").addEventListener("change", function () {
     var marcar = $("s-kit").checked;
     caixas.forEach(function (c) { c.checked = marcar; });
-    mostrarEscolha(); salvar();
+    mostrar(true);
   });
   $("ir-ficha").addEventListener("click", function (e) {
-    if (!escolhidos().length) { e.preventDefault(); $("conta-2").textContent = "Escolha pelo menos uma peça antes de começar a ficha."; return; }
+    if (!escolhidos().length) { e.preventDefault(); $("conta-2").textContent = "Escolham pelo menos uma peça antes de abrir a ficha."; }
   });
+  var q = (location.search.match(/[?&]servico=([a-z,-]+)/) || [])[1];
+  if (q) { var m = { identidade: "id", presskit: "pk", "press-kit": "pk", rider: "rd", kit: "id,pk,rd" }; q.split(",").map(function (s) { return m[s] || s; }).join(",").split(",").forEach(function (k) { var c = document.querySelector('[data-serv="' + k + '"]'); if (c) c.checked = true; }); }
 
-  /* ---------- Partes da ficha ---------- */
-  function trilha() {
-    var lista = ativas();
-    $("trilha").innerHTML = lista.map(function (et, i) {
-      return '<li><button type="button" data-ir="' + i + '" class="' + (i < atual ? "feita" : i === atual ? "atual" : "") + '" aria-label="' + esc(et.dataset.nome) + '"' + (i === atual ? ' aria-current="step"' : "") + "></button></li>";
-    }).join("");
-    $("onde-nome").innerHTML = "<b>" + esc(lista[atual].dataset.nome) + "</b>";
-    $("onde-conta").textContent = "Parte " + (atual + 1) + " de " + lista.length;
-  }
-  $("trilha").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-ir]"); if (!b) return;
-    var alvo = +b.dataset.ir;
-    if (alvo > atual && !conferir(true)) return;
-    atual = alvo; trilha(); mostrarEtapa(true);
-  });
-  function mostrarEtapa(rolar) {
-    var lista = ativas();
-    etapas.forEach(function (et) { et.classList.toggle("ativa", et === lista[atual]); });
-    $("voltar").hidden = atual === 0;
-    $("avancar").hidden = atual === lista.length - 1;
-    $("falta").textContent = "";
-    if (lista[atual].dataset.etapa === "rider") abrirRider();
-    if (lista[atual].dataset.etapa === "envio") atualizarEnvio();
-    if (rolar) $("ficha-area").scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
-  }
-
-  function rotulo(el) {
-    if (el.tagName === "FIELDSET") return el.querySelector("legend").firstChild.textContent.trim();
-    var l = form.querySelector('label[for="' + el.id + '"]');
-    return l ? l.firstChild.textContent.trim() : el.name;
-  }
-  function faltando(et) {
-    var f = [];
-    $$("input[required], select[required], textarea[required]", et).forEach(function (el) {
-      var cel = el.closest(".celula"); if (cel && cel.hidden) return;
-      var ok = el.value.trim() !== "";
-      if (el.type === "email") ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value.trim());
-      if (el.type === "tel") ok = el.value.replace(/\D/g, "").length >= 10;
-      if (!ok) f.push({ el: el, cel: cel, nome: rotulo(el) });
-    });
-    $$("fieldset[data-obrig]", et).forEach(function (fs) {
-      if (fs.hidden) return;
-      if (!fs.querySelector("input:checked")) f.push({ el: fs.querySelector("input"), cel: fs, nome: rotulo(fs) });
-    });
-    if (et.dataset.etapa === "formacao" && !integrantes().some(function (i) { return i.nome && i.funcao; })) f.push({ el: $("integrantes").querySelector("input"), cel: null, nome: "pelo menos um integrante com nome e função" });
-    if (et.dataset.etapa === "rider") {
-      var r = riderApi();
-      var fr = r ? r.falta() : [];
-      if (fr.length) f.push({ el: null, cel: null, nome: "no rider: " + fr.join(" · ") });
-    }
-    if (et.dataset.etapa === "envio" && !$("f-aceite").checked) f.push({ el: $("f-aceite"), cel: $("aceite-caixa"), nome: "a autorização de uso" });
-    return f;
-  }
-  function conferir(mostrar) {
-    var et = ativas()[atual], f = faltando(et);
-    $$(".erro", et).forEach(function (c) { c.classList.remove("erro"); });
-    if (!f.length) { $("falta").textContent = ""; return true; }
-    if (mostrar) {
-      f.forEach(function (x) { if (x.cel) x.cel.classList.add("erro"); });
-      $("falta").textContent = "Falta " + f.map(function (x) { return x.nome.toLowerCase(); }).join(", ").replace(/, ([^,]*)$/, " e $1") + ".";
-      var primeiro = f.filter(function (x) { return x.el; })[0];
-      if (primeiro) primeiro.el.focus({ preventScroll: false });
-    }
-    return false;
-  }
-  $("avancar").addEventListener("click", function () {
-    if (!conferir(true)) return;
-    atual++; trilha(); mostrarEtapa(true); salvar();
-  });
-  $("voltar").addEventListener("click", function () { atual = Math.max(0, atual - 1); trilha(); mostrarEtapa(true); });
-  form.addEventListener("input", function (e) {
-    var c = e.target.closest(".erro"); if (c) c.classList.remove("erro");
-  });
-
-  /* ---------- Limite de escolhas (até 2) ---------- */
-  $$("[data-max]").forEach(function (g) {
-    var max = +g.dataset.max;
-    g.addEventListener("change", function (e) {
-      var marcados = $$("input:checked", g);
-      if (marcados.length > max) { e.target.checked = false; $("falta").textContent = "Aqui vale escolher até " + max + "."; }
-    });
-  });
-
-  /* ---------- Integrantes e discos ---------- */
-  var nL = 0;
-  function linha(alvo, campos, valores) {
-    var div = document.createElement("div"); div.className = "linha" + (alvo === "discos" ? " disco" : ""); nL++;
-    div.innerHTML = campos.map(function (c) {
-      var id = "l" + nL + "-" + c.k;
-      var ctrl = c.op ? '<select id="' + id + '" data-l="' + c.k + '">' + c.op.map(function (o) { return '<option value="' + o + '">' + (o || "Escolha") + "</option>"; }).join("") + "</select>"
-        : '<input id="' + id + '" data-l="' + c.k + '" type="' + (c.t || "text") + '"' + (c.ph ? ' placeholder="' + c.ph + '"' : "") + (c.max ? ' maxlength="' + c.max + '"' : "") + (c.t === "url" ? ' inputmode="url"' : "") + ">";
-      return '<div class="celula"><label for="' + id + '">' + c.r + "</label>" + ctrl + "</div>";
-    }).join("") + '<button class="tirar" type="button" aria-label="Tirar esta linha">Tirar</button>';
-    campos.forEach(function (c) { if (valores && valores[c.k] != null) div.querySelector('[data-l="' + c.k + '"]').value = valores[c.k]; });
-    div.querySelector(".tirar").addEventListener("click", function () { div.remove(); salvar(); });
-    $(alvo).appendChild(div);
-    return div;
-  }
-  var C_INT = [
-    { k: "nome", r: "Nome", ph: "Nome artístico", max: 40 },
-    { k: "funcao", r: "Faz o quê", ph: "Vocal e guitarra", max: 50 },
-    { k: "mao", r: "Mão", op: ["", "Destro", "Canhoto"] },
-    { k: "insta", r: "Instagram", ph: "@", max: 40 }
-  ];
-  var C_DISCO = [
-    { k: "titulo", r: "Título", max: 60 },
-    { k: "tipo", r: "Tipo", op: ["", "Single", "EP", "Álbum", "Clipe", "Ao vivo"] },
-    { k: "ano", r: "Ano", ph: "2024", max: 4 },
-    { k: "link", r: "Link", t: "url", ph: "https://" }
-  ];
-  function ler(alvo, campos) {
-    return $$(".linha", $(alvo)).map(function (d) {
-      var o = {}; campos.forEach(function (c) { o[c.k] = d.querySelector('[data-l="' + c.k + '"]').value.trim(); }); return o;
-    }).filter(function (o) { return Object.keys(o).some(function (k) { return o[k]; }); });
-  }
-  function integrantes() { return ler("integrantes", C_INT); }
-  function discos() { return ler("discos", C_DISCO); }
-  $("mais-integrante").addEventListener("click", function () { linha("integrantes", C_INT).querySelector("input").focus(); });
-  $("mais-disco").addEventListener("click", function () { linha("discos", C_DISCO).querySelector("input").focus(); });
-
-  /* ---------- Cores ---------- */
-  $$(".cor").forEach(function (c) {
-    var inp = c.querySelector("input");
-    inp.addEventListener("input", function () { c.classList.add("usada"); salvar(); });
-    c.querySelector(".tirar-cor").addEventListener("click", function () { c.classList.remove("usada"); salvar(); });
-  });
-  function cores() { return $$(".cor.usada input").map(function (i) { return i.value.toUpperCase(); }); }
-
-  /* ---------- Rider (a ficha /rider-tecnico em modo kit) ---------- */
-  var quadro = $("rider-quadro"), riderAberto = false;
-  function riderApi() { try { return quadro.contentWindow && quadro.contentWindow.riderKit; } catch (e) { return null; } }
-  function abrirRider() {
-    if (!riderAberto) {
-      riderAberto = true;
-      var noSite = /(^|\.)7aprodutora\.com\.br$|\.workers\.dev$/.test(location.hostname);
-      quadro.src = (noSite ? "/rider-tecnico" : "rider-tecnico.html") + "?kit=1";
-      quadro.addEventListener("load", function () { $("rider-carregando").hidden = true; passarParaRider(); });
-    } else passarParaRider();
-  }
-  function passarParaRider() {
-    var r = riderApi(); if (!r) return;
-    r.preencher({ nome: val("f-nome"), cidade: val("f-cidade"), responsavel: val("f-responsavel"), whats: val("f-whats"), email: val("f-email"), tecNome: val("f-tec-nome"), tecWhats: val("f-tec-whats"), integrantes: integrantes() });
-  }
-  window.addEventListener("message", function (e) {
-    if (e.origin !== location.origin && location.protocol !== "file:") return;
-    if (e.data && e.data.tipo === "rider-kit" && e.data.altura) quadro.style.height = Math.max(600, e.data.altura) + "px";
-  });
-
-  /* ---------- Leitura das respostas ---------- */
-  function val(id) { var el = $(id); return el ? el.value.trim() : ""; }
-  function regua(inp) {
-    var lados = inp.dataset.regua.split("|"), n = +inp.value;
-    return n === 3 ? "meio a meio entre " + lados[0].toLowerCase() + " e " + lados[1].toLowerCase() : (n === 1 || n === 5 ? "bem " : "mais ") + (n < 3 ? lados[0] : lados[1]).toLowerCase();
-  }
-  function respostasDe(et) {
-    var r = [];
-    $$("input, select, textarea, fieldset", et).forEach(function (el) {
-      if (el.closest("[hidden]") || el.closest(".linha") || el.closest(".cor") || el.closest(".reguas") || el.id === "f-aceite") return;
-      if (el.tagName === "FIELDSET") {
-        var m = $$("input:checked", el).map(function (i) { return i.value; });
-        r.push({ k: el.querySelector("[data-k]").dataset.k, rotulo: rotulo(el), valor: m.join(", ") });
-        return;
-      }
-      if (el.closest("fieldset") || !el.id) return;
-      r.push({ k: el.name, rotulo: rotulo(el), valor: el.value.trim() });
-    });
-    return r;
-  }
-
-  function montarTexto() {
-    var p = pedido() || { nome: "-", preco: 0, prazo: 0, lista: [] };
-    var L = ["♦ KIT DE ESTRADA · 7A PRODUTORA", "", "Pedido: " + p.nome + " · " + reais(p.preco) + " · " + p.prazo + " dias úteis"];
-    ativas().forEach(function (et) {
-      var nome = et.dataset.etapa;
-      if (nome === "rider") {
-        L.push("", "RIDER E MAPA DE PALCO");
-        respostasDe(et).forEach(function (x) { if (x.valor) L.push(x.rotulo + ": " + x.valor); });
-        var r = riderApi();
-        if (r) L.push(r.texto().split("\n").filter(function (l) { return !/^(♦ RIDER|Banda:|O mapa de palco vai)/.test(l); }).join("\n").replace(/\nCONTATO[\s\S]*$/, "").trim());
-        else L.push("(mapa de palco não aberto)");
-        return;
-      }
-      L.push("", et.dataset.nome.toUpperCase());
-      if (nome === "formacao") integrantes().forEach(function (i) { L.push("- " + (i.nome || "?") + (i.funcao ? ": " + i.funcao : "") + (i.mao === "Canhoto" ? " (canhoto)" : "") + (i.insta ? " · " + i.insta : "")); });
-      respostasDe(et).forEach(function (x) { if (x.valor) L.push(x.rotulo + ": " + x.valor); });
-      if (nome === "historia" && discos().length) { L.push("Discografia:"); discos().forEach(function (d) { L.push("- " + [d.titulo, d.tipo, d.ano, d.link].filter(Boolean).join(" · ")); }); }
-      if (nome === "identidade") {
-        L.push("Jeito da banda: " + $$("#reguas input").map(regua).join("; "));
-        if (cores().length) L.push("Cores escolhidas: " + cores().join(", "));
-      }
-      if (nome === "envio" && $("f-aceite").checked) L.push("Autorizou o uso de nome, fotos e músicas para montar as peças.");
-    });
-    L.push("", "Fotos e logo vão logo depois, nesta conversa, como documento.");
-    return L.join("\n");
-  }
-  function montarJson() {
-    var p = pedido();
-    var o = { origem: "7aprodutora.com.br/kit-de-estrada", versao: 1, enviadoEm: new Date().toISOString(), pedido: p && { servicos: p.lista.map(function (k) { return SERV[k].nome; }), nome: p.nome, valor: p.preco, prazoDiasUteis: p.prazo }, partes: {} };
-    ativas().forEach(function (et) {
-      var d = {}; respostasDe(et).forEach(function (x) { d[x.k] = x.valor; });
-      if (et.dataset.etapa === "formacao") d.integrantes = integrantes();
-      if (et.dataset.etapa === "historia") d.discografia = discos();
-      if (et.dataset.etapa === "identidade") { d.cores = cores(); d.reguas = $$("#reguas input").map(function (i) { return { eixo: i.dataset.regua.replace("|", " x "), valor: +i.value, leitura: regua(i) }; }); }
-      if (et.dataset.etapa === "rider") { var r = riderApi(); d.riderTexto = r ? r.texto() : ""; }
-      if (et.dataset.etapa === "envio") d.autorizaUso = $("f-aceite").checked;
-      o.partes[et.dataset.etapa] = d;
-    });
-    o.paraCadaPeca = { identidade: ["quem", "historia", "identidade", "fotos"], pressKit: ["quem", "formacao", "historia", "fotos", "logistica"], rider: ["quem", "formacao", "rider", "logistica"] };
-    return o;
-  }
-  function nomeBase() { return (val("f-nome") || "banda").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "banda"; }
-
-  /* ---------- Envio ---------- */
-  function faltaGeral() {
-    var f = [];
-    ativas().forEach(function (et) { if (et.dataset.etapa !== "envio" && faltando(et).length) f.push(et.dataset.nome.toLowerCase()); });
-    return f;
-  }
-  function atualizarEnvio() {
-    var p = pedido();
-    $("resumo-pedido").textContent = p ? p.nome + " · " + reais(p.preco) + " · " + p.prazo + " dias úteis" : "Escolha as peças lá em cima";
-    var f = faltaGeral();
-    $("resumo-falta").textContent = f.length ? "Ainda falta completar: " + f.join(", ") + ". Dá para mandar assim e completar na conversa." : "Tudo preenchido. Agora é só mandar.";
-    var texto = montarTexto();
-    $("enviar-whats").href = "https://wa.me/" + NUMERO + "?text=" + encodeURIComponent(texto);
-    $("enviar-email").href = "mailto:" + EMAIL + "?subject=" + encodeURIComponent("Kit de Estrada: " + (val("f-nome") || "banda")) + "&body=" + encodeURIComponent(texto);
-  }
-  $("enviar-whats").addEventListener("click", function (e) {
-    atualizarEnvio();
-    if (!conferir(true)) { e.preventDefault(); return; }
-    if (!pedido()) { e.preventDefault(); $("falta").textContent = "Escolha as peças do pedido lá em cima."; return; }
-  });
-  $("copiar").addEventListener("click", function () {
-    var t = montarTexto();
-    (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { $("aviso-envio").textContent = "Texto copiado. Cole na conversa com a 7A."; }, function () { $("aviso-envio").textContent = "Não deu para copiar neste aparelho. Use o botão do WhatsApp."; });
-  });
-  function baixar(blob, nome) {
-    var a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = nome;
-    document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
-  }
-  $("baixar-json").addEventListener("click", function () {
-    baixar(new Blob([JSON.stringify(montarJson(), null, 2)], { type: "application/json" }), "kit-de-estrada-" + nomeBase() + ".json");
-    $("aviso-envio").textContent = "Arquivo salvo. Mande junto na conversa ou por e-mail.";
-  });
-  $("enviar-mapa").addEventListener("click", function () {
-    var r = riderApi();
-    if (!r) { $("aviso-envio").textContent = "Abra a parte do rider e monte o mapa antes."; return; }
-    r.mapa(function (blob) {
-      if (!blob) { $("aviso-envio").textContent = "O palco está vazio. Monte o mapa antes de mandar a imagem."; return; }
-      var arq = new File([blob], r.nomeArquivo(), { type: "image/png" });
-      if (navigator.canShare && navigator.canShare({ files: [arq] })) navigator.share({ files: [arq], title: "Mapa de palco" }).catch(function () {});
-      else { baixar(blob, r.nomeArquivo()); $("aviso-envio").textContent = "Imagem do mapa salva. Anexe na conversa com a 7A depois do texto."; }
-    });
-  });
-
-  /* ---------- Rascunho no aparelho ---------- */
-  var tSalvar;
-  function salvar() {
-    clearTimeout(tSalvar);
-    tSalvar = setTimeout(function () {
-      var d = { serv: escolhidos(), atual: atual, campos: {}, marcados: [], reguas: {}, cores: {} };
-      $$("input[id^='f-'], select[id^='f-'], textarea[id^='f-']", form).forEach(function (el) { if (el.type !== "checkbox") d.campos[el.id] = el.value; });
-      d.aceite = $("f-aceite").checked;
-      $$("fieldset input:checked", form).forEach(function (i) { d.marcados.push(i.name + "=" + i.value); });
-      $$("#reguas input").forEach(function (i) { d.reguas[i.dataset.regua] = i.value; });
-      $$(".cor.usada").forEach(function (c) { d.cores[c.dataset.cor] = c.querySelector("input").value; });
-      d.int = integrantes(); d.discos = discos();
-      try { localStorage.setItem(CHAVE, JSON.stringify(d)); $("salvo").textContent = "Ficha salva neste aparelho."; } catch (e) {}
-    }, 400);
-  }
-  function carregar() {
-    var d = null;
-    try { d = JSON.parse(localStorage.getItem(CHAVE) || "null"); } catch (e) {}
-    var q = (location.search.match(/[?&]servico=([a-z,]+)/) || [])[1];
-    if (q) { var m = { identidade: "id", presskit: "pk", "press-kit": "pk", rider: "rd", kit: "id,pk,rd" }; q = q.split(",").map(function (s) { return m[s] || s; }).join(",").split(","); }
-    if (d) {
-      Object.keys(d.campos || {}).forEach(function (k) { if ($(k)) $(k).value = d.campos[k]; });
-      $("f-aceite").checked = !!d.aceite;
-      (d.marcados || []).forEach(function (s) { var i = s.indexOf("="), el = form.querySelector('fieldset input[name="' + s.slice(0, i) + '"][value="' + s.slice(i + 1).replace(/"/g, '\\"') + '"]'); if (el) el.checked = true; });
-      $$("#reguas input").forEach(function (i) { if (d.reguas && d.reguas[i.dataset.regua]) i.value = d.reguas[i.dataset.regua]; });
-      Object.keys(d.cores || {}).forEach(function (k) { var c = form.querySelector('.cor[data-cor="' + k + '"]'); if (c) { c.querySelector("input").value = d.cores[k]; c.classList.add("usada"); } });
-      (d.int || []).forEach(function (i) { linha("integrantes", C_INT, i); });
-      (d.discos || []).forEach(function (x) { linha("discos", C_DISCO, x); });
-      (q || d.serv || []).forEach(function (k) { var c = form.ownerDocument.querySelector('[data-serv="' + k + '"]'); if (c) c.checked = true; });
-      atual = Math.max(0, d.atual || 0);
-    } else if (q) q.forEach(function (k) { var c = document.querySelector('[data-serv="' + k + '"]'); if (c) c.checked = true; });
-    while ($("integrantes").children.length < 4) linha("integrantes", C_INT);
-    if (!$("discos").children.length) linha("discos", C_DISCO);
-    $("c-historia").textContent = $("f-historia").value.length + " de 900";
-  }
-
-  /* ---------- Máscaras e contador ---------- */
-  function mascaraTel(e) {
-    var d = e.target.value.replace(/\D/g, "").slice(0, 11);
-    e.target.value = d.length > 10 ? "(" + d.slice(0, 2) + ") " + d.slice(2, 7) + "-" + d.slice(7) : d.length > 6 ? "(" + d.slice(0, 2) + ") " + d.slice(2, 6) + "-" + d.slice(6) : d.length > 2 ? "(" + d.slice(0, 2) + ") " + d.slice(2) : d;
-  }
-  $("f-whats").addEventListener("input", mascaraTel);
-  $("f-tec-whats").addEventListener("input", mascaraTel);
-  $("f-historia").addEventListener("input", function () { $("c-historia").textContent = $("f-historia").value.length + " de 900"; });
-  form.addEventListener("input", salvar);
-  form.addEventListener("change", salvar);
-  form.addEventListener("submit", function (e) { e.preventDefault(); });
-
-  /* ---------- Vídeo e entradas ---------- */
   var vid = $("video-abertura");
   if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { vid.removeAttribute("autoplay"); vid.pause(); }
   else if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { var p = vid.play(); if (p && p.catch) p.catch(function () {}); } else vid.pause(); }); }).observe(vid);
@@ -1087,9 +499,7 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
     $$("[data-revela]").forEach(function (el) { io.observe(el); });
   } else $$("[data-revela]").forEach(function (el) { el.classList.add("visto"); });
 
-  carregar();
-  mostrarEscolha();
-  $("conta").classList.remove("mudou");
+  mostrar(false);
 })();
 </script>
 </body>
