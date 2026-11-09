@@ -10,7 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&display=swap">
-<script>document.documentElement.classList.add('js');</script>
+<script>document.documentElement.classList.add('js'); if (/[?&]kit=1\b/.test(location.search)) document.documentElement.classList.add('kit');</script>
 <style>
 /* Ficha de rider técnico: mesma língua da ficha de press kit (campos chapados, Anton grande).
    O palco é a peça central: a banda monta o mapa tocando nas peças, e os canais saem do mapa. */
@@ -315,6 +315,13 @@ a { color: inherit; }
   #impressao dd { margin: 0; font-weight: 600; white-space: pre-wrap; }
   #impressao .pe { margin-top: 8mm; font-size: 9pt; color: #5E5852; }
 }
+
+/* ---------- Dentro do Kit de Estrada (/kit-de-estrada): só o miolo técnico ---------- */
+.kit, .kit body { background: var(--preto); }
+.kit .topo-site, .kit .abertura, .kit #b-banda, .kit #b-contato, .kit .enviar, .kit .fim { display: none !important; }
+.kit .corpo { padding: 8px 0 24px; }
+.kit .paleta { top: 16px; }
+.kit [data-revela] { opacity: 1 !important; transform: none !important; }
 </style>
 </head>
 <body>
@@ -538,7 +545,7 @@ a { color: inherit; }
 
 <script>
 (function () {
-  var NUMERO = "5531992233295", EMAIL = "contato@7aprodutora.com.br", CHAVE = "7a-ficha-rider";
+  var NUMERO = "5531992233295", EMAIL = "contato@7aprodutora.com.br", CHAVE = document.documentElement.classList.contains("kit") ? "7a-kit-rider" : "7a-ficha-rider";
   var COLS = 10, ROWS = 6;
   var $ = function (id) { return document.getElementById(id); };
   var form = $("ficha");
@@ -1098,6 +1105,30 @@ a { color: inherit; }
     document.querySelectorAll("[data-revela]").forEach(function (el) { io.observe(el); });
   } else {
     document.querySelectorAll("[data-revela]").forEach(function (el) { el.classList.add("visto"); });
+  }
+
+  /* ---------- Ponte com o Kit de Estrada (mesmo site, página-mãe lê daqui) ---------- */
+  if (document.documentElement.classList.contains("kit")) {
+    window.riderKit = {
+      texto: montarTexto,
+      mapa: function (fn) { if (!itens.length) { fn(null); return; } comImagem(fn); },
+      nomeArquivo: nomeArquivo,
+      falta: function () { return partes.filter(function (p) { return p.id !== "b-banda" && p.id !== "b-contato" && !p.ok(); }).map(function (p) { return p.nome; }); },
+      preencher: function (d) {
+        [["f-nome", d.nome], ["f-cidade", d.cidade], ["f-responsavel", d.responsavel], ["f-whats", d.whats], ["f-email", d.email], ["f-tec-nome", d.tecNome], ["f-tec-whats", d.tecWhats]].forEach(function (p) { if ($(p[0]) && p[1] != null) $(p[0]).value = p[1]; });
+        var atuais = integrantes().filter(function (i) { return i.nome; });
+        if (!atuais.length && d.integrantes && d.integrantes.length) {
+          lista.innerHTML = "";
+          d.integrantes.forEach(function (i) { novoIntegrante(i.nome, i.funcao, ""); });
+          while (lista.children.length < 2) novoIntegrante();
+        }
+        atualizar();
+      }
+    };
+    var avisar = function () { try { parent.postMessage({ tipo: "rider-kit", altura: document.documentElement.scrollHeight }, location.origin); } catch (e) {} };
+    if ("ResizeObserver" in window) new ResizeObserver(avisar).observe(document.body);
+    form.addEventListener("input", avisar); form.addEventListener("change", avisar); form.addEventListener("click", function () { setTimeout(avisar, 30); });
+    window.addEventListener("load", avisar);
   }
 
   montarPaleta();
