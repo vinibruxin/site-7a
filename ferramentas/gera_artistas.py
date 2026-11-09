@@ -196,6 +196,7 @@ if (!location.hash) {{ window.addEventListener("DOMContentLoaded", function () {
     <a href="index.html#agenda">Agenda</a>
     <a href="index.html#formatos">Shows</a>
     <a href="index.html#pedir">Contratar</a>
+    <a href="kit-de-estrada.html">Kit de Estrada</a>
   </nav>
   <a class="btn btn-barra" href="{pedir}">Pedir data</a>
   <button class="abre-menu" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
