@@ -909,8 +909,8 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   function abrirRider() {
     if (!riderAberto) {
       riderAberto = true;
-      var local = location.protocol === "file:" || /^(localhost|127\.|0\.0\.0\.0)/.test(location.hostname);
-      quadro.src = (local ? "rider-tecnico.html" : "/rider-tecnico") + "?kit=1";
+      var noSite = /(^|\.)7aprodutora\.com\.br$|\.workers\.dev$/.test(location.hostname);
+      quadro.src = (noSite ? "/rider-tecnico" : "rider-tecnico.html") + "?kit=1";
       quadro.addEventListener("load", function () { $("rider-carregando").hidden = true; passarParaRider(); });
     } else passarParaRider();
   }
