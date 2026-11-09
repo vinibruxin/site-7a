@@ -93,8 +93,44 @@ a { color: inherit; }
 .exemplo p { margin: 0; font-size: var(--t-lead); font-weight: 600; line-height: 1.45; max-width: 22em; }
 .exemplo p b { display: block; font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; margin-bottom: 10px; }
 .paginas { display: grid; grid-template-columns: 1.35fr 1fr 1fr 1fr; gap: 12px; align-items: end; }
-.paginas img { width: 100%; height: auto; aspect-ratio: 210 / 297; object-fit: cover; transition: transform .5s var(--ease); }
-.paginas img:hover { transform: translateY(-6px); }
+.paginas button { display: block; padding: 0; border: 0; background: none; cursor: zoom-in; transition: transform .5s var(--ease); }
+.paginas button:hover { transform: translateY(-6px); }
+.paginas button:focus-visible { outline: 3px solid var(--offwhite); outline-offset: 4px; }
+.paginas img { display: block; width: 100%; height: auto; aspect-ratio: 210 / 297; object-fit: cover; }
+
+/* ---------- Página ampliada ---------- */
+.zoom { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(10, 10, 10, .94); color: var(--offwhite); }
+.zoom[open] { display: grid; grid-template-columns: 72px minmax(0, 1fr) 72px; grid-template-rows: auto minmax(0, 1fr) auto; }
+.zoom::backdrop { background: rgba(10, 10, 10, .6); }
+.zoom .zoom-topo { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 20px; }
+.zoom .zoom-topo p { margin: 0; font-weight: 600; font-size: 15px; }
+.zoom .zoom-topo p span { font-family: var(--f-mono); color: var(--cinza); }
+.zoom figure { grid-column: 2; grid-row: 2; margin: 0; display: grid; place-items: center; min-height: 0; padding-bottom: 20px; }
+.zoom figure img { max-width: 100%; max-height: calc(100dvh - 110px); width: auto; height: auto; object-fit: contain; box-shadow: 0 20px 60px rgba(0, 0, 0, .5); }
+.zoom .seta { grid-row: 2; align-self: center; justify-self: center; width: 52px; height: 52px; display: grid; place-items: center; border: 2px solid var(--offwhite); background: none; color: var(--offwhite); font: 400 30px/1 var(--f-display); cursor: pointer; transition: background-color .2s, color .2s; }
+.zoom .seta:hover { background: var(--offwhite); color: var(--preto); }
+.zoom #zoom-ant { grid-column: 1; }
+.zoom #zoom-prox { grid-column: 3; }
+
+/* ---------- Carimbo "Recomendado" ---------- */
+.carimbo { position: absolute; z-index: 2; display: grid; justify-items: center; gap: 4px; padding: 12px 16px 10px; background: var(--vermelho); color: var(--offwhite); border: 3px solid currentColor; box-shadow: inset 0 0 0 3px var(--vermelho), inset 0 0 0 5px var(--offwhite); transform: rotate(-9deg); pointer-events: none; }
+.carimbo b { font: 400 26px/1 var(--f-display); text-transform: uppercase; letter-spacing: .08em; }
+.carimbo i { font-style: normal; font-weight: 700; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.js .carimbo.bate { animation: carimbar .5s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes carimbar { from { opacity: 0; transform: rotate(-2deg) scale(1.7); } to { opacity: 1; transform: rotate(-9deg) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .js .carimbo.bate { animation: none; } }
+
+/* ---------- Vantagens: lista grande, como "O que a 7A faz" na home ---------- */
+.vantagens { padding-block: clamp(96px, 14vh, 168px) 0; display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px 56px; align-items: start; }
+.vantagens > header { position: sticky; top: 96px; display: grid; gap: 18px; }
+.vantagens h2 { font-size: var(--t-titulo); }
+.vantagens > header p { margin: 0; font-size: var(--t-lead); line-height: 1.5; max-width: 22em; }
+.vantagens > header .btn { justify-self: start; }
+.lista-vale { list-style: none; margin: 0; padding: 0; display: grid; gap: 56px; }
+.lista-vale li { display: grid; gap: 12px; transition: color .25s; }
+.lista-vale h3 { margin: 0; font: 400 clamp(32px, 3.4vw, 54px)/1.12 var(--f-display); text-transform: uppercase; letter-spacing: -0.01em; }
+.lista-vale p { margin: 0; font-size: var(--t-lead); line-height: 1.5; max-width: 34em; }
+.lista-vale li.preco-musico h3 { color: var(--vermelho); }
 
 /* ---------- Serviços e preços ---------- */
 .servicos { padding-block: clamp(96px, 14vh, 168px) 0; display: grid; gap: 40px; }
@@ -105,14 +141,16 @@ a { color: inherit; }
 
 .kit-completo { position: relative; display: grid; align-content: space-between; gap: 32px; background: var(--vermelho); padding: 40px 36px 36px; cursor: pointer; transition: background-color .2s; }
 .kit-completo:hover { background: #A3101A; }
-.kit-completo .tag { justify-self: start; background: var(--offwhite); color: var(--preto); font-weight: 700; font-size: 15px; padding: 8px 14px; }
-.kit-completo h3 { font: 400 clamp(44px, 4.6vw, 76px)/1.12 var(--f-display); text-transform: uppercase; margin: 18px 0 0; }
+.kit-completo .carimbo { top: -26px; right: 28px; }
+.kit-completo h3 { font: 400 clamp(44px, 4.6vw, 76px)/1.12 var(--f-display); text-transform: uppercase; margin: 28px 0 0; }
 .kit-completo ul { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; font-weight: 600; font-size: 17px; }
 .kit-completo li { display: flex; gap: 12px; align-items: baseline; }
 .kit-completo li::before { content: ""; flex: none; width: 8px; height: 8px; background: var(--offwhite); transform: rotate(45deg) translateY(-2px); }
 .kit-completo .valor { display: grid; gap: 4px; }
 .kit-completo .valor strong { font: 400 clamp(56px, 6vw, 96px)/1 var(--f-display); }
-.kit-completo .valor s { font-weight: 600; font-size: 17px; opacity: .85; }
+.kit-completo .valor .de { margin: 0; font-weight: 600; font-size: 20px; }
+.kit-completo .valor .de s { font: 400 34px/1 var(--f-display); opacity: .75; text-decoration-thickness: 3px; margin-left: 4px; }
+.kit-completo .valor strong small { font: 700 20px/1 var(--f-texto); margin-right: 10px; vertical-align: .9em; }
 .kit-completo .valor span { font-weight: 600; font-size: 17px; }
 .kit-completo .marcar { display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 17px; }
 .kit-completo input { position: absolute; opacity: 0; pointer-events: none; }
@@ -297,7 +335,7 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   .js [data-revela] { opacity: 1; transform: none; transition: none; }
   .js .etapa.ativa > *, .conta.mudou .linha1 { animation: none; }
   .btn:active { transform: none; }
-  .paginas img:hover { transform: none; }
+  .paginas button:hover { transform: none; }
 }
 
 /* ---------- Telas menores ---------- */
@@ -306,6 +344,9 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   .abertura figure { max-width: 520px; }
   .exemplo { grid-template-columns: minmax(0, 1fr); }
   .tabela { grid-template-columns: minmax(0, 1fr); }
+  .vantagens { grid-template-columns: minmax(0, 1fr); }
+  .vantagens > header { position: static; }
+  .lista-vale { gap: 40px; }
   .estilos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .cores { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .cores .celula { grid-column: 1 / -1; }
@@ -326,6 +367,13 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   .exemplo { padding-block: 36px 40px; }
   .paginas { gap: 8px; }
   .kit-completo { padding: 30px 22px 26px; }
+  .kit-completo .carimbo { right: 16px; }
+  .zoom[open] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; }
+  .zoom figure { grid-column: 1 / -1; padding: 0 12px 12px; }
+  .zoom figure img { max-height: calc(100dvh - 190px); }
+  .zoom .seta { grid-row: 3; margin-bottom: 18px; }
+  .zoom #zoom-ant { grid-column: 1; }
+  .zoom #zoom-prox { grid-column: 2; }
   .avulso { grid-template-columns: 28px minmax(0, 1fr); padding: 24px 20px; }
   .avulso .preco { grid-column: 2; }
   .conta { grid-template-columns: minmax(0, 1fr); padding: 24px 20px; }
@@ -373,14 +421,30 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   </section>
 
   <div class="exemplo">
-    <p data-revela><b>Do jeito que a 7A entrega</b>Este é o press kit que a 7A montou para a Ossos do Banquete. O seu sai no mesmo padrão, com a marca da sua banda.</p>
+    <p data-revela><b>Do jeito que a 7A entrega</b>Este é o press kit que a 7A montou para a Ossos do Banquete. Toque numa página para ver de perto. O seu sai no mesmo padrão, com a marca da sua banda.</p>
     <div class="paginas" data-revela style="--d:1">
-      <img src="img/press-kit/ossos-1.jpg" alt="Capa do press kit da Ossos do Banquete" width="794" height="1123" loading="lazy">
-      <img src="img/press-kit/ossos-2.jpg" alt="Página de release" width="794" height="1123" loading="lazy">
-      <img src="img/press-kit/ossos-3.jpg" alt="Página da história da banda" width="794" height="1123" loading="lazy">
-      <img src="img/press-kit/ossos-5.jpg" alt="Página de integrantes e conquistas" width="794" height="1123" loading="lazy">
+      <button type="button" data-zoom="0" aria-label="Ampliar: Capa do press kit da Ossos do Banquete"><img src="img/press-kit/ossos-1.jpg" alt="Capa do press kit da Ossos do Banquete" width="794" height="1123" loading="lazy"></button>
+      <button type="button" data-zoom="1" aria-label="Ampliar: Página de release"><img src="img/press-kit/ossos-2.jpg" alt="Página de release" width="794" height="1123" loading="lazy"></button>
+      <button type="button" data-zoom="2" aria-label="Ampliar: Página da história da banda"><img src="img/press-kit/ossos-3.jpg" alt="Página da história da banda" width="794" height="1123" loading="lazy"></button>
+      <button type="button" data-zoom="3" aria-label="Ampliar: Página de integrantes e conquistas"><img src="img/press-kit/ossos-5.jpg" alt="Página de integrantes e conquistas" width="794" height="1123" loading="lazy"></button>
     </div>
   </div>
+
+  <section class="vantagens margem" id="vantagens" aria-labelledby="t-vantagens">
+    <header data-revela>
+      <h2 class="display" id="t-vantagens">Por que vale a pena</h2>
+      <p>Banda boa existe aos montes. Quem fecha data é quem chega pronta: com cara própria, material na mão e o palco resolvido antes do show.</p>
+      <a class="btn" href="#servicos">Montar o meu kit</a>
+    </header>
+    <ul class="lista-vale">
+      <li data-revela><h3>A casa decide rápido</h3><p>Quem contrata recebe banda toda semana. Um press kit com release, fotos, discos e links num PDF só responde tudo antes da primeira pergunta.</p></li>
+      <li data-revela><h3>Passagem de som sem sufoco</h3><p>Com o rider e o mapa de palco, o técnico da casa chega com os canais montados e os retornos no lugar. Vocês ganham tempo e tocam com o som do ensaio.</p></li>
+      <li data-revela><h3>Uma marca que fica na cabeça</h3><p>Logo, cores e fontes iguais no post, na camiseta, no bumbo e no cartaz. Banda com identidade parece maior e é lembrada depois do show.</p></li>
+      <li data-revela><h3>Feito por quem vende show</h3><p>A 7A usa este mesmo material para fechar as datas do próprio casting. Cada peça é pensada para convencer quem contrata, não só para ficar bonita.</p></li>
+      <li data-revela><h3>Os arquivos são de vocês</h3><p>Vocês recebem tudo em PDF e imagem para mandar, imprimir e postar quantas vezes quiserem.</p></li>
+      <li class="preco-musico" data-revela><h3>Preço de músico</h3><p>Kit completo por R$ 790, R$ 110 a menos que as peças separadas. Metade no Pix para começar, metade na entrega, tudo pronto em 15 dias úteis.</p></li>
+    </ul>
+  </section>
 
   <section class="servicos margem" id="servicos" aria-labelledby="t-servicos">
     <header data-revela>
@@ -391,7 +455,7 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
     <div class="tabela" data-revela style="--d:1">
       <label class="kit-completo" for="s-kit">
         <div>
-          <span class="tag">Recomendado</span>
+          <span class="carimbo" aria-label="Recomendado pela 7A"><b>Recomendado</b><i>pela 7A</i></span>
           <h3>Kit completo</h3>
           <ul>
             <li>Identidade da marca</li>
@@ -399,7 +463,7 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
             <li>Rider técnico e mapa de palco</li>
           </ul>
         </div>
-        <div class="valor"><strong>R$ 790</strong><s>R$ 900 separado</s><span>15 dias úteis</span></div>
+        <div class="valor"><p class="de">de <s>R$ 900</s></p><strong><small>por</small>R$ 790</strong><span>15 dias úteis</span></div>
         <input type="checkbox" id="s-kit">
         <span class="marcar"><span class="caixa" aria-hidden="true"></span>Quero o kit completo</span>
       </label>
@@ -434,6 +498,16 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   </section>
 
 </main>
+
+<dialog class="zoom" id="zoom" aria-label="Press kit da Ossos do Banquete ampliado">
+  <div class="zoom-topo">
+    <p id="zoom-legenda"></p>
+    <button type="button" class="btn btn-claro" id="zoom-fechar">Fechar</button>
+  </div>
+  <button type="button" class="seta" id="zoom-ant" aria-label="Página anterior">&lsaquo;</button>
+  <figure><img id="zoom-img" src="" alt=""></figure>
+  <button type="button" class="seta" id="zoom-prox" aria-label="Próxima página">&rsaquo;</button>
+</dialog>
 
 <footer class="fim margem">
   <img src="img/logo-7a.png" alt="7A Produtora">
@@ -504,6 +578,38 @@ input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform
   } else $$("[data-revela]").forEach(function (el) { el.classList.add("visto"); });
 
   mostrar(false);
+
+  (function () {
+    var dlg = $("zoom"), img = $("zoom-img"), leg = $("zoom-legenda");
+    var bts = $$(".paginas [data-zoom]"), at = 0, x0 = null;
+    if (!dlg || !dlg.showModal) return;
+    function ver(i) {
+      at = (i + bts.length) % bts.length;
+      var o = bts[at].querySelector("img");
+      img.src = o.src; img.alt = o.alt;
+      leg.innerHTML = "";
+      leg.appendChild(document.createTextNode(o.alt + " "));
+      var s = document.createElement("span"); s.textContent = (at + 1) + " de " + bts.length; leg.appendChild(s);
+    }
+    function abrir(i) { ver(i); dlg.showModal(); document.documentElement.style.overflow = "hidden"; }
+    function fechar() { dlg.close(); }
+    dlg.addEventListener("close", function () { document.documentElement.style.overflow = ""; if (bts[at]) bts[at].focus(); });
+    bts.forEach(function (b, i) { b.addEventListener("click", function () { abrir(i); }); });
+    $("zoom-fechar").addEventListener("click", fechar);
+    $("zoom-ant").addEventListener("click", function () { ver(at - 1); });
+    $("zoom-prox").addEventListener("click", function () { ver(at + 1); });
+    dlg.addEventListener("click", function (e) { if (e.target === dlg || e.target.tagName === "FIGURE") fechar(); });
+    dlg.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") ver(at - 1); else if (e.key === "ArrowRight") ver(at + 1); });
+    dlg.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    dlg.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) ver(at + (dx < 0 ? 1 : -1)); });
+  })();
+
+  (function () {
+    var cs = document.querySelectorAll(".carimbo");
+    if (!("IntersectionObserver" in window)) return;
+    var ob = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("bate"); ob.unobserve(en.target); } }); }, { threshold: .6 });
+    Array.prototype.forEach.call(cs, function (c) { ob.observe(c); });
+  })();
 })();
 </script>
 </body>
