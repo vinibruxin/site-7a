@@ -1858,8 +1858,8 @@ a.item:active { transform: translateX(3px) scale(.99); }
   function dadosAviso(s) {
     const k = contas(s);
     const [a, m, d] = (s.data || "").split("-").map(Number);
-    // show particular: no lugar do nome do local vai "Particular", com o endereço completo e as observações
-    const enderecoTxt = s.particular ? ([[s.endereco, s.numero].filter(Boolean).join(", ") + (s.complemento ? " (" + s.complemento + ")" : ""), s.bairro, [s.cidade, s.uf].filter(Boolean).join(" - "), s.referencia ? "Obs.: " + s.referencia : ""].filter(Boolean).join(" · ") || "Endereço a confirmar") : "";
+    // show particular: no lugar do nome do local vai "Particular", com o endereço completo
+    const enderecoTxt = s.particular ? ([[s.endereco, s.numero].filter(Boolean).join(", ") + (s.complemento ? " (" + s.complemento + ")" : ""), s.bairro, [s.cidade, s.uf].filter(Boolean).join(" - ")].filter(Boolean).join(" · ") || "Endereço a confirmar") : "";
     return {
       nome: nomeArtista(s),
       data: s.data ? `${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}/${a}` : "Data a definir",
