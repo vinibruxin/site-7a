@@ -87,3 +87,29 @@ describe("datas", () => {
     expect(inicioDoDia("2026-10-28")).toBe("2026-10-28T03:00:00.000Z");
   });
 });
+
+describe("duração do show", async () => {
+  const { duracaoTexto } = await import("../src/gestao.js");
+  it("calcula pelo início e fim, inclusive passando da meia-noite", () => {
+    expect(duracaoTexto("17:00", "20:00")).toBe("3 horas");
+    expect(duracaoTexto("21:00", "22:00")).toBe("1 hora");
+    expect(duracaoTexto("20:30", "23:00")).toBe("2h30");
+    expect(duracaoTexto("23:00", "01:30")).toBe("2h30");
+    expect(duracaoTexto("22:00", "22:45")).toBe("45 min");
+    expect(duracaoTexto("20:00", "")).toBe("");
+    expect(duracaoTexto("20:00", "20:00")).toBe("");
+  });
+});
+
+describe("cache dos arquivos do site", () => {
+  it("guarda fotos e vídeos por 1 dia e não mexe em páginas nem no /admin", async () => {
+    const { comCache } = await import("../src/worker.js");
+    const r = () => new Response("x", { status: 200, headers: { "cache-control": "public, max-age=0, must-revalidate" } });
+    expect(comCache(r(), "/img/ossos.jpg").headers.get("cache-control")).toBe("public, max-age=86400, stale-while-revalidate=604800");
+    expect(comCache(r(), "/img/ossos-ao-vivo.mp4").headers.get("cache-control")).toContain("max-age=86400");
+    expect(comCache(r(), "/kit-de-estrada").headers.get("cache-control")).toBe("public, max-age=0, must-revalidate");
+    expect(comCache(r(), "/admin/app.js").headers.get("cache-control")).toBe("public, max-age=0, must-revalidate");
+    const parcial = new Response("x", { status: 206, headers: { "cache-control": "no-cache" } });
+    expect(comCache(parcial, "/midia/a.mp4").headers.get("cache-control")).toBe("no-cache");
+  });
+});

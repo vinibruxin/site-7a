@@ -1,9 +1,12 @@
 // Site da 7A Produtora: serve os arquivos de public/ e encaixa nas páginas o conteúdo editado no /admin.
 // O conteúdo editável (agenda, textos e formação dos artistas) fica no KV CONTEUDO, chave "conteudo".
 // Sem nada salvo no KV, o site mostra o que está em public/ (gerado por ferramentas/gera_artistas.py).
-// O sistema de gestão (/admin/gestao.html) fica em src/gestao.js, com os dados no D1 DB.
+// O sistema de gestão (/admin/, arquivo public/admin/index.html) fica em src/gestao.js, com os dados no D1 DB.
 
-import { gestao, pedidoDoSite, propostaPublica, showsPublicos } from "./gestao.js";
+import { CASTING, gestao, pedidoDoSite, propostaPublica, showsPublicos } from "./gestao.js";
+import { agenteAutorizado, motivoAgente, rotasAgente } from "./agente.js";
+import { reciboPublico } from "./documentos.js";
+import { prepararBanco } from "./banco.js";
 
 const CHAVE = "conteudo";
 const SESSAO_DIAS = 7;
@@ -25,9 +28,13 @@ export default {
       }
     }
 
-    // proposta enviada ao contratante: a página é fixa e busca os dados pelo token do endereço
-    if (/^\/proposta\/[a-f0-9]{24}$/.test(p)) {
-      const r = await env.ASSETS.fetch(new Request(new URL("/proposta", req.url)));
+    // a Gestão virou a página principal do /admin; o endereço antigo continua valendo (o navegador mantém o #seção)
+    if (p === "/admin/gestao" || p === "/admin/gestao.html") return Response.redirect(new URL("/admin/" + url.search, req.url).toString(), 301);
+
+    // recibo e proposta: a página é fixa e busca os dados pelo token do endereço
+    const fixa = p.match(/^\/(proposta|recibo)\/[a-f0-9]{24}$/);
+    if (fixa) {
+      const r = await env.ASSETS.fetch(new Request(new URL("/" + fixa[1], req.url)));
       const h = new Headers(r.headers);
       h.set("x-robots-tag", "noindex");
       h.set("cache-control", "no-cache");
@@ -36,12 +43,13 @@ export default {
 
     const resp = await env.ASSETS.fetch(req);
     const tipo = resp.headers.get("content-type") || "";
-    if (!tipo.includes("text/html") || p.startsWith("/admin")) return resp;
+    if (!tipo.includes("text/html") || p.startsWith("/admin")) return comCache(resp, p);
 
+    // conteúdo do /admin (KV) e shows da gestão (D1) são buscados ao mesmo tempo, não um depois do outro
+    const [salvo, doSistema] = await Promise.all([lerConteudo(env), showsPublicos(env, hojeSP()).catch(() => [])]);
     // antes do primeiro salvar no /admin vale o conteúdo padrão (dados/padrao.json)
-    let conteudo = { ...((await lerConteudo(env)) || (await conteudoPadrao(env, req))) };
+    let conteudo = { ...(salvo || (await conteudoPadrao(env, req))) };
     // shows confirmados no sistema de gestão entram na agenda do site junto com os da aba Agenda
-    const doSistema = await showsPublicos(env, hojeSP()).catch(() => []);
     if (doSistema.length) conteudo.agenda = [...(conteudo.agenda || []), ...doSistema];
     const slug = p === "/" || p === "/index.html" || p === "/index" ? "" : p.replace(/^\//, "").replace(/\.html$/, "");
     const r = slug ? reescreverArtista(resp, conteudo, slug) : reescreverInicio(resp, conteudo);
@@ -51,10 +59,28 @@ export default {
   },
 };
 
+/* ---------------- cache dos arquivos ---------------- */
+
+// fotos, logos, vídeos e fontes ficam guardados no navegador por 1 dia (antes o navegador conferia cada um a cada visita);
+// trocar uma imagem com o mesmo nome aparece para quem já visitou em até 1 dia
+const ESTATICO = /\.(jpe?g|png|webp|gif|svg|ico|mp4|mp3|webm|woff2?|ttf|css|js)$/i;
+export function comCache(resp, p) {
+  if (resp.status !== 200 || p.startsWith("/admin") || !ESTATICO.test(p)) return resp;
+  const h = new Headers(resp.headers);
+  h.set("cache-control", "public, max-age=86400, stale-while-revalidate=604800");
+  return new Response(resp.body, { status: resp.status, headers: h });
+}
+
 /* ---------------- conteúdo ---------------- */
 
 async function lerConteudo(env) {
   const salvo = await env.CONTEUDO.get(CHAVE, "json");
+  // troca única pedida em 28/10/2026: a Ossos deixou de ser "punk rock autoral" também no texto salvo pelo /admin
+  const ossos = salvo?.artistas?.["ossos-do-banquete"];
+  if (ossos?.resumo?.some((p) => /punk rock autoral/i.test(p))) {
+    ossos.resumo = ossos.resumo.map((p) => p.replace(/punk rock autoral/gi, "rock clássico e autoral"));
+    await env.CONTEUDO.put(CHAVE, JSON.stringify(salvo));
+  }
   return salvo || null;
 }
 
@@ -99,11 +125,34 @@ function itemAgenda(d, conteudo, mostrarArtista) {
       : `<span class="quem">${esc(nome)}</span>`
     : "";
   const onde = [d.local, d.cidade].filter(Boolean).map(esc).join(", ");
-  return `<li class="data-show">
+  const carta = mostrarArtista ? miniCarta(d.artista, nome) : "";
+  // artista de fora do casting: carta simples, selo "Convidado 7A" e, sem ingresso, "Pedir data" pelo WhatsApp da 7A (nunca o do artista)
+  const convidado = mostrarArtista && nome && !CASTING[d.artista];
+  const pedir = convidado && !ingresso
+    ? `<a class="ingresso" href="https://wa.me/5531992233295?text=${encodeURIComponent(`Olá, 7A! Quero ${nome} no meu evento.`)}" target="_blank" rel="noopener">Pedir data</a>`
+    : "";
+  return `<li class="data-show${carta ? " com-carta" : ""}">
+        ${carta}
         <p class="quando"><span class="dia">${String(dia).padStart(2, "0")}</span><span class="mes">${MESES[m - 1]}</span></p>
-        <div class="o-que">${quem}${d.evento ? `<span class="evento">${esc(d.evento)}</span>` : ""}<span class="onde">${onde}</span><span class="hora">${esc(semana)}${d.hora ? ", " + esc(d.hora) : ""}</span></div>
-        ${ingresso ? `<a class="ingresso" href="${esc(ingresso)}" target="_blank" rel="noopener">Ingressos</a>` : ""}
+        <div class="o-que">${quem}${convidado ? '<span class="selo-convidado">Convidado 7A</span>' : ""}${d.evento ? `<span class="evento">${esc(d.evento)}</span>` : ""}<span class="onde">${onde}</span><span class="hora">${esc(semana)}${d.hora ? ", " + esc(d.hora) : ""}</span></div>
+        ${ingresso ? `<a class="ingresso" href="${esc(ingresso)}" target="_blank" rel="noopener">Ingressos</a>` : pedir}
       </li>`;
+}
+
+// miniatura da carta do casting: foto na carta toda (5:7), filete ouro e o índice 7A com naipe nos dois cantos, como baralho
+// fotos com o canto de cima claro: ali o índice 7A fica em preto para ser lido
+const TOPO_CLARO = new Set(["ordem-mor", "aenima", "dj-ivan-lennon"]);
+
+function miniCarta(slug, nome) {
+  const k = CASTING[slug];
+  const arte = k
+    ? `<img src="${esc(k.foto)}" alt="" loading="lazy" style="object-position:${esc(k.foco)}">`
+    : `<span class="inicial">${esc((nome || "7A").trim().charAt(0))}</span>`;
+  const tag = k ? "a" : "span";
+  const extra = k ? ` href="${esc(slug)}.html" tabindex="-1"` : "";
+  // o índice 7A nos cantos e o filete ouro são do casting; o convidado ganha só a carta simples com a inicial
+  if (!k) return `<span class="mini-carta convidado" aria-hidden="true"><span class="arte">${arte}</span></span>`;
+  return `<${tag} class="mini-carta${TOPO_CLARO.has(slug) ? " clara" : ""}"${extra} aria-hidden="true"><span class="arte">${arte}</span><span class="ind">7A<i></i></span><span class="ind inf">7A<i></i></span></${tag}>`;
 }
 
 function reescreverInicio(resp, conteudo) {
@@ -206,10 +255,21 @@ function itemMidia(m, reserva) {
   capa = capa || reserva;
   const acao = tipo === "spotify" ? "Ouvir no Spotify" : `Ver no ${NOMES[tipo]}`;
   const titulo = m.titulo || (tipo === "spotify" ? "Música" : "Vídeo");
-  const fig = tipo === "spotify" ? "faixa-spotify" : "faixa-yt";
-  const quadro = tipo === "spotify" ? "capa-link" : "capa-link quadro";
-  return `<figure class="${fig}" data-revela>
-          <a class="${quadro}" href="${esc(m.url)}" target="_blank" rel="noopener" aria-label="${esc(acao)}: ${esc(titulo)}"><img src="${esc(capa)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(reserva)}'"><span class="play" aria-hidden="true"></span></a>
+  if (tipo === "youtube") {
+    // toca aqui na página (o script da página troca a capa pelo player), com tela cheia e link para o YouTube
+    return `<figure class="faixa-video" data-revela>
+          <div class="tela" data-tela><button type="button" class="capa-link" data-yt="${esc(idYoutube(m.url))}" aria-label="Tocar ${esc(titulo)} aqui no site"><img src="${esc(capa)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(reserva)}'"><span class="play" aria-hidden="true"></span></button></div>
+          <figcaption><span class="titulo">${esc(titulo)}</span><span class="rotulo">YouTube</span><span class="acoes"><button type="button" class="link" data-ampliar>Tela cheia</button><a class="link" href="${esc(m.url)}" target="_blank" rel="noopener">Abrir no YouTube</a></span></figcaption>
+        </figure>`;
+  }
+  if (tipo === "spotify") {
+    return `<figure class="faixa-spotify" data-revela>
+          <a class="capa-link" href="${esc(m.url)}" target="_blank" rel="noopener" aria-label="${esc(acao)}: ${esc(titulo)}"><img src="${esc(capa)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(reserva)}'"><span class="play" aria-hidden="true"></span></a>
+          <figcaption><span class="titulo">${esc(titulo)}</span><span class="rotulo">Spotify</span><a class="link" href="${esc(m.url)}" target="_blank" rel="noopener">${esc(acao)}</a></figcaption>
+        </figure>`;
+  }
+  return `<figure class="faixa-video" data-revela>
+          <div class="tela"><a class="capa-link" href="${esc(m.url)}" target="_blank" rel="noopener" aria-label="${esc(acao)}: ${esc(titulo)}"><img src="${esc(capa)}" alt="" loading="lazy" onerror="this.onerror=null;this.src='${esc(reserva)}'"><span class="play" aria-hidden="true"></span></a></div>
           <figcaption><span class="titulo">${esc(titulo)}</span><span class="rotulo">${esc(NOMES[tipo])}</span><a class="link" href="${esc(m.url)}" target="_blank" rel="noopener">${esc(acao)}</a></figcaption>
         </figure>`;
 }
@@ -229,16 +289,32 @@ async function api(req, env, url) {
   if (rota === "entrar" && metodo === "POST") return entrar(req, env);
   if (rota === "pedido" && metodo === "POST") return pedidoDoSite(req, env);
   if (rota.startsWith("proposta/") && metodo === "GET") return propostaPublica(req, env, rota.slice("proposta/".length));
+  if (rota.startsWith("recibo/") && metodo === "GET") {
+    await prepararBanco(env);
+    return reciboPublico(env, rota.slice("recibo/".length));
+  }
   if (rota === "sair" && metodo === "POST") {
     const t = token(req);
     if (t) await env.CONTEUDO.delete("sessao:" + t);
     return json({ ok: true }, 200, { "set-cookie": cookie("", 0) });
   }
 
-  if (!(await logado(req, env))) return json({ erro: "Entre com a senha para continuar." }, 401);
+  // o agente comercial entra com o token dele (cabeçalho Authorization), não com a senha do painel
+  const agente = agenteAutorizado(req, env);
+  if (rota.startsWith("agente/")) {
+    if (!agente) return json({ erro: "Token do agente inválido." }, 401);
+    return rotasAgente(req, env, rota.slice("agente/".length));
+  }
+  if (!agente && !(await logado(req, env))) return json({ erro: "Entre com a senha para continuar." }, 401);
+  if (agente) {
+    if (!rota.startsWith("gestao/")) return json({ erro: "Esta rota não está liberada para o agente." }, 403);
+    const corpo = metodo === "POST" || metodo === "PUT" ? await req.clone().json().catch(() => ({})) : null;
+    const motivo = await motivoAgente(env, metodo, rota.slice("gestao/".length), corpo);
+    if (motivo) return json({ erro: motivo }, 403);
+  }
 
   if (rota === "sessao" && metodo === "GET") return json({ ok: true });
-  if (rota.startsWith("gestao/")) return gestao(req, env, rota.slice("gestao/".length));
+  if (rota.startsWith("gestao/")) return gestao(req, env, rota.slice("gestao/".length), agente ? "agente" : "equipe");
   if (rota === "conteudo" && metodo === "PUT") {
     const novo = await req.json();
     const limpo = validar(novo);

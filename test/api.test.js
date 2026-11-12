@@ -35,6 +35,16 @@ describe("autorização", () => {
   });
 });
 
+describe("endereço do admin", () => {
+  it("o endereço antigo /admin/gestao leva para o /admin", async () => {
+    for (const caminho of ["/admin/gestao", "/admin/gestao.html"]) {
+      const r = await SELF.fetch(BASE + caminho, { redirect: "manual" });
+      expect(r.status).toBe(301);
+      expect(new URL(r.headers.get("location")).pathname).toBe("/admin/");
+    }
+  });
+});
+
 describe("contratantes", () => {
   it("cadastra com telefone normalizado e perfil", async () => {
     const r = await novo({ telefone: "031 98877-6655", perfil: "autoral", email: "Bar@Exemplo.com" });
@@ -431,5 +441,100 @@ describe("campanhas", () => {
     await api(`gestao/campanhas/${ca.id}/confirmar`, "POST", { assinatura: p.assinatura });
     expect((await api(`gestao/campanhas/${ca.id}/fila`)).espera).toBe(ca.inicio);
     expect((await api(`gestao/campanhas/${ca.id}`, "PUT", { nome: "Outro" })).status).toBe(409);
+  });
+});
+
+describe("agenda do site", () => {
+  it("show publicado da Gestão aparece na home com a miniatura da carta do artista, e some ao tirar do site ou excluir", async () => {
+    const data = somarDias(hojeSP(), 40);
+    const s = await api("gestao/shows", "POST", { data, hora: "21:00", artista: "athos-tibaes", local: "Casa Teste Miniatura", cidade: "Betim", status: "confirmado", publicar: 1 });
+    let html = await (await SELF.fetch(BASE + "/")).text();
+    expect(html).toContain("Casa Teste Miniatura");
+    expect(html).toMatch(/class="data-show com-carta"[\s\S]*?class="mini-carta"[^>]*href="athos-tibaes\.html"[\s\S]*?src="\/img\/athos\.jpg"/);
+
+    await api("gestao/shows/" + s.id, "PUT", { ...s, publicar: 0 });
+    html = await (await SELF.fetch(BASE + "/")).text();
+    expect(html).not.toContain("Casa Teste Miniatura");
+
+    await api("gestao/shows/" + s.id, "PUT", { ...s, publicar: 1 });
+    expect((await api("gestao/shows/" + s.id, "DELETE")).ok).toBe(true);
+    html = await (await SELF.fetch(BASE + "/")).text();
+    expect(html).not.toContain("Casa Teste Miniatura");
+    expect((await api("gestao/dados")).shows.some((x) => x.id === s.id)).toBe(false);
+  });
+});
+
+describe("agenda do site: artista convidado", () => {
+  it("artista de fora entra com carta simples, selo Convidado 7A e Pedir data pelo WhatsApp da 7A", async () => {
+    const data = somarDias(hojeSP(), 41);
+    const s = await api("gestao/shows", "POST", { data, hora: "20:00", artista: "", artista_texto: "Convidado Teste", local: "Bar Teste Convidado", cidade: "Contagem", status: "confirmado", publicar: 1 });
+    const html = await (await SELF.fetch(BASE + "/")).text();
+    const linha = html.slice(html.lastIndexOf("<li", html.indexOf("Bar Teste Convidado")), html.indexOf("</li>", html.indexOf("Bar Teste Convidado")));
+    expect(linha).toContain('class="mini-carta convidado"');
+    expect(linha).not.toContain('class="ind"'); // o índice 7A é só do casting
+    expect(linha).toContain("Convidado 7A");
+    expect(linha).toContain("https://wa.me/5531992233295?text=");
+    expect(linha).toContain("Pedir data");
+    await api("gestao/shows/" + s.id, "DELETE");
+  });
+});
+
+describe("funil em colunas", () => {
+  it("muda só a etapa e deixa a mudança no histórico", async () => {
+    const c = await novo({ etapa: "contatado", proxima_acao: "Cobrar resposta" });
+    const r = await api(`gestao/contratantes/${c.id}/etapa`, "POST", { etapa: "negociando" });
+    expect(r.status).toBe(200);
+    expect(r.etapa).toBe("negociando");
+    expect(r.proxima_acao).toBe("Cobrar resposta");
+    const notas = await api(`gestao/contratantes/${c.id}/notas`);
+    expect(notas.some((n) => n.texto === "Etapa: Contatado → Negociando.")).toBe(true);
+  });
+  it("recusa etapa desconhecida e não duplica a nota quando a etapa é a mesma", async () => {
+    const c = await novo({ etapa: "contatar" });
+    expect((await api(`gestao/contratantes/${c.id}/etapa`, "POST", { etapa: "xpto" })).status).toBe(400);
+    await api(`gestao/contratantes/${c.id}/etapa`, "POST", { etapa: "contatar" });
+    const notas = await api(`gestao/contratantes/${c.id}/notas`);
+    expect(notas.filter((n) => n.texto.startsWith("Etapa:")).length).toBe(0);
+  });
+});
+
+describe("início e fim do show", () => {
+  it("guarda a hora de fim e a proposta pública mostra a duração calculada", async () => {
+    const s = await api("gestao/shows", "POST", { data: "2030-05-10", hora: "17:00", hora_fim: "20:00", artista: "athos-tibaes", status: "consulta", cache: 30000 });
+    expect(s.hora_fim).toBe("20:00");
+    const p = await api(`gestao/shows/${s.id}/proposta`, "PUT", { formato: "Voz e violão", duracao: "2 horas", condicoes: "Pix" });
+    const r = await SELF.fetch(BASE + "/api/proposta/" + p.token);
+    const pub = await r.json();
+    expect(pub.hora_fim).toBe("20:00");
+    expect(pub.duracao).toBe("3 horas");
+    expect(p.duracao).toBe("3 horas");
+  });
+  it("sem hora de fim, a proposta guarda o texto enviado", async () => {
+    const s = await api("gestao/shows", "POST", { data: "2030-05-12", hora: "17:00", artista: "athos-tibaes", status: "consulta" });
+    const p = await api(`gestao/shows/${s.id}/proposta`, "PUT", { formato: "Voz e violão", duracao: "2 horas", condicoes: "Pix" });
+    expect(p.duracao).toBe("2 horas");
+  });
+  it("recusa hora de fim sem hora de início", async () => {
+    const r = await api("gestao/shows", "POST", { data: "2030-05-11", hora_fim: "20:00", artista: "athos-tibaes", status: "consulta" });
+    expect(r.status).toBe(400);
+  });
+});
+
+describe("pedido do site", () => {
+  it("evento particular vira contratante do tipo particular com os detalhes na nota", async () => {
+    const nome = "Festa " + Math.random().toString(36).slice(2, 8);
+    const r = await SELF.fetch(BASE + "/api/pedido", {
+      method: "POST",
+      headers: { "content-type": "application/json", "cf-connecting-ip": "10.0.0." + Math.floor(Math.random() * 250) },
+      body: JSON.stringify({ nome, artista: "Ænima", evento: "Casamento", particular: true, data: "2027-03-20", inicio: "21:30", fim: "01:00", cidade: "Betim", convidados: "120", local: "Sítio" }),
+    });
+    expect(r.status).toBe(200);
+    const achado = await api(`gestao/contratantes?busca=${nome}`);
+    expect(achado.itens).toHaveLength(1);
+    expect(achado.itens[0].tipo).toBe("particular");
+    const notas = await api(`gestao/contratantes/${achado.itens[0].id}/notas`);
+    expect(notas[0].texto).toContain("Horário: 21:30 às 01:00 (3 h 30 min)");
+    expect(notas[0].texto).toContain("Convidados: 120");
+    expect(notas[0].texto).toContain("Local: Sítio");
   });
 });

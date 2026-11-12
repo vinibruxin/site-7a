@@ -2,8 +2,9 @@
 
 Publicado no Cloudflare (Worker `site-7a` com arquivos estáticos). Cada push na branch `main` publica de novo.
 
-- `public/`: o site (index.html, páginas dos artistas, img/, midia/) e o painel `public/admin/`.
-- `public/admin/gestao.html` + `src/gestao.js`: sistema de gestão da 7A (contratantes, WhatsApp, campanhas, histórico, shows com cachê, % da 7A e repasse, planilhas). Dados no D1 `site-7a-gestao` (binding `DB`). Shows confirmados com "mostrar na agenda" entram sozinhos na agenda do site, e cada pedido do formulário do site vira um contratante. Cada show pode gerar uma proposta com a marca, aberta pelo contratante em `/proposta/<token>` (`public/proposta.html`).
+- `public/`: o site (index.html, páginas dos artistas, `evento-particular.html`, img/, midia/) e o painel `public/admin/` (`index.html` é a Gestão, aberta em `/admin`; `site.html` é o "Editar o site", em `/admin/site`). A página de evento particular manda o pedido para o WhatsApp ou o e-mail e registra na Gestão como contratante do tipo "particular" (`POST /api/pedido`).
+- `public/admin/index.html` (em `/admin`; o endereço antigo `/admin/gestao` redireciona) + `src/gestao.js`: sistema de gestão da 7A (contratantes, WhatsApp, campanhas, histórico, shows com cachê, % da 7A e repasse, planilhas). Dados no D1 `site-7a-gestao` (binding `DB`). Shows confirmados com "mostrar na agenda" entram sozinhos na agenda do site, e cada pedido do formulário do site vira um contratante. Cada show pode gerar uma proposta com a marca, aberta pelo contratante em `/proposta/<token>` (`public/proposta.html`).
+- Menu da Gestão: **Hoje** (o que fazer: casas atrasadas e de hoje, shows da semana com o que falta, funil e dinheiro), **Funil** (casas em colunas por etapa, arrastar no computador ou "Mover para" no celular; lista com busca e importação ficam nas sub-abas), **Agenda** (lista, mês em calendário e Financeiro por mês e por artista, com o que falta receber e repassar; mostra também os shows que ainda estão só na agenda do "Editar o site", com o botão "Trazer para a Gestão"), **Mensagens** (fila do WhatsApp, campanhas e modelos) e **Ajustes**. Clicar numa casa abre a ficha; a conversa fica no botão "Conversa". Mudar de etapa pelo funil usa `POST /api/gestao/contratantes/:id/etapa` e grava uma nota no histórico (a Évora não tem acesso).
 - `src/worker.js`: serve o site, encaixa nas páginas a agenda, os textos e a formação editados no `/admin`, e a API do painel.
 - `public/dados/padrao.json`: conteúdo inicial do painel (gerado por `ferramentas/gera_artistas.py`).
 - `ferramentas/`: gerador das páginas de artista (`gera_artistas.py` + `artista.css` + `comum.css`) e especificação da carta do casting.
@@ -13,6 +14,27 @@ A senha inicial do painel é verificada pelo hash em `wrangler.jsonc`; trocada n
 
 Gestão como app: `public/admin/manifest.json` + `sw.js` (instalável pelo navegador do celular, sem cache offline).
 Envio da proposta por e-mail: Resend, remetente `propostas@7aprodutora.com.br`, respostas para o Gmail da 7A. Precisa do secret `RESEND_API_KEY` no Worker (Cloudflare > Workers > site-7a > Settings > Variables and Secrets); sem ele o botão avisa que o envio não está ligado.
+
+## Artistas (cadastro de músicos)
+
+Menu **Artistas** (`src/musicos.js`, tabela `musicos`, migração v8). Agenda única de todo mundo que toca com a 7A, do casting ou de fora: nome artístico, WhatsApp, chave Pix (tipo e valor, conferidos: CPF/CNPJ pelos dígitos, celular, e-mail ou chave aleatória), cidade, estilo, formação (instrumentos) e observações, com a marca "Casting 7A".
+
+- Busca por nome, instrumento ou cidade, sem ligar para acento ("violao" acha "Violão"); filtros por cidade, instrumento e casting. Botão de WhatsApp e "Copiar Pix" em cada artista.
+- **Convidado na agenda do site**: show publicado de artista de fora do casting aparece na home com carta simples (sem filete ouro nem índice 7A), o selo "Convidado 7A" e, sem link de ingresso, o botão "Pedir data" para o WhatsApp da 7A (nunca o do artista). Convidado não ganha página própria.
+- **Grupo do WhatsApp**: cada artista pode ter o link de convite do grupo da banda (`https://chat.whatsapp.com/...`). O casting (os 6) já vem cadastrado só com nome e marca de casting, ligado ao artista do site (migração v10); o resto a equipe preenche.
+- **Aviso de data fechada** (ficha do show, status Confirmado): o painel monta no navegador uma imagem 1080x1350 com data, horário, local e o cachê aberto (cachê negociado, comissão 7A com o %, despesas se houver e cachê líquido do artista). "Enviar imagem" abre o compartilhar do celular (WhatsApp > grupo da banda ou conversa do artista solo); também dá para abrir o grupo, abrir o WhatsApp do artista com o texto, baixar a imagem e copiar o texto. Nada é enviado sozinho e a imagem não fica em nenhum endereço público.
+- Mesmo WhatsApp não entra duas vezes. A auditoria registra quem foi cadastrado, editado ou excluído, sem gravar telefone nem Pix.
+- **Sigilo**: WhatsApp e Pix ficam só no painel com senha. Não entram em `/api/gestao/dados`, no site público, em planilhas nem na API do agente Évora (barrado até para leitura). Só a equipe cadastra: não há auto-cadastro.
+- Não mexe nos artistas do site (cartas e páginas do casting continuam no "Editar o site").
+
+## Recibos e notas fiscais
+
+Menu **Agenda > Recibos e notas** e a seção "Recibo e nota fiscal" na ficha de cada show (`src/documentos.js`, tabela `documentos`, migração v7).
+
+- **Recibo**: emitido pelo sistema, número em sequência (`7A-R-0001`), valor por extenso, opção de somar no "Recebido" do show. O pagador abre em `/recibo/<token>` (`public/recibo.html`) e salva em PDF (uma folha A4). Recibo emitido não muda: se sair errado, cancela (o valor sai do "Recebido") e emite outro.
+- **Nota fiscal (NFS-e)**: o sistema **não emite**. Guarda tomador, serviço, valor e ISS, avisa o que falta e monta o texto para colar no [Emissor Nacional](https://www.nfse.gov.br/EmissorNacional) (Betim usa o padrão nacional desde 01/01/2026). Depois da emissão no portal, registra o número da nota. Situações: faltam dados, pronta para emitir, emitida, cancelada.
+- **Dados da 7A** (nome, CPF/CNPJ, inscrição municipal, endereço, quem assina): em Ajustes, começam vazios. Sem eles o recibo sai como rascunho, com os campos marcados, e se completa sozinho quando forem preenchidos. CPF e CNPJ (inclusive o alfanumérico) são conferidos pelos dígitos.
+- O agente Évora não acessa recibos nem notas.
 
 ## Relacionamento pelo WhatsApp (versão gratuita)
 
@@ -36,6 +58,33 @@ Custo zero: não usa a API paga da Meta, nem intermediários (Twilio, Z-API...),
 - **Autorização de contato**: tabela `consentimentos` com situação, origem e prova ("Pedido pelo site em 28/10", "Respondeu no WhatsApp em 30/10", "Pediu para parar").
 
 O código que monta o link fica isolado em `src/whatsapp.js`. As regras comerciais estão em `src/mensagens.js` e `src/campanhas.js`, e não dependem do link.
+
+## Agente comercial Évora (API)
+
+O agente conversa com o sistema pelo token `AGENTE_TOKEN` (secret do Worker, mínimo de 32 caracteres), enviado no cabeçalho `Authorization: Bearer <token>`. Não usa a senha do painel e não tem acesso a login, conteúdo do site, configurações nem senhas.
+
+Gerar e gravar o token (no computador, fora do repositório):
+
+```bash
+npx wrangler secret put AGENTE_TOKEN
+```
+
+**O que o agente pode**
+- Ler: `GET /api/agente/painel` (funil, vencidos, sem próxima ação, shows dos próximos 60 dias, limite do dia), `GET /api/gestao/dados`, `GET /api/gestao/contratantes[/id]`, notas, modelos, campanhas e o link da proposta de um show.
+- Rascunhar: `POST /api/gestao/mensagens/previa` monta o texto e mostra avisos (intervalo, limite, bloqueio) sem registrar nada.
+- Cadastrar contratante (`POST /api/gestao/contratantes`) e anotar (`POST /api/gestao/contratantes/:id/notas`).
+- Atualizar a ação: `POST /api/agente/contratantes/:id/acao` com `proxima_acao`, `proxima_data` (AAAA-MM-DD), `etapa` (contatar, contatado, negociando ou perdido) e `nota` opcional. A nota entra no histórico com o prefixo "Évora:".
+- Criar ou alterar consulta de show (`POST /api/gestao/shows`, `PUT /api/gestao/shows/:id`), sempre com status `consulta`. O cachê (em centavos) só entra acima do piso do artista (`PISOS` em `src/agente.js`). Recebido, repasse e despesas ficam de fora.
+- Montar ou atualizar a proposta (`PUT /api/gestao/shows/:id/proposta`), que devolve o token e o link `/proposta/<token>`. A proposta do agente fica com `situacao = aguardando_aprovacao`: a casa não abre o link e o envio não funciona até a equipe aprovar, o que acontece ao salvar a proposta no painel.
+
+**O que fica com a equipe** (o agente recebe 403 com o motivo)
+- Enviar proposta por e-mail, registrar toque no WhatsApp, iniciar ou alterar campanhas.
+- Marcar casa como fechada, confirmar, publicar, aprovar a proposta, ou lançar recebido, repasse e despesas de show.
+- Apagar, arquivar, bloquear ou desbloquear, exportar planilhas, mudar configurações, senha ou conteúdo do site.
+
+Quem envia continua sendo uma pessoa: o WhatsApp abre pelo link do painel e o e-mail sai pelo botão da Gestão.
+
+Testes: `test/agente.test.js` cobre a autenticação, o que é lido, o que é recusado e a atualização da ação.
 
 ## Banco de dados e migrações
 

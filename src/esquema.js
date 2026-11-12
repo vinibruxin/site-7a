@@ -259,17 +259,115 @@ const RELACIONAMENTO = [
 
 // show "Particular": sem contratante, com endereço completo do local (privado, só no /admin)
 const ENDERECO_SHOW = { particular: "INTEGER NOT NULL DEFAULT 0", cep: "TEXT NOT NULL DEFAULT ''", endereco: "TEXT NOT NULL DEFAULT ''", numero: "TEXT NOT NULL DEFAULT ''", complemento: "TEXT NOT NULL DEFAULT ''", bairro: "TEXT NOT NULL DEFAULT ''", uf: "TEXT NOT NULL DEFAULT ''", referencia: "TEXT NOT NULL DEFAULT ''" };
-// SQLite não tem ADD COLUMN IF NOT EXISTS: confere antes, para a migração poder rodar de novo sem erro
-async function colunasShowParticular(env) {
-  const { results } = await env.DB.prepare("PRAGMA table_info(shows)").all();
-  const ja = new Set(results.map((r) => r.name));
-  for (const [coluna, tipo] of Object.entries(ENDERECO_SHOW)) {
-    if (!ja.has(coluna)) await env.DB.prepare(`ALTER TABLE shows ADD COLUMN ${coluna} ${tipo}`).run();
+
+// v3: situação da proposta. As que já existem foram feitas pela equipe, então ficam aprovadas.
+// O agente cria com "aguardando_aprovacao" e só a equipe aprova (ao salvar a proposta no painel).
+const SITUACAO_PROPOSTA = async (env) => {
+  const { results } = await env.DB.prepare("PRAGMA table_info(propostas)").all();
+  if (!results.some((c) => c.name === "situacao")) {
+    await env.DB.prepare("ALTER TABLE propostas ADD COLUMN situacao TEXT NOT NULL DEFAULT 'aprovada'").run();
   }
-}
+};
 
 export const MIGRACOES = [
   { versao: 1, nome: "base", passos: BASE },
   { versao: 2, nome: "relacionamento pelo WhatsApp", passos: RELACIONAMENTO },
-  { versao: 3, nome: "shows particulares com endereço", passos: [colunasShowParticular] },
+  { versao: 3, nome: "situação da proposta", passos: [SITUACAO_PROPOSTA] },
+  { versao: 4, nome: "último cachê por casa", passos: [
+    // último cachê fechado com a casa para cada artista: o piso da negociação não cai abaixo dele
+    `CREATE TABLE IF NOT EXISTS ultimos_cache (
+      contratante_id INTEGER NOT NULL REFERENCES contratantes(id),
+      artista TEXT NOT NULL,
+      valor INTEGER NOT NULL,
+      origem TEXT NOT NULL DEFAULT '',
+      criado TEXT NOT NULL,
+      PRIMARY KEY (contratante_id, artista)
+    )`,
+  ] },
+  { versao: 5, nome: "conversa por casa", passos: [
+    // respostas que a casa mandou (coladas pela equipe): entram na conversa, em ordem, junto com as mensagens enviadas
+    `CREATE TABLE IF NOT EXISTS conversa (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      contratante_id INTEGER NOT NULL REFERENCES contratantes(id),
+      quem TEXT NOT NULL,
+      texto TEXT NOT NULL,
+      criado TEXT NOT NULL
+    )`,
+    `CREATE INDEX IF NOT EXISTS conversa_contratante ON conversa(contratante_id, criado)`,
+  ] },
+  // hora de fim do show: a duração sai da conta entre início e fim, em vez de ser escrita à mão
+  { versao: 6, nome: "hora de fim do show", passos: [coluna("shows", "hora_fim", "TEXT NOT NULL DEFAULT ''")] },
+  // recibos e notas fiscais (NFS-e). O recibo é emitido pelo sistema; a nota só é preparada aqui e emitida no Emissor Nacional.
+  { versao: 7, nome: "recibos e notas fiscais", passos: [
+    coluna("contratantes", "documento", "TEXT NOT NULL DEFAULT ''"), // CPF ou CNPJ do contratante (só dígitos), guardado no primeiro recibo ou nota
+    `CREATE TABLE IF NOT EXISTS documentos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      tipo TEXT NOT NULL,
+      numero INTEGER,
+      token TEXT NOT NULL UNIQUE,
+      show_id INTEGER REFERENCES shows(id) ON DELETE SET NULL,
+      contratante_id INTEGER REFERENCES contratantes(id) ON DELETE SET NULL,
+      situacao TEXT NOT NULL,
+      valor INTEGER NOT NULL DEFAULT 0,
+      data TEXT NOT NULL DEFAULT '',
+      forma TEXT NOT NULL DEFAULT '',
+      referente TEXT NOT NULL DEFAULT '',
+      pagador_nome TEXT NOT NULL DEFAULT '',
+      pagador_doc TEXT NOT NULL DEFAULT '',
+      pagador_endereco TEXT NOT NULL DEFAULT '',
+      pagador_cidade TEXT NOT NULL DEFAULT '',
+      pagador_email TEXT NOT NULL DEFAULT '',
+      emitente TEXT NOT NULL DEFAULT '{}',
+      nfse TEXT NOT NULL DEFAULT '{}',
+      lancado INTEGER NOT NULL DEFAULT 0,
+      obs TEXT NOT NULL DEFAULT '',
+      motivo_cancelamento TEXT NOT NULL DEFAULT '',
+      criado TEXT NOT NULL,
+      atualizado TEXT NOT NULL
+    )`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS documentos_numero ON documentos(tipo, numero) WHERE numero IS NOT NULL`,
+    `CREATE INDEX IF NOT EXISTS documentos_show ON documentos(show_id)`,
+  ] },
+  // cadastro de artistas e músicos (do casting e de fora): WhatsApp e Pix ficam só aqui, no painel com senha
+  { versao: 8, nome: "cadastro de artistas", passos: [
+    `CREATE TABLE IF NOT EXISTS musicos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      nome TEXT NOT NULL,
+      telefone TEXT NOT NULL DEFAULT '',
+      pix_tipo TEXT NOT NULL DEFAULT '',
+      pix_chave TEXT NOT NULL DEFAULT '',
+      cidade TEXT NOT NULL DEFAULT '',
+      estilo TEXT NOT NULL DEFAULT '',
+      instrumentos TEXT NOT NULL DEFAULT '[]',
+      casting INTEGER NOT NULL DEFAULT 0,
+      obs TEXT NOT NULL DEFAULT '',
+      criado TEXT NOT NULL,
+      atualizado TEXT NOT NULL
+    )`,
+    `CREATE UNIQUE INDEX IF NOT EXISTS musicos_telefone ON musicos(telefone) WHERE telefone <> ''`,
+  ] },
+  // % da 7A por artista: quem é do casting segue o % padrão (20%), quem é de fora começa no % de fora (30%); dá para mudar em cada um
+  { versao: 9, nome: "% da 7A por artista", passos: [
+    coluna("musicos", "pct", "REAL"),
+    `UPDATE musicos SET pct = 30 WHERE pct IS NULL AND casting = 0`,
+  ] },
+  // grupo do WhatsApp da banda e o casting já cadastrado (só nome e marca de casting; o resto a equipe preenche)
+  { versao: 10, nome: "grupo do WhatsApp e casting no cadastro", passos: [
+    coluna("musicos", "grupo", "TEXT NOT NULL DEFAULT ''"),
+    coluna("musicos", "slug", "TEXT NOT NULL DEFAULT ''"), // liga o cadastro ao artista do site (shows do casting)
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'Ordem Mor', 'ordem-mor', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'ordem-mor' OR nome = 'Ordem Mor')`,
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'Sub Rosa', 'sub-rosa', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'sub-rosa' OR nome = 'Sub Rosa')`,
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'Ossos do Banquete', 'ossos-do-banquete', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'ossos-do-banquete' OR nome = 'Ossos do Banquete')`,
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'Athos Tibães', 'athos-tibaes', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'athos-tibaes' OR nome = 'Athos Tibães')`,
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'Ænima', 'aenima', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'aenima' OR nome = 'Ænima')`,
+    `INSERT INTO musicos (nome, slug, casting, pct, criado, atualizado) SELECT 'DJ Ivan Lennon', 'dj-ivan-lennon', 1, 20, datetime('now'), datetime('now') WHERE NOT EXISTS (SELECT 1 FROM musicos WHERE slug = 'dj-ivan-lennon' OR nome = 'DJ Ivan Lennon')`,
+    // quem já estava cadastrado com o mesmo nome ganha a ligação com o site
+    `UPDATE musicos SET slug = 'ordem-mor', casting = 1 WHERE slug = '' AND nome = 'Ordem Mor'`,
+    `UPDATE musicos SET slug = 'sub-rosa', casting = 1 WHERE slug = '' AND nome = 'Sub Rosa'`,
+    `UPDATE musicos SET slug = 'ossos-do-banquete', casting = 1 WHERE slug = '' AND nome = 'Ossos do Banquete'`,
+    `UPDATE musicos SET slug = 'athos-tibaes', casting = 1 WHERE slug = '' AND nome = 'Athos Tibães'`,
+    `UPDATE musicos SET slug = 'aenima', casting = 1 WHERE slug = '' AND nome = 'Ænima'`,
+    `UPDATE musicos SET slug = 'dj-ivan-lennon', casting = 1 WHERE slug = '' AND nome = 'DJ Ivan Lennon'`,
+  ] },
+  { versao: 11, nome: "shows particulares com endereço", passos: Object.entries(ENDERECO_SHOW).map(([nome, def]) => coluna("shows", nome, def)) },
 ];

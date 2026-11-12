@@ -7,6 +7,7 @@ import { cloudflareTest } from "@cloudflare/vitest-plugin";
 // senha só dos testes (a de produção continua só como hash no wrangler.jsonc)
 const SAL = "sal-dos-testes";
 const SENHA = "senha-dos-testes-7a";
+const TOKEN_AGENTE = "token-dos-testes-do-agente-evora-0123456789";
 
 export default defineConfig({
   plugins: [
@@ -18,6 +19,7 @@ export default defineConfig({
           ADMIN_SAL: SAL,
           ADMIN_HASH: createHash("sha256").update(SAL + SENHA).digest("hex"),
           SENHA_TESTE: SENHA,
+          AGENTE_TOKEN: TOKEN_AGENTE,
         },
       },
     }),

@@ -10,6 +10,10 @@ ADMIN_HASH=
 # Envio da proposta por e-mail (opcional no computador). Em produção é um secret do Worker.
 RESEND_API_KEY=
 
+# Token do agente comercial Évora (cabeçalho Authorization: Bearer). Mínimo de 32 caracteres.
+# Em produção é um secret do Worker: npx wrangler secret put AGENTE_TOKEN
+AGENTE_TOKEN=
+
 # [VERSÃO PAGA, não usada nesta versão] API oficial do WhatsApp (Meta). Só como secret do Worker,
 # nunca no repositório nem no navegador.
 # WHATSAPP_TOKEN=

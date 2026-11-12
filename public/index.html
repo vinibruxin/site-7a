@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>7A Produtora</title>
+<title>7A Produtora | Shows de rock em Betim, MG</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="7A Produtora: produtora e incubadora de artistas de rock em Betim, MG. Contrate shows de Ordem Mor, Sub Rosa, Ossos do Banquete, Athos Tibães, Ænima e DJ Ivan Lennon.">
 <meta property="og:type" content="website">
@@ -12,10 +12,100 @@
 <meta property="og:title" content="7A Produtora | Aqui o artista é levado a sério">
 <meta property="og:description" content="Produtora e incubadora de rock em Betim, MG. Seis artistas prontos para o seu palco. Peça uma data.">
 <meta property="og:url" content="https://7aprodutora.com.br/">
+<link rel="canonical" href="https://7aprodutora.com.br/">
 <meta property="og:image" content="https://7aprodutora.com.br/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "EntertainmentBusiness",
+ "@id": "https://7aprodutora.com.br/#7a",
+ "name": "7A Produtora",
+ "alternateName": "7A Produtora de Rock",
+ "description": "Produtora de rock e incubadora de artistas em Betim, MG. Shows de bandas, duo acústico, voz e violão e DJ para casas de show, bares, festivais, eventos e festas particulares.",
+ "slogan": "Aqui o artista é levado a sério",
+ "url": "https://7aprodutora.com.br/",
+ "logo": "https://7aprodutora.com.br/img/logo-7a-g.png",
+ "image": "https://7aprodutora.com.br/img/og.jpg",
+ "telephone": "+55 31 99223-3295",
+ "email": "contato@7aprodutora.com.br",
+ "address": {
+  "@type": "PostalAddress",
+  "addressLocality": "Betim",
+  "addressRegion": "MG",
+  "addressCountry": "BR"
+ },
+ "areaServed": [
+  {
+   "@type": "City",
+   "name": "Betim"
+  },
+  {
+   "@type": "City",
+   "name": "Contagem"
+  },
+  {
+   "@type": "City",
+   "name": "Belo Horizonte"
+  },
+  {
+   "@type": "State",
+   "name": "Minas Gerais"
+  }
+ ],
+ "sameAs": [
+  "https://www.instagram.com/7a_produtora/"
+ ],
+ "contactPoint": {
+  "@type": "ContactPoint",
+  "contactType": "Contratação de shows",
+  "telephone": "+55 31 99223-3295",
+  "email": "contato@7aprodutora.com.br",
+  "areaServed": "BR",
+  "availableLanguage": "Portuguese"
+ },
+ "member": [
+  {
+   "@type": "MusicGroup",
+   "name": "Ordem Mor",
+   "genre": "Rock autoral",
+   "url": "https://7aprodutora.com.br/ordem-mor.html"
+  },
+  {
+   "@type": "MusicGroup",
+   "name": "Sub Rosa",
+   "genre": "Rock progressivo",
+   "url": "https://7aprodutora.com.br/sub-rosa.html"
+  },
+  {
+   "@type": "MusicGroup",
+   "name": "Ossos do Banquete",
+   "genre": "Rock clássico e autoral",
+   "url": "https://7aprodutora.com.br/ossos-do-banquete.html"
+  },
+  {
+   "@type": "MusicGroup",
+   "name": "Ænima",
+   "genre": "Clássicos do rock em versão acústica",
+   "url": "https://7aprodutora.com.br/aenima.html"
+  },
+  {
+   "@type": "Person",
+   "name": "Athos Tibães",
+   "jobTitle": "Cantor e violonista",
+   "url": "https://7aprodutora.com.br/athos-tibaes.html"
+  },
+  {
+   "@type": "Person",
+   "name": "DJ Ivan Lennon",
+   "jobTitle": "DJ",
+   "url": "https://7aprodutora.com.br/dj-ivan-lennon.html"
+  }
+ ]
+}
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;600;700&family=Space+Mono&display=swap">
@@ -37,7 +127,8 @@
   --f-serial: "Space Mono", Consolas, "Courier New", monospace;
 
   /* cinco degraus */
-  --t-cartaz: clamp(84px, 13vw, 210px);
+  /* o título nunca sobe até a barra do menu: em tela larga e baixa, a altura limita o tamanho */
+  --t-cartaz: clamp(84px, min(13vw, calc((50svh - 100px) / 1.62)), 210px);
   --t-titulo: clamp(40px, 5.2vw, 84px);
   --t-sub: clamp(26px, 2.6vw, 40px);
   --t-lead: 20px;
@@ -120,14 +211,38 @@ a { color: inherit; }
 .data-show .dia { font-size: 76px; }
 .data-show .mes { font-size: 28px; }
 .data-show .o-que { display: grid; gap: 4px; }
-.data-show .quem { font: 400 var(--t-sub)/1.05 var(--f-display); text-transform: uppercase; text-decoration: none; }
+.data-show .quem { font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; text-decoration: none; }
 .data-show a.quem:hover { text-decoration: underline; text-decoration-thickness: 3px; text-underline-offset: 6px; }
 .data-show .evento { font-size: var(--t-lead); font-weight: 700; }
 .data-show .onde { font-size: var(--t-lead); font-weight: 500; }
 .data-show .hora { font-size: var(--t-texto); }
 .data-show .ingresso { font: 700 15px/1 var(--f-texto); padding: 15px 20px; background: var(--preto); color: var(--offwhite); text-decoration: none; transition: transform .15s var(--ease); }
 .data-show .ingresso:hover { transform: translateY(-2px); }
+/* miniatura da carta do casting ao lado de cada data */
+.data-show.com-carta { grid-template-columns: 104px 150px minmax(0, 1fr) auto; }
+.mini-carta { position: relative; display: block; width: 104px; aspect-ratio: 5 / 7; overflow: hidden; background: var(--grafite); text-decoration: none; transition: transform .3s var(--ease); }
+.mini-carta::after { content: ""; position: absolute; inset: 5px; border: 1px solid var(--ouro); pointer-events: none; z-index: 2; }
+.mini-carta .arte { position: absolute; inset: 0; overflow: hidden; background: var(--preto); display: grid; place-items: center; }
+.mini-carta img { width: 100%; height: 100%; object-fit: cover; }
+.mini-carta .inicial { font: 400 54px/.85 var(--f-display); text-transform: uppercase; color: var(--offwhite); }
+.mini-carta .ind { position: absolute; z-index: 3; top: 11px; left: 11px; display: grid; justify-items: center; gap: 3px; font: 400 11px/1 var(--f-display); color: var(--offwhite); }
+.mini-carta .ind.inf { top: auto; left: auto; bottom: 11px; right: 11px; transform: rotate(180deg); }
+.mini-carta.clara .ind:not(.inf) { color: var(--preto); }
+.mini-carta .ind i { width: 5px; height: 5px; background: var(--vermelho); transform: rotate(45deg); }
+.data-show:hover .mini-carta { transform: translateY(-3px) rotate(-1.5deg); }
+/* artista convidado (fora do casting): carta simples, sem filete ouro nem índice 7A, e o selo */
+.mini-carta.convidado .arte { background: #1A1A1A; }
+.mini-carta.convidado::after { border-color: var(--cinza); opacity: .55; }
+.data-show .selo-convidado { justify-self: start; font: 700 13px/1 var(--f-texto); padding: 6px 8px; background: var(--preto); color: var(--offwhite); }
+@media (prefers-reduced-motion: reduce) { .data-show:hover .mini-carta { transform: none; } }
 @media (max-width: 700px) {
+  .data-show.com-carta { grid-template-columns: 76px 72px minmax(0, 1fr); gap: 8px 16px; align-items: start; }
+  .data-show.com-carta .ingresso { grid-column: 3; }
+  .mini-carta { width: 76px; }
+  .mini-carta::after { inset: 4px; }
+  .mini-carta .ind { top: 8px; left: 8px; font-size: 9px; }
+  .mini-carta .ind.inf { top: auto; left: auto; bottom: 8px; right: 8px; }
+  .mini-carta .ind i { width: 4px; height: 4px; }
   .data-show { grid-template-columns: 96px minmax(0, 1fr); }
   .data-show .dia { font-size: 56px; }
   .data-show .mes { font-size: 22px; }
@@ -162,9 +277,9 @@ a { color: inherit; }
   width: clamp(200px, 22vw, 340px); aspect-ratio: 4 / 5; height: auto; object-fit: cover; object-position: 50% 30%;
   transform: rotate(4deg);
 }
-.adesivo {
-  position: absolute; z-index: 2; width: clamp(150px, 13vw, 210px); height: auto;
-  left: calc(var(--m) + 1vw); top: calc(var(--seam) - 7vw);
+.adesivo { /* logo completa colada na costura preto/vermelho */
+  position: absolute; z-index: 2; width: clamp(250px, 24vw, 400px); height: auto;
+  left: calc(var(--m) + 1vw); top: calc(var(--seam) - clamp(250px, 24vw, 400px) / 2);
 }
 
 /* ---------- Casting ---------- */
@@ -231,6 +346,29 @@ a { color: inherit; }
 .programa tr.linha-artista:hover .sobre { color: var(--grafite); }
 .formatos .nota { margin: 48px 0 0; font-size: var(--t-nota); color: var(--cinza-tinta); max-width: 52em; }
 
+/* ---------- Duas portas: palco ou evento particular ---------- */
+.portas { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.porta { position: relative; display: flex; flex-direction: column; gap: 28px; min-height: 54svh; padding: 40px var(--m-r) 40px var(--m); text-decoration: none; overflow: hidden; transition: background-color .25s, color .25s; }
+.porta.palco { background: var(--preto); color: var(--offwhite); }
+.porta.festa { background: var(--vermelho); color: var(--preto); }
+.porta .quem-e { margin: 0; max-width: 24em; padding-right: 64px; font-size: var(--t-lead); font-weight: 600; color: var(--offwhite); }
+.porta svg { position: absolute; top: 40px; right: var(--m-r); width: 44px; height: 44px; transition: transform .3s var(--ease); }
+.porta h2 { margin-top: auto; font-size: clamp(64px, 8.4vw, 150px); line-height: 1.12; }
+.porta .faz-o-que { margin: 0; max-width: 28em; font-size: var(--t-texto); font-weight: 500; color: var(--offwhite); }
+.porta .vai { align-self: start; font: 700 15px/1 var(--f-texto); padding: 16px 22px; background: var(--offwhite); color: var(--preto); transition: transform .15s var(--ease); }
+.porta.palco .vai { background: var(--vermelho); color: var(--offwhite); }
+.porta:hover svg, .porta:focus-visible svg { transform: translate(6px, -6px); }
+.porta.palco:hover, .porta.palco:focus-visible { background: var(--grafite); }
+.porta.festa:hover, .porta.festa:focus-visible { background: #9A0F17; }
+.porta:active .vai { transform: scale(.97); }
+@media (max-width: 860px) {
+  .portas { grid-template-columns: minmax(0, 1fr); }
+  .porta { min-height: 0; padding-block: 32px 40px; gap: 22px; }
+  .porta svg { top: 32px; width: 32px; height: 32px; }
+  .porta .quem-e { font-size: 17px; padding-right: 48px; }
+  .porta h2 { margin-top: 24px; font-size: 17vw; }
+}
+
 /* ---------- Pedir data (faixa de fotos + barra) ---------- */
 .pedir-data { background: var(--grafite); padding-block: 56px 140px; overflow: hidden; }
 .faixa-fotos { display: flex; gap: 8px; width: max-content; animation: corre 60s linear infinite; }
@@ -278,6 +416,36 @@ a { color: inherit; }
 .lista-faz p { margin: 0; font-size: var(--t-texto); max-width: 30em; }
 .lista-faz:hover li:not(:first-child) .item { color: var(--cinza); }
 .lista-faz li:not(:first-child):hover .item { color: var(--offwhite); }
+
+/* ---------- Kit de Estrada: serviço para bandas de fora ---------- */
+.kit-chamada { background: var(--offwhite); color: var(--preto); padding: 14vh var(--m-r) 14vh var(--m); display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 48px 72px; align-items: end; }
+.kit-chamada h2 { font: 400 clamp(64px, 9vw, 156px)/1 var(--f-display); text-transform: uppercase; letter-spacing: -0.015em; margin: 0; }
+.kit-chamada .lead { margin: 28px 0 0; max-width: 30em; font-size: var(--t-lead); line-height: 1.5; font-weight: 500; }
+.kit-chamada .lead b { font-weight: 700; }
+.kit-precos { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.kit-precos li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; background: #E4DFD7; padding: 18px 22px; font-weight: 700; font-size: 17px; }
+.kit-precos li b { font: 400 30px/1 var(--f-display); white-space: nowrap; }
+.kit-precos li.completo { position: relative; margin-top: 18px; background: var(--vermelho); color: var(--offwhite); padding-block: 24px; font-size: 19px; }
+.kit-precos li.completo { padding-top: 58px; }
+.kit-precos li.completo .carimbo { top: -20px; right: 18px; }
+.kit-precos li.completo .carimbo b { font-size: 20px; }
+.carimbo { position: absolute; z-index: 2; display: grid; justify-items: center; gap: 4px; padding: 12px 16px 10px; background: var(--vermelho); color: var(--offwhite); border: 3px solid currentColor; box-shadow: inset 0 0 0 3px var(--vermelho), inset 0 0 0 5px var(--offwhite); transform: rotate(-9deg); pointer-events: none; }
+.carimbo b { font: 400 26px/1 var(--f-display); text-transform: uppercase; letter-spacing: .08em; }
+.carimbo i { font-style: normal; font-weight: 700; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.js .carimbo.bate { animation: carimbar .5s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes carimbar { from { opacity: 0; transform: rotate(-2deg) scale(1.7); } to { opacity: 1; transform: rotate(-9deg) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .js .carimbo.bate { animation: none; } }
+
+.kit-precos li.completo span small { display: block; font-weight: 600; font-size: 14px; margin-top: 4px; }
+.kit-precos li.completo b { font-size: 46px; }
+.kit-precos li.completo .de-por { display: grid; justify-items: end; gap: 6px; }
+.kit-precos li.completo .de-por small { font: 600 15px/1 Montserrat, sans-serif; }
+.kit-precos li.completo .de-por s { font: 400 22px/1 var(--f-display); opacity: .75; text-decoration-thickness: 2px; }
+.kit-chamada .acao { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; margin-top: 18px; }
+.kit-chamada .acao .btn { background: var(--preto); color: var(--offwhite); }
+.kit-chamada .acao .btn:hover { background: var(--grafite); }
+.kit-chamada .acao span { font-weight: 600; font-size: 15px; color: var(--cinza-tinta); }
+@media (max-width: 900px) { .kit-chamada { grid-template-columns: minmax(0, 1fr); padding-block: 72px; } .kit-chamada .acao .btn { width: 100%; } }
 
 /* ---------- Uma palavra é o botão ---------- */
 .mande {
@@ -331,7 +499,7 @@ a { color: inherit; }
   .grade { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px 12px; }
   .adesivo { display: none; }
   .foto-colada { top: calc(var(--seam) + 0.62 * var(--t-cartaz) + 12px); }
-  :root { --t-cartaz: 17vw; }
+  :root { --t-cartaz: max(64px, min(17vw, calc((50svh - 100px) / 1.62))); }
 }
 @media (max-width: 700px) {
   :root { --t-cartaz: 28vw; --seam: 46%; --m: max(16px, env(safe-area-inset-left, 0px)); --m-r: max(16px, env(safe-area-inset-right, 0px)); }
@@ -379,12 +547,14 @@ a { color: inherit; }
 
 
 <header class="topo-site sobre margem" data-barra>
-  <a class="marca" href="#inicio" aria-label="7A Produtora, início"><img src="img/logo-7a.png" srcset="img/logo-7a.png 1x, img/logo-7a-g.png 3x" alt="Logo 7A" width="40" height="47"><span>7A Produtora</span></a>
+  <a class="marca" href="#inicio" aria-label="7A Produtora, início"><img src="img/logo-7a.png" alt="Logo 7A" width="40" height="47"><span>7A Produtora</span></a>
   <nav class="menu" id="menu" aria-label="Principal">
     <a href="#casting">Casting</a>
     <a href="#agenda">Agenda</a>
     <a href="#formatos">Shows</a>
-    <a href="#pedir">Contratar</a>
+    <a href="#contratar">Contratar</a>
+    <a href="evento-particular.html">Evento particular</a>
+    <a href="kit-de-estrada.html">Kit de Estrada</a>
   </nav>
   <a class="btn btn-barra" href="#pedir">Pedir data</a>
   <button class="abre-menu" type="button" aria-expanded="false" aria-controls="menu">Menu</button>
@@ -403,7 +573,7 @@ a { color: inherit; }
   </div>
 
   <img class="foto-colada" src="img/v2.jpg" alt="Vocalista de uma banda da 7A cantando, foto em preto e branco" width="800" height="769">
-  <img class="adesivo" src="img/logo-7a-g.png" alt="" width="640" height="751">
+  <img class="adesivo" src="img/logo-7a-completa.png" alt="" width="640" height="640">
   <p class="apoio">Aqui o artista é levado a sério. Somos uma produtora e incubadora de rock em Betim, MG, com seis artistas prontos para o seu palco.</p>
 </div>
 
@@ -507,6 +677,24 @@ a { color: inherit; }
     <p class="nota">Toque em uma linha para pedir uma data com o artista. Valores, duração e rider técnico vão na proposta.</p>
   </section>
 
+  <!-- CONTRATAR: DUAS PORTAS -->
+  <section class="portas" id="contratar" aria-label="Contratar a 7A">
+    <a class="porta palco" href="#pedir" data-revela>
+      <p class="quem-e">Tem bar, casa de show ou festival?</p>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36 36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="4"/></svg>
+      <h2 class="display">Seu palco</h2>
+      <p class="faz-o-que">Peça uma data com o artista. A proposta vem com formato, rider e valores.</p>
+      <span class="vai">Pedir data</span>
+    </a>
+    <a class="porta festa" href="evento-particular.html" data-revela style="--d:1">
+      <p class="quem-e">Aniversário, casamento, formatura ou empresa?</p>
+      <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M12 36 36 12M16 12h20v20" fill="none" stroke="currentColor" stroke-width="4"/></svg>
+      <h2 class="display">Sua festa</h2>
+      <p class="faz-o-que">Voz e violão, duo acústico de rock, DJ ou banda completa no seu evento particular.</p>
+      <span class="vai">Ver evento particular</span>
+    </a>
+  </section>
+
   <!-- PEDIR DATA -->
   <section class="pedir-data" id="pedir" aria-labelledby="t-pedir">
     <div class="faixa-fotos" aria-hidden="true">
@@ -534,7 +722,7 @@ a { color: inherit; }
         </div>
         <div class="mensagem" aria-live="polite"><span>Sua mensagem</span><pre id="previa">Olá, 7A! Quero um orçamento de show.</pre></div>
       </form>
-      <p class="letra-miuda">Prefere ligar ou mandar e-mail? <b>(31) 99223-3295</b> · <b>7a.produtora@gmail.com</b></p>
+      <p class="letra-miuda">Prefere ligar ou mandar e-mail? <b>(31) 99223-3295</b> · <b>contato@7aprodutora.com.br</b></p>
     </div>
   </section>
 
@@ -551,6 +739,23 @@ a { color: inherit; }
     </ul>
   </section>
 
+  <!-- KIT DE ESTRADA -->
+  <section class="kit-chamada" id="kit" aria-labelledby="t-kit">
+    <div data-revela>
+      <h2 id="t-kit">Kit de Estrada</h2>
+      <p class="lead">Sua banda pronta para ser contratada. A 7A cria a <b>marca</b>, monta o <b>press kit</b> e faz o <b>rider com mapa de palco</b>, sob medida e do mesmo jeito que faz para o próprio casting. Feito por uma produtora, não por uma agência de publicidade.</p>
+    </div>
+    <div data-revela style="--d:1">
+      <ul class="kit-precos">
+        <li><span>Identidade da marca</span><b>R$ 447</b></li>
+        <li><span>Press kit</span><b>R$ 297</b></li>
+        <li><span>Rider e mapa de palco</span><b>R$ 147</b></li>
+        <li class="completo"><span>Kit completo<small>No Pix, ou 10x de R$ 70 no cartão.</small></span><span class="carimbo" aria-label="Recomendado pela 7A"><b>Recomendado</b><i>pela 7A</i></span><b class="de-por"><small>de <s>R$ 891</s> por</small>R$ 697</b></li>
+      </ul>
+      <div class="acao"><a class="btn" href="kit-de-estrada.html">Ver o Kit de Estrada</a><span>Pronto em 15 dias úteis</span></div>
+    </div>
+  </section>
+
   <!-- MANDE -->
   <a class="mande" id="artistas" href="https://wa.me/5531992233295?text=Ol%C3%A1%2C%207A!%20Sou%20artista%20e%20quero%20mandar%20meu%20material." target="_blank" rel="noopener">
     <p class="frase">Tem uma banda? Mande seu som, suas fotos e onde já tocou. Abre o WhatsApp da 7A.</p>
@@ -561,7 +766,7 @@ a { color: inherit; }
 
 <footer class="fim">
   <div class="filme">
-    <video src="img/ossos-ao-vivo.mp4" poster="img/ossos-ao-vivo.jpg" autoplay muted loop playsinline aria-label="Ossos do Banquete tocando ao vivo"></video>
+    <video data-src="img/ossos-ao-vivo.mp4" poster="img/ossos-ao-vivo.jpg" preload="none" muted loop playsinline aria-label="Ossos do Banquete tocando ao vivo"></video>
   </div>
   <div class="menu-fim">
     <a class="marca" href="#inicio" aria-label="Voltar ao início">
@@ -571,11 +776,13 @@ a { color: inherit; }
       <a href="#casting">Casting</a>
       <a href="#formatos">Formatos</a>
       <a href="#pedir">Pedir data</a>
+      <a href="evento-particular.html">Evento particular</a>
+      <a href="kit-de-estrada.html">Kit de Estrada</a>
       <a href="#faz">O que a 7A faz</a>
       <a href="#artistas">Para artistas</a>
     </nav>
     <div class="blocos">
-      <p><b>Contato</b>(31) 99223-3295, WhatsApp e celular<br>7a.produtora@gmail.com<br><button class="copiar" type="button" data-copiar="7a.produtora@gmail.com">Copiar e-mail</button></p>
+      <p><b>Contato</b>(31) 99223-3295, WhatsApp e celular<br>contato@7aprodutora.com.br<br><button class="copiar" type="button" data-copiar="contato@7aprodutora.com.br">Copiar e-mail</button></p>
       <p><b>Redes</b><a href="https://instagram.com/7a_produtora" target="_blank" rel="noopener">@7a_produtora no Instagram</a><br>Betim, Minas Gerais</p>
     </div>
     <p class="legal">© 2026 7A Produtora. Criar, produzir, transformar. Fotos: Ayra Mendes Fotografia e Mateus Rodrigues.</p>
@@ -674,5 +881,26 @@ a { color: inherit; }
 })();
 </script>
 
+<script>
+(function () {
+
+
+    var cs = document.querySelectorAll(".carimbo");
+    if (!("IntersectionObserver" in window)) return;
+    var ob = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("bate"); ob.unobserve(en.target); } }); }, { threshold: .6 });
+    Array.prototype.forEach.call(cs, function (c) { ob.observe(c); });
+  })();
+</script>
+<script>
+// vídeo do rodapé: só baixa quando o visitante chega perto dele (antes baixava 1,9 MB junto com a página)
+(function () {
+  var v = document.querySelector("video[data-src]");
+  if (!v) return;
+  var liga = function () { if (v.src) return; v.src = v.getAttribute("data-src"); v.autoplay = true; var p = v.play(); if (p && p.catch) p.catch(function () {}); };
+  if (!("IntersectionObserver" in window)) { liga(); return; }
+  var ob = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { liga(); ob.disconnect(); } }, { rootMargin: "400px 0px" });
+  ob.observe(v);
+})();
+</script>
 </body>
 </html>

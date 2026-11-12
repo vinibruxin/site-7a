@@ -2,15 +2,17 @@
 // Tudo fica no D1 (binding DB). As rotas abaixo exigem login, exceto pedidoDoSite (formulário público) e propostaPublica.
 
 import { agora, auditoria, dataBR, dataOk, hojeSP, json, lerConfig, prepararBanco, txt } from "./banco.js";
-import { NOMES_ETAPA, NOMES_PERFIL, rotasContratantes } from "./contratantes.js";
+import { gravarUltimoCacheDoShow, NOMES_ETAPA, NOMES_PERFIL, rotasContratantes } from "./contratantes.js";
 import { rotasMensagens, rotasModelos } from "./mensagens.js";
 import { indicadores, rotasCampanhas } from "./campanhas.js";
+import { rotasDocumentos, salvarEmitente } from "./documentos.js";
+import { rotasMusicos } from "./musicos.js";
 
 export { prepararBanco };
 export const STATUS = ["consulta", "reservado", "confirmado", "realizado", "cancelado"];
 const NOMES_STATUS = { consulta: "Consulta", reservado: "Reservado", confirmado: "Confirmado", realizado: "Realizado", cancelado: "Cancelado" };
 
-const CAMPOS_SHOW = ["data", "hora", "artista", "artista_texto", "contratante_id", "particular", "cep", "endereco", "numero", "complemento", "bairro", "uf", "referencia", "evento", "local", "cidade", "status", "cache", "pct", "despesas", "recebido", "repassado", "publicar", "link", "obs"];
+const CAMPOS_SHOW = ["data", "hora", "hora_fim", "artista", "artista_texto", "contratante_id", "particular", "cep", "endereco", "numero", "complemento", "bairro", "uf", "referencia", "evento", "local", "cidade", "status", "cache", "pct", "despesas", "recebido", "repassado", "publicar", "link", "obs"];
 
 const horaOk = (s) => (/^\d{2}:\d{2}$/.test(s || "") ? s : "");
 const centavos = (v) => {
@@ -32,6 +34,7 @@ function limparShow(s) {
   const r = {
     data: dataOk(s?.data),
     hora: horaOk(s?.hora),
+    hora_fim: horaOk(s?.hora_fim),
     artista: /^[a-z0-9-]{0,60}$/.test(s?.artista || "") ? s.artista || "" : "",
     artista_texto: txt(s?.artista_texto, 120),
     // um show é de um contratante ou é particular (sem contratante); nunca os dois
@@ -59,6 +62,8 @@ function limparShow(s) {
   };
   if (!r.data && r.status !== "consulta") return { erro: "Só uma consulta pode ficar sem data. Preencha o dia do show." };
   if (!r.artista && !r.artista_texto) return { erro: "Escolha o artista do show." };
+  if (r.hora_fim && !r.hora) return { erro: "Preencha a hora de início antes da hora de fim." };
+  if (r.hora_fim && r.hora_fim === r.hora) return { erro: "A hora de fim precisa ser diferente da hora de início." };
   return r;
 }
 
@@ -71,9 +76,22 @@ export function contas(s, config) {
   return { pct, comissao, repasse, falta_receber: s.cache - s.recebido, falta_repassar: repasse == null ? null : repasse - s.repassado };
 }
 
+// duração entre início e fim (passando da meia-noite conta como o dia seguinte): "3 horas", "2h30", "45 min"
+export function duracaoTexto(inicio, fim) {
+  if (!/^\d{2}:\d{2}$/.test(inicio || "") || !/^\d{2}:\d{2}$/.test(fim || "")) return "";
+  const min = (t) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3));
+  const total = (min(fim) - min(inicio) + 1440) % 1440;
+  if (!total) return "";
+  const h = Math.floor(total / 60), m = total % 60;
+  if (!h) return `${m} min`;
+  if (!m) return h === 1 ? "1 hora" : `${h} horas`;
+  return `${h}h${String(m).padStart(2, "0")}`;
+}
+
 /* ---------------- rotas com login ---------------- */
 
-export async function gestao(req, env, rota) {
+// quem = "equipe" (painel, com senha) ou "agente" (Évora, com token): o da Évora deixa a proposta aguardando aprovação
+export async function gestao(req, env, rota, quem = "equipe") {
   await prepararBanco(env);
   const metodo = req.method;
   const partes = rota.split("/"); // ex.: ["contratantes", "12", "notas"]
@@ -101,6 +119,20 @@ export async function gestao(req, env, rota) {
   if (partes[0] === "mensagens") return rotasMensagens(req, env, partes, corpo);
   if (partes[0] === "modelos") return rotasModelos(req, env, partes, corpo);
   if (partes[0] === "campanhas") return rotasCampanhas(req, env, partes, corpo);
+  // recibos e notas fiscais: só a equipe (o agente é barrado antes, em motivoAgente)
+  if (partes[0] === "documentos") return rotasDocumentos(req, env, partes, corpo, new URL(req.url));
+  // cadastro de artistas e músicos: só a equipe (o agente é barrado em motivoAgente)
+  if (partes[0] === "musicos") return rotasMusicos(req, env, partes, corpo, new URL(req.url));
+  if (rota === "emitente" && metodo === "PUT") return salvarEmitente(req, env, corpo);
+  // fila de mensagens: rascunhos prontos para abrir e abertas aguardando a confirmação de envio
+  if (rota === "fila" && metodo === "GET") {
+    const [rascunhos, abertas, enviadas] = await Promise.all([
+      env.DB.prepare("SELECT m.id, m.texto, m.criado, m.telefone, c.id AS contratante_id, c.nome, c.cidade, c.contato FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'rascunho' ORDER BY m.criado DESC LIMIT 100").all(),
+      env.DB.prepare("SELECT m.id, m.texto, m.criado, m.tipo, m.telefone, c.id AS contratante_id, c.nome FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'aberta' ORDER BY m.criado DESC LIMIT 100").all(),
+      env.DB.prepare("SELECT m.id, m.texto, m.atualizado, m.telefone, c.id AS contratante_id, c.nome FROM mensagens m JOIN contratantes c ON c.id = m.contratante_id WHERE m.situacao = 'enviada' ORDER BY m.atualizado DESC LIMIT 50").all(),
+    ]);
+    return json({ rascunhos: rascunhos.results, abertas: abertas.results, enviadas: enviadas.results });
+  }
   if (rota === "indicadores" && metodo === "GET") {
     const dias = [7, 30, 90].includes(Number(new URL(req.url).searchParams.get("dias"))) ? Number(new URL(req.url).searchParams.get("dias")) : 30;
     return json(await indicadores(env, dias));
@@ -117,15 +149,20 @@ export async function gestao(req, env, rota) {
   }
 
   if (partes[0] === "shows" && partes[2] === "proposta" && partes[3] === "email" && id && metodo === "POST") return enviarProposta(env, req, id, corpo);
+  // só a equipe aprova, pelo botão de aprovação: aprovar já envia a proposta por e-mail ao contratante
+  if (partes[0] === "shows" && partes[2] === "proposta" && partes[3] === "aprovar" && id && metodo === "POST") return aprovarProposta(env, req, id);
+  // proposta nova: a da Évora nasce aguardando; a da equipe nasce aprovada (como sempre foi)
+  const situacao = quem === "agente" ? "aguardando_aprovacao" : "aprovada";
 
   if (partes[0] === "shows" && partes[2] === "proposta" && id) {
     if (metodo === "GET") return json((await env.DB.prepare("SELECT * FROM propostas WHERE show_id = ?").bind(id).first()) || {});
     if (metodo === "PUT") {
-      const show = await env.DB.prepare("SELECT id FROM shows WHERE id = ?").bind(id).first();
+      const show = await env.DB.prepare("SELECT id, hora, hora_fim FROM shows WHERE id = ?").bind(id).first();
       if (!show) return json({ erro: "Salve o show antes de gerar a proposta." }, 404);
       const pr = {
         formato: txt(corpo?.formato, 160),
-        duracao: txt(corpo?.duracao, 160),
+        // com início e fim no show, a duração é sempre a conta; sem eles, vale o texto enviado
+        duracao: duracaoTexto(show.hora, show.hora_fim) || txt(corpo?.duracao, 160),
         inclui: txt(corpo?.inclui, 2000),
         rider: txt(corpo?.rider, 4000),
         condicoes: txt(corpo?.condicoes, 2000),
@@ -134,10 +171,11 @@ export async function gestao(req, env, rota) {
       const t = agora();
       const token = hex(crypto.getRandomValues(new Uint8Array(12)));
       const linha = await env.DB.prepare(
-        `INSERT INTO propostas (show_id, token, formato, duracao, inclui, rider, condicoes, validade, criado, atualizado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `INSERT INTO propostas (show_id, token, formato, duracao, inclui, rider, condicoes, validade, situacao, criado, atualizado) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
          ON CONFLICT(show_id) DO UPDATE SET formato = excluded.formato, duracao = excluded.duracao, inclui = excluded.inclui, rider = excluded.rider,
-         condicoes = excluded.condicoes, validade = excluded.validade, atualizado = excluded.atualizado RETURNING *`
-      ).bind(id, token, pr.formato, pr.duracao, pr.inclui, pr.rider, pr.condicoes, pr.validade, t, t).first();
+         condicoes = excluded.condicoes, validade = excluded.validade, atualizado = excluded.atualizado,
+         situacao = CASE WHEN excluded.situacao = 'aguardando_aprovacao' THEN 'aguardando_aprovacao' ELSE propostas.situacao END RETURNING *`
+      ).bind(id, token, pr.formato, pr.duracao, pr.inclui, pr.rider, pr.condicoes, pr.validade, situacao, t, t).first();
       return json(linha);
     }
   }
@@ -150,6 +188,7 @@ export async function gestao(req, env, rota) {
       const linha = await env.DB.prepare(
         `INSERT INTO shows (${CAMPOS_SHOW.join(", ")}, criado, atualizado) VALUES (${CAMPOS_SHOW.map(() => "?").join(", ")}, ?, ?) RETURNING *`
       ).bind(...CAMPOS_SHOW.map((k) => s[k]), t, t).first();
+      if (quem === "equipe") await gravarUltimoCacheDoShow(env, linha);
       return json(linha);
     }
     if (!id) return json({ erro: "Show não encontrado." }, 404);
@@ -159,6 +198,8 @@ export async function gestao(req, env, rota) {
       const linha = await env.DB.prepare(`UPDATE shows SET ${CAMPOS_SHOW.map((k) => k + " = ?").join(", ")}, atualizado = ? WHERE id = ? RETURNING *`)
         .bind(...CAMPOS_SHOW.map((k) => s[k]), agora(), id)
         .first();
+      // confirmar o show (feito pela equipe) grava o cachê como último cachê da casa
+      if (linha && quem === "equipe") await gravarUltimoCacheDoShow(env, linha);
       return linha ? json(linha) : json({ erro: "Show não encontrado." }, 404);
     }
     if (metodo === "DELETE") {
@@ -172,6 +213,9 @@ export async function gestao(req, env, rota) {
     if (pct !== "" && !(Number.isFinite(pct) && pct >= 0 && pct <= 100)) return json({ erro: "O % precisa ficar entre 0 e 100." }, 400);
     const base = corpo?.base === "liquido" ? "liquido" : "bruto";
     const atual = await lerConfig(env);
+    // % da 7A para artistas de fora do casting (padrão 30%)
+    const fora = corpo?.pct_fora == null ? atual.pct_fora : corpo.pct_fora === "" ? "" : Number(corpo.pct_fora);
+    if (fora !== "" && !(Number.isFinite(Number(fora)) && Number(fora) >= 0 && Number(fora) <= 100)) return json({ erro: "O % de artistas de fora precisa ficar entre 0 e 100." }, 400);
     const limite = corpo?.limite_diario == null ? Number(atual.limite_diario) : Math.round(Number(corpo.limite_diario));
     if (!(limite >= 1 && limite <= 250)) return json({ erro: "O limite diário precisa ficar entre 1 e 250 novas abordagens." }, 400);
     const intervalo = corpo?.intervalo_dias == null ? Number(atual.intervalo_dias) : Math.round(Number(corpo.intervalo_dias));
@@ -180,6 +224,7 @@ export async function gestao(req, env, rota) {
     const up = "INSERT INTO config (chave, valor) VALUES (?, ?) ON CONFLICT(chave) DO UPDATE SET valor = excluded.valor";
     await env.DB.batch([
       env.DB.prepare(up).bind("pct_padrao", String(pct)),
+      env.DB.prepare(up).bind("pct_fora", String(fora)),
       env.DB.prepare(up).bind("base", base),
       env.DB.prepare(up).bind("limite_diario", String(limite)),
       env.DB.prepare(up).bind("intervalo_dias", String(intervalo)),
@@ -253,16 +298,35 @@ export function montarEmailProposta({ token, artista, slug, contato, data, hora,
   return { html, text };
 }
 
+// aprovação da equipe: marca a proposta como aprovada e, se a casa tem e-mail e o envio está ligado, manda na hora
+async function aprovarProposta(env, req, id) {
+  const atual = await env.DB.prepare(
+    "SELECT p.show_id, c.email AS email FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.show_id = ?"
+  ).bind(id).first();
+  if (!atual) return json({ erro: "Gere a proposta antes de aprovar." }, 404);
+  await env.DB.prepare("UPDATE propostas SET situacao = 'aprovada', atualizado = ? WHERE show_id = ?").bind(agora(), id).run();
+  if (!atual.email) {
+    return json({ ok: true, situacao: "aprovada", enviada: false, motivo: "A proposta está aprovada, mas a casa não tem e-mail cadastrado. Envie o link pelo WhatsApp." });
+  }
+  const r = await enviarProposta(env, req, id, { para: atual.email });
+  if (r.status !== 200) {
+    const dados = await r.json().catch(() => ({}));
+    return json({ ok: true, situacao: "aprovada", enviada: false, motivo: dados.erro || "Não deu para enviar o e-mail. Tente pelo botão de envio." });
+  }
+  return json({ ok: true, situacao: "aprovada", enviada: true, para: atual.email });
+}
+
 async function enviarProposta(env, req, id, corpo) {
   if (!env.RESEND_API_KEY) return json({ erro: "O envio por e-mail ainda não está ligado. Falta a chave do Resend na Cloudflare." }, 503);
   const para = txt(corpo?.para, 160).toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(para)) return json({ erro: "Confira o e-mail do contratante." }, 400);
   const mensagem = txt(corpo?.mensagem, 2000);
   const p = await env.DB.prepare(
-    `SELECT p.token, s.artista, s.artista_texto, s.data, s.hora, s.local, s.cidade, s.contratante_id, c.contato AS contato
+    `SELECT p.token, p.situacao, s.artista, s.artista_texto, s.data, s.hora, s.local, s.cidade, s.contratante_id, c.contato AS contato
      FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.show_id = ?`
   ).bind(id).first();
   if (!p) return json({ erro: "Gere a proposta antes de enviar." }, 404);
+  if (p.situacao !== "aprovada") return json({ erro: "Esta proposta ainda aguarda aprovação. Revise e salve no painel antes de enviar." }, 409);
   const artista = (await nomesArtistas(env, req))[p.artista] || p.artista_texto || p.artista;
   const { html, text } = montarEmailProposta({ token: p.token, artista, slug: p.artista, contato: p.contato, data: p.data, hora: p.hora, local: p.local, cidade: p.cidade, mensagem });
   let r;
@@ -325,10 +389,10 @@ async function exportar(env, req, qual) {
       nomesArtistas(env, req),
     ]);
     const nomes = Object.fromEntries(cs.results.map((c) => [c.id, c.nome]));
-    linhas = [["Data", "Hora", "Artista", "Contratante", "Evento", "Local", "Cidade", "Status", "Cachê", "% 7A", "Despesas", "Comissão 7A", "Repasse ao artista", "Recebido", "Repassado", "Falta receber", "Falta repassar", "Observações"]];
+    linhas = [["Data", "Início", "Fim", "Duração", "Artista", "Contratante", "Evento", "Local", "Cidade", "Status", "Cachê", "% 7A", "Despesas", "Comissão 7A", "Repasse ao artista", "Recebido", "Repassado", "Falta receber", "Falta repassar", "Observações"]];
     for (const s of results) {
       const k = contas(s, config);
-      linhas.push([s.data, s.hora, art[s.artista] || s.artista_texto || s.artista, nomes[s.contratante_id] || "", s.evento, s.local, s.cidade, NOMES_STATUS[s.status] || s.status, reais(s.cache), k.pct == null ? "" : String(k.pct).replace(".", ","), reais(s.despesas), reais(k.comissao), reais(k.repasse), reais(s.recebido), reais(s.repassado), reais(k.falta_receber), reais(k.falta_repassar), s.obs]);
+      linhas.push([s.data, s.hora, s.hora_fim || "", duracaoTexto(s.hora, s.hora_fim), art[s.artista] || s.artista_texto || s.artista, nomes[s.contratante_id] || "", s.evento, s.local, s.cidade, NOMES_STATUS[s.status] || s.status, reais(s.cache), k.pct == null ? "" : String(k.pct).replace(".", ","), reais(s.despesas), reais(k.comissao), reais(k.repasse), reais(s.recebido), reais(s.repassado), reais(k.falta_receber), reais(k.falta_repassar), s.obs]);
     }
   } else return json({ erro: "Planilha não encontrada." }, 404);
 
@@ -352,6 +416,27 @@ async function exportar(env, req, qual) {
 
 const LIMITE_IP_HORA = 5;
 const LIMITE_DIA = 100;
+// tipo do contratante a partir do que a pessoa escolheu no site (home e página de evento particular)
+const TIPO_DO_EVENTO = {
+  "Bar ou casa de show": "casa",
+  Festival: "festival",
+  "Evento de empresa": "empresa",
+  "Confraternização de empresa": "empresa",
+  "Festa particular": "particular",
+  Aniversário: "particular",
+  Casamento: "particular",
+  Formatura: "particular",
+  "Festa em casa": "particular",
+};
+
+// duração entre início e fim (fim antes do início passa da meia-noite), ex.: "3 h 30 min"
+export function duracaoShow(inicio, fim) {
+  const min = (h) => +h.slice(0, 2) * 60 + +h.slice(3, 5);
+  let d = min(fim) - min(inicio);
+  if (d <= 0) d += 1440;
+  const h = Math.floor(d / 60), m = d % 60;
+  return [h ? `${h} h` : "", m ? `${m} min` : ""].filter(Boolean).join(" ");
+}
 
 export async function pedidoDoSite(req, env) {
   await prepararBanco(env);
@@ -364,7 +449,7 @@ export async function pedidoDoSite(req, env) {
   if (!artista || !evento) return json({ ok: false }, 400);
 
   const ip = req.headers.get("cf-connecting-ip") || "local";
-  const assinatura = [nome, artista, evento, cidade, data].join("|").toLowerCase();
+  const assinatura = [nome, artista, evento, cidade, data, String(p?.local || "").slice(0, 120)].join("|").toLowerCase();
   const umaHora = new Date(Date.now() - 3600e3).toISOString();
   const umDia = new Date(Date.now() - 86400e3).toISOString();
   const [porIp, repetido, noDia] = await env.DB.batch([
@@ -375,9 +460,24 @@ export async function pedidoDoSite(req, env) {
   // mesmo pedido clicado duas vezes, ou excesso: responde ok sem gravar de novo
   if (porIp.results[0].n >= LIMITE_IP_HORA || repetido.results[0].n > 0 || noDia.results[0].n >= LIMITE_DIA) return json({ ok: true });
 
+  // página de evento particular manda também horário, convidados e local
+  const hora = (x) => (/^([01]\d|2[0-3]):[0-5]\d$/.test(x || "") ? x : "");
+  const inicio = hora(p?.inicio), fim = hora(p?.fim);
+  const horario = inicio && fim ? `${inicio} às ${fim} (${duracaoShow(inicio, fim)})` : inicio || (fim ? `até ${fim}` : "");
+  const convidados = txt(p?.convidados, 20);
+  const local = txt(p?.local, 120);
+
   const t = agora();
-  const tipo = { "Bar ou casa de show": "casa", Festival: "festival", "Evento de empresa": "empresa", "Festa particular": "particular" }[evento] || "outro";
-  const detalhe = [`Pedido pelo site: ${artista}`, `Evento: ${evento}`, data ? `Data: ${data.split("-").reverse().join("/")}` : "", cidade ? `Cidade: ${cidade}` : ""].filter(Boolean).join(". ");
+  const tipo = TIPO_DO_EVENTO[evento] || (p?.particular ? "particular" : "outro");
+  const detalhe = [
+    `Pedido pelo site: ${artista}`,
+    `Evento: ${evento}`,
+    data ? `Data: ${data.split("-").reverse().join("/")}` : "",
+    horario ? `Horário: ${horario}` : "",
+    cidade ? `Cidade: ${cidade}` : "",
+    local ? `Local: ${local}` : "",
+    convidados ? `Convidados: ${convidados}` : "",
+  ].filter(Boolean).join(". ");
   const titulo = nome || `Pedido do site (${cidade || evento})`;
   const c = await env.DB.prepare(
     `INSERT INTO contratantes (nome, tipo, contato, cidade, etapa, proxima_acao, proxima_data, origem, obs, criado, atualizado)
@@ -396,7 +496,7 @@ export async function pedidoDoSite(req, env) {
 /* ---------------- proposta (pública, pelo link com token) ---------------- */
 
 // dados de cada artista que o site já mostra nas cartas do casting
-const CASTING = {
+export const CASTING = {
   "ordem-mor": { genero: "Rock autoral", serie: "7A-001", formato: "Banda completa", foto: "/img/ordem-mor.jpg", foco: "50% 100%", claro: true },
   "sub-rosa": { genero: "Rock progressivo autoral", serie: "7A-002", formato: "Banda completa", foto: "/img/sub-rosa.jpg", foco: "50% 50%" },
   "ossos-do-banquete": { genero: "Rock Clássico / Autoral", serie: "7A-003", formato: "Banda completa", foto: "/img/ossos.jpg", foco: "47% 50%" },
@@ -409,8 +509,8 @@ export async function propostaPublica(req, env, token) {
   if (!/^[a-f0-9]{24}$/.test(token)) return json({ erro: "Proposta não encontrada." }, 404);
   await prepararBanco(env);
   const p = await env.DB.prepare(
-    `SELECT p.*, s.data, s.hora, s.artista, s.artista_texto, s.evento, s.local, s.cidade, s.cache, s.status, c.nome AS contratante, c.contato
-     FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.token = ?`
+    `SELECT p.*, s.data, s.hora, s.hora_fim, s.artista, s.artista_texto, s.evento, s.local, s.cidade, s.cache, s.status, c.nome AS contratante, c.contato
+     FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.token = ? AND p.situacao = 'aprovada'`
   ).bind(token).first();
   if (!p || p.status === "cancelado") return json({ erro: "Proposta não encontrada." }, 404);
   let conteudo = await env.CONTEUDO.get("conteudo", "json");
@@ -438,8 +538,9 @@ export async function propostaPublica(req, env, token) {
       destaques: (a.destaques || []).slice(0, 4),
       formacao: (a.formacao || []).filter((f) => f.nome),
     },
-    data: p.data, hora: p.hora, evento: p.evento, local: p.local, cidade: p.cidade, cache: p.cache,
-    formato: p.formato, duracao: p.duracao, inclui: p.inclui, rider: p.rider, condicoes: p.condicoes, validade: p.validade,
+    data: p.data, hora: p.hora, hora_fim: p.hora_fim || "", evento: p.evento, local: p.local, cidade: p.cidade, cache: p.cache,
+    // com início e fim no show, a duração da proposta é sempre a conta entre os dois
+    formato: p.formato, duracao: duracaoTexto(p.hora, p.hora_fim) || p.duracao, inclui: p.inclui, rider: p.rider, condicoes: p.condicoes, validade: p.validade,
   });
 }
 

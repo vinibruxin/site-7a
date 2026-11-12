@@ -92,7 +92,7 @@ p { margin: 0; }
 
 /* fecho */
 .fecho { padding: 64px var(--m) 56px; display: grid; gap: 36px; }
-.fecho .lema { font-size: clamp(44px, 7vw, 68px); }
+.fecho .lema { font-size: clamp(44px, 7vw, 68px); line-height: 1.12; }
 .acoes { display: flex; flex-wrap: wrap; gap: 10px; }
 .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 52px; padding: 16px 24px; font: 700 16px/1 var(--f-texto); background: var(--vermelho); color: var(--offwhite); border: 0; text-decoration: none; cursor: pointer; transition: transform .15s, background-color .2s; }
 .btn:hover { background: #9A0F17; }
@@ -125,8 +125,8 @@ p { margin: 0; }
 }
 
 @page { size: A4; margin: 0; }
-/* impressão e PDF: sempre o layout largo, em duas folhas A4 (o show na primeira, valores e artista na segunda),
-   mesmo quando o PDF é gerado no celular */
+/* impressão e PDF: sempre o layout largo, em duas folhas A4 (o show na primeira; valores, artista e contato da 7A
+   na segunda), mesmo quando o PDF é gerado no celular. O fecho é compacto para não sobrar numa terceira folha. */
 @media print {
   :root { --m: 15mm; }
   html, body { background: var(--preto); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
@@ -146,8 +146,17 @@ p { margin: 0; }
   .valores h2 { margin-bottom: 0; }
   .rider { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 10mm; }
   .rider .inteiro { margin-top: 7mm; }
-  .fecho { padding: 11mm var(--m); gap: 7mm; break-inside: avoid; }
-  .fecho .lema { font-size: 44px; }
+  .valores, .rider { padding: 9mm var(--m) 9mm; }
+  .valores h2, .rider h2 { font-size: 30px; margin-bottom: 5mm; }
+  .valores h2 { margin-bottom: 0; }
+  .rider .inteiro { margin-top: 5mm; }
+  .valores .termos, .rider .bloco { font-size: 14px; line-height: 1.45; }
+  .termos { gap: 4mm; }
+  .rider ul { gap: 3px; }
+  .fecho { padding: 8mm var(--m) 9mm; gap: 4mm; break-inside: avoid; grid-template-columns: auto minmax(0, 1fr); align-items: end; column-gap: 10mm; }
+  .fecho .lema { font-size: 34px; grid-row: span 2; }
+  .contato { font-size: 13px; gap: 3px 18px; }
+  .slogan { font-size: 12px; }
 }
 </style>
 </head>
@@ -179,7 +188,7 @@ p { margin: 0; }
     const inclui = lista(p.inclui || "");
     const fatos = [
       ["Data", p.data ? dataLonga(p.data) : "A combinar", true],
-      ["Horário", p.hora ? p.hora.replace(":", "h") : "A combinar"],
+      ["Horário", p.hora ? p.hora.replace(":", "h") + (p.hora_fim ? " às " + p.hora_fim.replace(":", "h") : "") : "A combinar"],
       ["Formato", p.formato || "A combinar"],
       ["Local", [p.local, p.evento && p.evento !== p.local ? p.evento : ""].filter(Boolean).join(" · ") || "A combinar"],
       ["Cidade", p.cidade || "A combinar"],
@@ -221,6 +230,7 @@ p { margin: 0; }
           ${inclui.length ? `<div><h3>O que está incluso</h3><ul>${inclui.map((l) => `<li>${esc(l)}</li>`).join("")}</ul></div>` : ""}
           ${p.condicoes ? `<div><h3>Condições de pagamento</h3><p>${esc(p.condicoes)}</p></div>` : ""}
           ${!inclui.length && !p.condicoes ? "<div><p>Condições de pagamento a combinar com a 7A.</p></div>" : ""}
+          <div><h3>Responsabilidades</h3><p>O show acontece no local indicado, que é um estabelecimento privado. A casa é responsável pelas licenças do estabelecimento (alvará, AVCB, lotação) e pelo controle do volume ambiente, incluindo os limites de ruído da legislação municipal. A 7A responde pela técnica e pela passagem de som dos equipamentos que leva.</p></div>
         </div>
       </section>
 
@@ -239,7 +249,7 @@ p { margin: 0; }
         </div>
         <div class="contato">
           <a href="https://wa.me/5531992233295" target="_blank" rel="noopener">(31) 99223-3295</a>
-          <a href="mailto:7a.produtora@gmail.com">7a.produtora@gmail.com</a>
+          <a href="mailto:contato@7aprodutora.com.br">contato@7aprodutora.com.br</a>
           <a href="https://instagram.com/7a_produtora" target="_blank" rel="noopener">@7a_produtora</a>
           <a href="https://7aprodutora.com.br/${a.slug ? esc(a.slug) + ".html" : ""}" target="_blank" rel="noopener">7aprodutora.com.br</a>
         </div>

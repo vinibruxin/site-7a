@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kit de Estrada | 7A Produtora</title>
+<meta name="description" content="Identidade da marca, press kit e rider técnico com mapa de palco para a sua banda. Feito pela 7A Produtora.">
+<link rel="canonical" href="https://7aprodutora.com.br/kit-de-estrada.html">
+<meta property="og:title" content="Kit de Estrada | 7A Produtora">
+<meta property="og:description" content="Identidade da marca, press kit e rider técnico com mapa de palco para a sua banda. Kit completo por R$ 697 ou 10x de R$ 70.">
+<meta property="og:image" content="https://7aprodutora.com.br/img/og.jpg">
+<meta property="og:url" content="https://7aprodutora.com.br/kit-de-estrada.html">
+<link rel="icon" href="img/logo-7a.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Montserrat:wght@400;500;600;700&family=Space+Mono&display=swap">
+<script>document.documentElement.classList.add('js');</script>
+<style>
+/* Kit de Estrada: serviço da 7A para artistas de fora do casting.
+   Mesma língua das fichas de press kit e de rider (campos chapados, Anton grande, vermelho em campo inteiro só onde decide).
+   O rider e o mapa de palco vêm da própria ficha /rider-tecnico, aberta aqui dentro em modo kit. */
+:root {
+  --preto: #0A0A0A;
+  --vermelho: #B5121B;
+  --offwhite: #F2EFEA;
+  --grafite: #2B2B2B;
+  --grafite-2: #3A3A3A;
+  --ouro: #F2D27C;
+  --cinza: #B8B2AA;
+  --cinza-tinta: #8A847D;
+  --f-display: "Anton", "Impact", "Arial Narrow Bold", sans-serif;
+  --f-texto: "Montserrat", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --t-cartaz: clamp(72px, 9.6vw, 164px);
+  --t-titulo: clamp(36px, 4.2vw, 64px);
+  --t-sub: clamp(24px, 2.2vw, 34px);
+  --t-lead: 20px;
+  --t-texto: 17px;
+  --t-nota: 14px;
+  --m: max(20px, env(safe-area-inset-left, 0px));
+  --m-r: max(20px, env(safe-area-inset-right, 0px));
+  --ease: cubic-bezier(.16, 1, .3, 1);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--preto); scroll-behavior: smooth; scroll-padding-top: 84px; }
+body { margin: 0; background: var(--preto); color: var(--offwhite); font-family: var(--f-texto); font-size: var(--t-texto); line-height: 1.55; -webkit-font-smoothing: antialiased; }
+img, video { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--ouro); outline-offset: 3px; }
+[hidden] { display: none !important; }
+.margem { padding-left: var(--m); padding-right: var(--m-r); }
+.display { font-family: var(--f-display); font-weight: 400; text-transform: uppercase; letter-spacing: -0.01em; line-height: 1.12; margin: 0; text-wrap: balance; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; font: 700 16px/1 var(--f-texto); text-decoration: none; cursor: pointer; border: 0; border-radius: 0; padding: 20px 28px; background: var(--vermelho); color: var(--offwhite); transition: background-color .2s, transform .15s var(--ease); }
+.btn:hover { background: #9A0F17; }
+.btn:active { transform: scale(.97); }
+.btn[disabled] { opacity: .45; cursor: not-allowed; }
+.btn-preto { background: var(--preto); }
+.btn-preto:hover { background: var(--grafite-2); }
+.btn-claro { background: var(--offwhite); color: var(--preto); }
+.btn-claro:hover { background: #fff; }
+.btn-grafite { background: var(--grafite); }
+.btn-grafite:hover { background: var(--grafite-2); }
+.link { font-weight: 700; font-size: 15px; text-decoration: underline; text-decoration-color: var(--vermelho); text-decoration-thickness: 2px; text-underline-offset: 6px; background: none; border: 0; color: inherit; cursor: pointer; padding: 6px 0; font-family: var(--f-texto); }
+.link:hover { text-decoration-color: var(--offwhite); }
+
+/* ---------- Barra ---------- */
+.topo-site { position: sticky; top: 0; z-index: 50; display: flex; align-items: center; gap: 24px; padding-top: calc(env(safe-area-inset-top, 0px) + 14px); padding-bottom: 14px; background: var(--preto); }
+.topo-site .marca { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--offwhite); margin-right: auto; }
+.topo-site .marca img { width: 38px; height: auto; }
+.topo-site .marca span { font: 400 20px/1 var(--f-display); text-transform: uppercase; letter-spacing: .02em; }
+.topo-site .escolha-curta { font-weight: 600; font-size: 15px; color: var(--cinza); }
+.topo-site .escolha-curta b { color: var(--offwhite); }
+.topo-site .btn { padding: 13px 18px; font-size: 14px; }
+
+/* ---------- Abertura ---------- */
+.abertura { display: grid; grid-template-columns: minmax(0, 6fr) minmax(0, 5fr); gap: 40px 56px; align-items: end; padding-block: clamp(48px, 8vh, 104px) 0; }
+.abertura h1 { font-size: var(--t-cartaz); line-height: .98; }
+.abertura h1 span { display: block; }
+.abertura .apoio { margin: 32px 0 0; font-size: var(--t-lead); line-height: 1.45; font-weight: 500; max-width: 30em; }
+.abertura .tres { margin: 28px 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 8px 28px; font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; }
+.abertura .tres li { display: flex; align-items: center; gap: 12px; }
+.abertura .tres li::before { content: ""; width: 10px; height: 10px; background: var(--vermelho); transform: rotate(45deg); }
+.abertura .acao { margin-top: 36px; display: flex; flex-wrap: wrap; gap: 16px 28px; align-items: center; }
+.abertura .acao span { font-weight: 600; color: var(--cinza); font-size: 16px; }
+.abertura figure { margin: 0; position: relative; }
+.abertura figure video, .abertura figure img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(1) contrast(1.05); background: var(--grafite); }
+.abertura figcaption { margin-top: 12px; font-size: var(--t-nota); color: var(--cinza); }
+.abertura figcaption b { color: var(--offwhite); }
+
+/* Exemplo real: o press kit da Ossos, feito pela 7A */
+.exemplo { margin-top: clamp(64px, 9vh, 112px); background: var(--vermelho); padding: 44px var(--m-r) 48px var(--m); display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 7fr); gap: 32px 56px; align-items: end; }
+.exemplo p { margin: 0; font-size: var(--t-lead); font-weight: 600; line-height: 1.45; max-width: 22em; }
+.exemplo p b { display: block; font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; margin-bottom: 10px; }
+.paginas { display: grid; grid-template-columns: 1.35fr 1fr 1fr 1fr; gap: 12px; align-items: end; }
+.paginas button { display: block; padding: 0; border: 0; background: none; cursor: zoom-in; transition: transform .5s var(--ease); }
+.paginas button:hover { transform: translateY(-6px); }
+.paginas button:focus-visible { outline: 3px solid var(--offwhite); outline-offset: 4px; }
+.paginas img { display: block; width: 100%; height: auto; aspect-ratio: 210 / 297; object-fit: cover; }
+
+/* ---------- Página ampliada ---------- */
+.zoom { width: 100vw; height: 100dvh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: rgba(10, 10, 10, .94); color: var(--offwhite); }
+.zoom[open] { display: grid; grid-template-columns: 72px minmax(0, 1fr) 72px; grid-template-rows: auto minmax(0, 1fr) auto; }
+.zoom::backdrop { background: rgba(10, 10, 10, .6); }
+.zoom .zoom-topo { grid-column: 1 / -1; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 16px 20px; }
+.zoom .zoom-topo p { margin: 0; font-weight: 600; font-size: 15px; }
+.zoom .zoom-topo p span { font-family: var(--f-mono); color: var(--cinza); }
+.zoom figure { grid-column: 2; grid-row: 2; margin: 0; display: grid; place-items: center; min-height: 0; padding-bottom: 20px; }
+.zoom figure img { max-width: 100%; max-height: calc(100dvh - 110px); width: auto; height: auto; object-fit: contain; box-shadow: 0 20px 60px rgba(0, 0, 0, .5); }
+.zoom .seta { grid-row: 2; align-self: center; justify-self: center; width: 52px; height: 52px; display: grid; place-items: center; border: 2px solid var(--offwhite); background: none; color: var(--offwhite); font: 400 30px/1 var(--f-display); cursor: pointer; transition: background-color .2s, color .2s; }
+.zoom .seta:hover { background: var(--offwhite); color: var(--preto); }
+.zoom #zoom-ant { grid-column: 1; }
+.zoom #zoom-prox { grid-column: 3; }
+
+/* ---------- Carimbo "Recomendado" ---------- */
+.carimbo { position: absolute; z-index: 2; display: grid; justify-items: center; gap: 4px; padding: 12px 16px 10px; background: var(--vermelho); color: var(--offwhite); border: 3px solid currentColor; box-shadow: inset 0 0 0 3px var(--vermelho), inset 0 0 0 5px var(--offwhite); transform: rotate(-9deg); pointer-events: none; }
+.carimbo b { font: 400 26px/1 var(--f-display); text-transform: uppercase; letter-spacing: .08em; }
+.carimbo i { font-style: normal; font-weight: 700; font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+.js .carimbo.bate { animation: carimbar .5s cubic-bezier(.2, 1.6, .4, 1) both; }
+@keyframes carimbar { from { opacity: 0; transform: rotate(-2deg) scale(1.7); } to { opacity: 1; transform: rotate(-9deg) scale(1); } }
+@media (prefers-reduced-motion: reduce) { .js .carimbo.bate { animation: none; } }
+
+/* ---------- Vantagens: lista grande, como "O que a 7A faz" na home ---------- */
+.vantagens { padding-block: clamp(96px, 14vh, 168px) 0; display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 8fr); gap: 40px 56px; align-items: start; }
+.vantagens > header { position: sticky; top: 96px; display: grid; gap: 18px; }
+.vantagens h2 { font-size: var(--t-titulo); }
+.vantagens > header p { margin: 0; font-size: var(--t-lead); line-height: 1.5; max-width: 22em; }
+.vantagens > header .btn { justify-self: start; }
+.lista-vale { list-style: none; margin: 0; padding: 0; display: grid; gap: 56px; }
+.lista-vale li { display: grid; gap: 12px; transition: color .25s; }
+.lista-vale h3 { margin: 0; font: 400 clamp(32px, 3.4vw, 54px)/1.12 var(--f-display); text-transform: uppercase; letter-spacing: -0.01em; }
+.lista-vale p { margin: 0; font-size: var(--t-lead); line-height: 1.5; max-width: 34em; }
+.lista-vale li.preco-musico h3 { color: var(--vermelho); }
+
+/* ---------- Serviços e preços ---------- */
+.servicos { padding-block: clamp(96px, 14vh, 168px) 0; display: grid; gap: 40px; }
+.servicos > header { display: grid; gap: 14px; max-width: 46em; }
+.servicos h2 { font-size: var(--t-titulo); }
+.servicos > header p { margin: 0; font-size: var(--t-lead); line-height: 1.5; }
+.tabela { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 12px; align-items: stretch; }
+
+.kit-completo { position: relative; display: grid; align-content: space-between; gap: 32px; background: var(--vermelho); padding: 40px 36px 36px; cursor: pointer; transition: background-color .2s; }
+.kit-completo:hover { background: #A3101A; }
+.kit-completo .carimbo { top: -26px; right: 28px; }
+.kit-completo h3 { font: 400 clamp(44px, 4.6vw, 76px)/1.12 var(--f-display); text-transform: uppercase; margin: 28px 0 0; }
+.kit-completo ul { margin: 18px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; font-weight: 600; font-size: 17px; }
+.kit-completo li { display: flex; gap: 12px; align-items: baseline; }
+.kit-completo li::before { content: ""; flex: none; width: 8px; height: 8px; background: var(--offwhite); transform: rotate(45deg) translateY(-2px); }
+.kit-completo .valor { display: grid; gap: 4px; }
+.kit-completo .valor strong { font: 400 clamp(56px, 6vw, 96px)/1 var(--f-display); }
+.kit-completo .valor .de { margin: 0; font-weight: 600; font-size: 20px; }
+.kit-completo .valor .de s { font: 400 34px/1 var(--f-display); opacity: .75; text-decoration-thickness: 3px; margin-left: 4px; }
+.kit-completo .valor strong small { font: 700 20px/1 var(--f-texto); margin-right: 10px; vertical-align: .9em; }
+.kit-completo .valor span { font-weight: 600; font-size: 17px; }
+.kit-completo .valor .parcela { font-weight: 700; font-size: 20px; margin-bottom: 4px; }
+.kit-completo .marcar { display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 17px; }
+.kit-completo input { position: absolute; opacity: 0; pointer-events: none; }
+.caixa { flex: none; width: 28px; height: 28px; background: var(--offwhite); display: grid; place-items: center; transition: background-color .2s; }
+.caixa::after { content: ""; width: 12px; height: 12px; background: var(--vermelho); transform: rotate(45deg) scale(0); transition: transform .25s var(--ease); }
+input:checked + .marcar .caixa::after, input:checked + .caixa::after { transform: rotate(45deg) scale(1); }
+.kit-completo input:focus-visible + .marcar .caixa { outline: 3px solid var(--ouro); outline-offset: 3px; }
+
+.avulsos { display: grid; gap: 12px; }
+.avulso { position: relative; display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 8px 22px; align-items: start; background: var(--grafite); padding: 28px 30px; cursor: pointer; transition: background-color .2s; }
+.avulso:hover { background: var(--grafite-2); }
+.avulso input { position: absolute; opacity: 0; pointer-events: none; }
+.avulso .caixa { margin-top: 4px; background: var(--preto); }
+.avulso input:checked ~ .caixa { background: var(--offwhite); }
+.avulso input:focus-visible ~ .caixa { outline: 3px solid var(--ouro); outline-offset: 3px; }
+.avulso h3 { font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; margin: 0; }
+.avulso p { margin: 8px 0 0; font-size: 16px; line-height: 1.5; max-width: 34em; }
+.avulso .prazo { display: block; margin-top: 10px; font-weight: 600; font-size: 15px; color: var(--cinza); }
+.avulso .preco { font: 400 clamp(30px, 2.8vw, 44px)/1 var(--f-display); white-space: nowrap; }
+
+.conta { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px 40px; align-items: center; background: var(--offwhite); color: var(--preto); padding: 28px 30px; }
+.conta .linha1 { font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; margin: 0; }
+.conta .linha2 { margin: 6px 0 0; font-weight: 600; font-size: 16px; color: #4A453F; }
+.conta .linha2 b { color: var(--vermelho); }
+.condicoes { margin: 0; font-size: 15px; color: var(--cinza); max-width: 60em; }
+
+/* ---------- Ficha em partes ---------- */
+.ficha-area { padding-block: clamp(96px, 14vh, 168px) 140px; display: grid; gap: 40px; }
+.ficha-area > header { display: grid; gap: 14px; max-width: 46em; }
+.ficha-area > header h2 { font-size: var(--t-titulo); }
+.ficha-area > header p { margin: 0; font-size: var(--t-lead); line-height: 1.5; }
+.trilha { display: grid; gap: 14px; }
+.trilha .onde { display: flex; justify-content: space-between; gap: 12px; font-weight: 600; font-size: 16px; color: var(--cinza); }
+.trilha .onde b { color: var(--offwhite); }
+.trilha ol { margin: 0; padding: 0; list-style: none; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 6px; }
+.trilha li button { display: block; width: 100%; height: 8px; padding: 0; border: 0; background: var(--grafite); cursor: pointer; transition: background-color .3s; }
+.trilha li button.feita { background: var(--cinza); }
+.trilha li button.atual { background: var(--vermelho); }
+.trilha li button:hover { background: var(--offwhite); }
+
+.ficha { min-width: 0; }
+.etapa { display: grid; gap: 28px; min-width: 0; }
+.js .etapa:not(.ativa) { display: none; }
+.etapa > header { display: grid; gap: 12px; }
+.etapa h3 { font: 400 var(--t-titulo)/1.12 var(--f-display); text-transform: uppercase; margin: 0; }
+.etapa > header p { margin: 0; max-width: 38em; font-size: var(--t-lead); line-height: 1.5; }
+.etapa h4 { margin: 20px 0 -12px; font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; }
+.js .etapa.ativa > * { animation: sobe .55s var(--ease) both; }
+.js .etapa.ativa > *:nth-child(2) { animation-delay: 70ms; }
+.js .etapa.ativa > *:nth-child(3) { animation-delay: 140ms; }
+.js .etapa.ativa > *:nth-child(n+4) { animation-delay: 210ms; }
+@keyframes sobe { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
+
+.campos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.campos.tres { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.celula { position: relative; background: var(--grafite); min-width: 0; transition: background-color .2s; }
+.celula.dupla { grid-column: 1 / -1; }
+.celula:focus-within { background: var(--grafite-2); }
+.celula label { position: absolute; top: 16px; left: 20px; right: 20px; font-size: var(--t-nota); font-weight: 600; color: var(--cinza); pointer-events: none; display: flex; justify-content: space-between; gap: 12px; }
+.celula label .op { font-weight: 500; color: var(--cinza-tinta); }
+.ob { color: var(--offwhite); }
+.celula label .ob, .grupo legend .ob { margin-left: -8px; margin-right: auto; }
+.celula input, .celula select, .celula textarea { display: block; width: 100%; padding: 44px 20px 18px; background: transparent; border: 0; border-radius: 0; color: var(--offwhite); font: 600 19px/1.4 var(--f-texto); appearance: none; -webkit-appearance: none; }
+.celula input, .celula select { height: 100px; }
+.celula textarea { min-height: 200px; resize: vertical; font-weight: 500; font-size: 17px; line-height: 1.6; padding-top: 48px; }
+.celula textarea.curta { min-height: 140px; }
+.celula input::placeholder, .celula textarea::placeholder { color: #77716A; font-weight: 500; }
+.celula input:focus, .celula select:focus, .celula textarea:focus { outline: none; }
+.celula:has(:focus-visible) { box-shadow: inset 0 0 0 2px var(--ouro); }
+.celula select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23B8B2AA' stroke-width='2'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 20px center; padding-right: 48px; cursor: pointer; }
+.celula select option { background: var(--grafite); color: var(--offwhite); }
+.celula .contador { position: absolute; right: 20px; bottom: 12px; font-size: 13px; color: var(--cinza-tinta); font-weight: 600; }
+.celula.erro, .grupo.erro { background: #3a1416; }
+.dica { margin: 0; font-size: 15px; color: var(--cinza); max-width: 46em; }
+.dica b { color: var(--offwhite); }
+
+/* Escolhas em botões (marcar) */
+.grupo { border: 0; margin: 0; padding: 20px 20px 22px; background: var(--grafite); min-width: 0; display: grid; gap: 14px; transition: background-color .2s; }
+.grupo legend { float: left; width: 100%; padding: 0; font-size: var(--t-nota); font-weight: 600; color: var(--cinza); display: flex; justify-content: space-between; gap: 12px; }
+.grupo legend .op { font-weight: 500; color: var(--cinza-tinta); }
+.grupo.dupla { grid-column: 1 / -1; }
+.opcoes { display: flex; flex-wrap: wrap; gap: 8px; clear: both; }
+.opcoes label { position: relative; cursor: pointer; }
+.opcoes input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.opcoes span { display: block; padding: 13px 17px; background: var(--preto); font-weight: 700; font-size: 15px; transition: background-color .2s, color .2s; }
+.opcoes label:hover span { background: #1C1C1C; }
+.opcoes input:checked + span { background: var(--offwhite); color: var(--preto); }
+.opcoes input:focus-visible + span { outline: 3px solid var(--ouro); outline-offset: 3px; }
+.opcoes.nao input:checked + span { background: var(--vermelho); color: var(--offwhite); }
+
+/* Estilo visual: cartões grandes com palavra-chave */
+.estilos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; clear: both; }
+.estilos label { position: relative; cursor: pointer; }
+.estilos input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.estilos span { display: grid; align-content: end; gap: 6px; min-height: 132px; padding: 18px; background: var(--preto); transition: background-color .2s, color .2s; }
+.estilos span b { font: 400 22px/1.12 var(--f-display); text-transform: uppercase; }
+.estilos span i { font-style: normal; font-size: 14px; color: var(--cinza); line-height: 1.4; }
+.estilos label:hover span { background: #1C1C1C; }
+.estilos input:checked + span { background: var(--offwhite); color: var(--preto); }
+.estilos input:checked + span i { color: #4A453F; }
+.estilos input:focus-visible + span { outline: 3px solid var(--ouro); outline-offset: 3px; }
+
+/* Réguas de estilo */
+.reguas { display: grid; gap: 8px; }
+.regua { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2.4fr) minmax(0, 1fr); gap: 18px; align-items: center; background: var(--grafite); padding: 20px 24px; }
+.regua span { font-weight: 700; font-size: 16px; }
+.regua span:last-child { text-align: right; }
+.regua input { width: 100%; appearance: none; -webkit-appearance: none; height: 28px; background: transparent; cursor: pointer; }
+.regua input::-webkit-slider-runnable-track { height: 6px; background: var(--preto); }
+.regua input::-moz-range-track { height: 6px; background: var(--preto); }
+.regua input::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; margin-top: -10px; background: var(--vermelho); transform: rotate(45deg); }
+.regua input::-moz-range-thumb { width: 22px; height: 22px; border: 0; border-radius: 0; background: var(--vermelho); transform: rotate(45deg); }
+.regua input:focus-visible { outline: 3px solid var(--ouro); outline-offset: 4px; }
+
+/* Cores */
+.cores { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 3fr); gap: 12px; }
+.cor { position: relative; background: var(--grafite); padding: 16px 16px 14px; display: grid; gap: 10px; }
+.cor > span { font-size: var(--t-nota); font-weight: 600; color: var(--cinza); }
+.cor input[type=color] { width: 100%; height: 56px; padding: 0; border: 0; background: none; cursor: pointer; }
+.cor input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+.cor input[type=color]::-webkit-color-swatch { border: 0; }
+.cor input[type=color]::-moz-color-swatch { border: 0; }
+.cor:not(.usada) input[type=color] { opacity: .25; }
+.cor .tirar-cor { justify-self: start; font-size: 13px; padding: 0; }
+.cor:not(.usada) .tirar-cor { visibility: hidden; }
+
+/* Linhas repetidas: integrantes e discos */
+.linhas { display: grid; gap: 12px; }
+.linha { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1.2fr) minmax(0, .8fr) minmax(0, 1fr) 72px; gap: 12px; }
+.linha.disco { grid-template-columns: minmax(0, 1.6fr) minmax(0, .9fr) minmax(0, .6fr) minmax(0, 1.6fr) 72px; }
+.linha .tirar { background: var(--grafite); border: 0; color: var(--cinza); cursor: pointer; font: 700 14px/1 var(--f-texto); transition: background-color .2s, color .2s; }
+.linha .tirar:hover { background: var(--vermelho); color: var(--offwhite); }
+.linhas > .linha:only-child .tirar { visibility: hidden; }
+.mais { justify-self: start; }
+
+/* Rider: a ficha de rider aberta aqui dentro */
+.rider-quadro { width: 100%; min-height: 900px; border: 0; display: block; background: var(--preto); }
+.rider-carregando { font-weight: 600; color: var(--cinza); }
+
+/* Navegação entre partes */
+.navega { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 24px; margin-top: 56px; }
+.navega .falta { flex: 1 1 280px; margin: 0; font-weight: 600; font-size: 16px; color: var(--offwhite); }
+.navega .falta:empty { display: none; }
+.navega .falta a { color: var(--offwhite); text-decoration-color: var(--vermelho); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.navega .salvo { font-size: 14px; color: var(--cinza); margin-left: auto; }
+
+/* Envio: campo vermelho */
+.enviar { background: var(--vermelho); color: var(--offwhite); padding: 48px 40px 44px; margin-top: 12px; display: grid; gap: 22px; }
+.enviar .resumo { margin: 0; font: 400 var(--t-sub)/1.12 var(--f-display); text-transform: uppercase; }
+.enviar p { margin: 0; font-size: 18px; font-weight: 600; max-width: 40em; line-height: 1.5; }
+.enviar .acoes { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center; }
+.enviar .link { color: var(--offwhite); text-decoration-color: var(--preto); }
+.enviar .passos { margin: 0; padding-left: 1.2em; display: grid; gap: 6px; font-size: 16px; font-weight: 500; max-width: 44em; }
+.enviar .aviso-envio { font-size: 15px; font-weight: 600; }
+.enviar .aviso-envio:empty { display: none; }
+.aceite { display: flex; gap: 14px; align-items: flex-start; cursor: pointer; background: var(--grafite); padding: 22px 24px; font-weight: 600; font-size: 16px; line-height: 1.5; position: relative; }
+.aceite input { position: absolute; opacity: 0; }
+.aceite .caixa { background: var(--preto); }
+.aceite input:checked + .caixa { background: var(--offwhite); }
+.aceite input:focus-visible + .caixa { outline: 3px solid var(--ouro); outline-offset: 3px; }
+.aceite.erro { background: #3a1416; }
+
+/* ---------- Rodapé ---------- */
+.fim { background: var(--grafite); padding-block: 72px 56px; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 24px 40px; align-items: end; }
+.fim img { width: 120px; }
+.fim .nome-casa { font: 400 var(--t-titulo)/1.12 var(--f-display); text-transform: uppercase; margin: 0; }
+.fim .casa-linha { margin: 8px 0 0; font-weight: 600; font-size: 16px; color: var(--cinza); }
+.fim dl { margin: 0; display: grid; grid-template-columns: auto auto; gap: 6px 18px; font-size: 15px; }
+.fim dt { color: var(--cinza); font-weight: 500; }
+.fim dd { margin: 0; font-weight: 700; }
+.fim dd a { text-decoration: none; }
+.fim dd a:hover { text-decoration: underline; text-decoration-color: var(--vermelho); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+
+/* ---------- Entradas (só com JS; sem JS tudo aparece) ---------- */
+.js [data-revela] { opacity: 0; transform: translateY(24px); transition: opacity .7s var(--ease), transform .7s var(--ease); transition-delay: calc(var(--d, 0) * 80ms); }
+.js [data-revela].visto { opacity: 1; transform: none; }
+.conta .linha1 { transition: opacity .25s; }
+.conta.mudou .linha1 { animation: pisca .45s var(--ease); }
+@keyframes pisca { from { opacity: .2; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js [data-revela] { opacity: 1; transform: none; transition: none; }
+  .js .etapa.ativa > *, .conta.mudou .linha1 { animation: none; }
+  .btn:active { transform: none; }
+  .paginas button:hover { transform: none; }
+}
+
+/* ---------- Telas menores ---------- */
+@media (max-width: 1080px) {
+  .abertura { grid-template-columns: minmax(0, 1fr); }
+  .abertura figure { max-width: 520px; }
+  .exemplo { grid-template-columns: minmax(0, 1fr); }
+  .tabela { grid-template-columns: minmax(0, 1fr); }
+  .vantagens { grid-template-columns: minmax(0, 1fr); }
+  .vantagens > header { position: static; }
+  .lista-vale { gap: 40px; }
+  .estilos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cores { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cores .celula { grid-column: 1 / -1; }
+  .linha, .linha.disco { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 56px; }
+  .linha .celula:nth-child(3), .linha .celula:nth-child(4) { grid-column: auto; }
+  .linha .tirar { grid-row: 1 / span 2; grid-column: 3; }
+  .fim { grid-template-columns: auto minmax(0, 1fr); }
+  .fim dl { grid-column: 1 / -1; }
+  .fim .nome-casa { font-size: 30px; }
+}
+@media (max-width: 640px) {
+  :root { --t-lead: 18px; --t-cartaz: 76px; }
+  .topo-site .marca span { display: none; }
+  .topo-site .escolha-curta { font-size: 14px; }
+  .topo-site .btn { display: none; }
+  .abertura .tres { font-size: 22px; gap: 6px 20px; }
+  .abertura figure video, .abertura figure img { aspect-ratio: 4 / 3; }
+  .exemplo { padding-block: 36px 40px; }
+  .paginas { gap: 8px; }
+  .kit-completo { padding: 30px 22px 26px; }
+  .kit-completo .carimbo { right: 16px; }
+  .zoom[open] { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto; }
+  .zoom figure { grid-column: 1 / -1; padding: 0 12px 12px; }
+  .zoom figure img { max-height: calc(100dvh - 190px); }
+  .zoom .seta { grid-row: 3; margin-bottom: 18px; }
+  .zoom #zoom-ant { grid-column: 1; }
+  .zoom #zoom-prox { grid-column: 2; }
+  .avulso { grid-template-columns: 28px minmax(0, 1fr); padding: 24px 20px; }
+  .avulso .preco { grid-column: 2; }
+  .conta { grid-template-columns: minmax(0, 1fr); padding: 24px 20px; }
+  .conta .btn { width: 100%; }
+  .campos, .campos.tres { grid-template-columns: minmax(0, 1fr); }
+  .celula input, .celula select { height: 86px; padding: 40px 18px 14px; font-size: 17px; }
+  .celula label { top: 14px; left: 18px; right: 18px; }
+  .estilos span { min-height: 112px; padding: 14px; }
+  .estilos span b { font-size: 19px; }
+  .regua { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); padding: 16px 18px 18px; gap: 10px; }
+  .regua input { grid-column: 1 / -1; grid-row: 2; }
+  .cores { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .cor { padding: 12px; }
+  .linha, .linha.disco { grid-template-columns: minmax(0, 1fr) 56px; }
+  .linha .celula { grid-column: 1; }
+  .linha .tirar { grid-row: 1 / span 4; grid-column: 2; }
+  .navega .btn { flex: 1 1 auto; }
+  .enviar { padding: 36px 20px; margin-inline: calc(-1 * var(--m)); }
+  .enviar .acoes .btn { width: 100%; }
+  .fim { grid-template-columns: minmax(0, 1fr); }
+  .fim img { width: 90px; }
+}
+</style>
+</head>
+<body>
+
+<header class="topo-site margem">
+  <a class="marca" href="/" aria-label="7A Produtora, início"><img src="img/logo-7a.png" alt="Logo 7A" width="38" height="45"><span>7A Produtora</span></a>
+  <span class="escolha-curta" id="escolha-curta" aria-live="polite"><b>Kit de Estrada</b></span>
+  <a class="btn" href="#servicos">Ver preços</a>
+</header>
+
+<main>
+  <section class="abertura margem" aria-labelledby="t-abertura">
+    <div>
+      <h1 class="display" id="t-abertura"><span data-revela>Kit de</span><span data-revela style="--d:1">Estrada</span></h1>
+      <p class="apoio" data-revela style="--d:2">Tudo de que a sua banda precisa para ser contratada: uma marca com cara própria, um press kit que convence a casa e um rider que faz a passagem de som andar. Feito sob medida por uma produtora, não por uma agência de publicidade, para artistas de qualquer lugar do Brasil.</p>
+      <ul class="tres" data-revela style="--d:3"><li>Marca</li><li>Press kit</li><li>Rider e palco</li></ul>
+      <div class="acao" data-revela style="--d:4"><a class="btn" href="#servicos">Escolher o que a banda precisa</a><span>Kit completo por R$ 697 ou 10x de R$ 70, em 15 dias úteis</span></div>
+    </div>
+    <figure data-revela style="--d:2">
+      <video id="video-abertura" src="img/ossos-ao-vivo.mp4" poster="img/ossos-ao-vivo.jpg" muted loop playsinline autoplay preload="metadata" aria-label="Ossos do Banquete ao vivo"></video>
+      <figcaption><b>Ossos do Banquete</b>, do casting da 7A, ao vivo</figcaption>
+    </figure>
+  </section>
+
+  <div class="exemplo">
+    <p data-revela><b>Do jeito que a 7A entrega</b>Este é o press kit que a 7A montou para a Ossos do Banquete. Toque numa página para ver de perto. O seu sai no mesmo padrão, com a marca da sua banda.</p>
+    <div class="paginas" data-revela style="--d:1">
+      <button type="button" data-zoom="0" aria-label="Ampliar: Capa do press kit da Ossos do Banquete"><img src="img/press-kit/ossos-1.jpg" alt="Capa do press kit da Ossos do Banquete" width="794" height="1123" loading="lazy"></button>
+      <button type="button" data-zoom="1" aria-label="Ampliar: Página de release"><img src="img/press-kit/ossos-2.jpg" alt="Página de release" width="794" height="1123" loading="lazy"></button>
+      <button type="button" data-zoom="2" aria-label="Ampliar: Página da história da banda"><img src="img/press-kit/ossos-3.jpg" alt="Página da história da banda" width="794" height="1123" loading="lazy"></button>
+      <button type="button" data-zoom="3" aria-label="Ampliar: Página de integrantes e conquistas"><img src="img/press-kit/ossos-5.jpg" alt="Página de integrantes e conquistas" width="794" height="1123" loading="lazy"></button>
+    </div>
+  </div>
+
+  <section class="vantagens margem" id="vantagens" aria-labelledby="t-vantagens">
+    <header data-revela>
+      <h2 class="display" id="t-vantagens">Por que vale a pena</h2>
+      <p>Banda boa existe aos montes. Quem fecha data é quem chega pronta: com cara própria, material na mão e o palco resolvido antes do show.</p>
+      <a class="btn" href="#servicos">Montar o meu kit</a>
+    </header>
+    <ul class="lista-vale">
+      <li data-revela><h3>A casa decide rápido</h3><p>Quem contrata recebe banda toda semana. Um press kit com release, fotos, discos e links num PDF só responde tudo antes da primeira pergunta.</p></li>
+      <li data-revela><h3>Passagem de som sem sufoco</h3><p>Com o rider e o mapa de palco, o técnico da casa chega com os canais montados e os retornos no lugar. Vocês ganham tempo e tocam com o som do ensaio.</p></li>
+      <li data-revela><h3>Uma marca que fica na cabeça</h3><p>Logo, cores e fontes iguais no post, na camiseta, no bumbo e no cartaz. Banda com identidade parece maior e é lembrada depois do show.</p></li>
+      <li data-revela><h3>Produtora, não agência</h3><p>A 7A é uma produtora especializada em produção executiva: agenda, negocia e produz show. Agência de publicidade faz peça para qualquer tipo de cliente. Aqui o kit é feito sob medida para a sua banda, por quem sabe o que a casa quer ver antes de fechar a data.</p></li>
+      <li data-revela><h3>Testado no próprio casting</h3><p>A 7A usa este mesmo material para fechar as datas dos artistas dela. Cada peça é pensada para convencer quem contrata, não só para ficar bonita.</p></li>
+      <li data-revela><h3>Os arquivos são de vocês</h3><p>Vocês recebem tudo em PDF e imagem para mandar, imprimir e postar quantas vezes quiserem.</p></li>
+      <li class="preco-musico" data-revela><h3>Preço de músico</h3><p>Kit completo por R$ 697 no Pix ou em 10x de R$ 70 no cartão. São R$ 194 a menos que as peças separadas, tudo pronto em 15 dias úteis.</p></li>
+    </ul>
+  </section>
+
+  <section class="servicos margem" id="servicos" aria-labelledby="t-servicos">
+    <header data-revela>
+      <h2 class="display" id="t-servicos">Monte o seu kit</h2>
+      <p>Dá para levar uma peça só ou as três juntas. Depois de escolher, a ficha abre numa página própria, só com as perguntas do que você pediu.</p>
+    </header>
+
+    <div class="tabela" data-revela style="--d:1">
+      <label class="kit-completo" for="s-kit">
+        <div>
+          <span class="carimbo" aria-label="Recomendado pela 7A"><b>Recomendado</b><i>pela 7A</i></span>
+          <h3>Kit completo</h3>
+          <ul>
+            <li>Identidade da marca</li>
+            <li>Press kit, já com a marca nova</li>
+            <li>Rider técnico e mapa de palco</li>
+          </ul>
+        </div>
+        <div class="valor"><p class="de">de <s>R$ 891</s></p><strong><small>por</small>R$ 697</strong><span class="parcela">ou 10x de R$ 70 no cartão</span><span>15 dias úteis</span></div>
+        <input type="checkbox" id="s-kit">
+        <span class="marcar"><span class="caixa" aria-hidden="true"></span>Quero o kit completo</span>
+      </label>
+
+      <div class="avulsos">
+        <label class="avulso" for="s-id">
+          <input type="checkbox" id="s-id" data-serv="id">
+          <span class="caixa" aria-hidden="true"></span>
+          <span><h3>Identidade da marca</h3><p>Logo em duas versões, paleta de cores, fontes e três aplicações: post, capa de música e camiseta. Duas rodadas de ajuste.</p><span class="prazo">12 dias úteis</span></span>
+          <span class="preco">R$ 447</span>
+        </label>
+        <label class="avulso" for="s-pk">
+          <input type="checkbox" id="s-pk" data-serv="pk">
+          <span class="caixa" aria-hidden="true"></span>
+          <span><h3>Press kit</h3><p>PDF de cinco a seis páginas com release escrito pela 7A, história, fotos, discos, links em QR code e contato, pronto para mandar a casas e festivais.</p><span class="prazo">7 dias úteis</span></span>
+          <span class="preco">R$ 297</span>
+        </label>
+        <label class="avulso" for="s-rd">
+          <input type="checkbox" id="s-rd" data-serv="rd">
+          <span class="caixa" aria-hidden="true"></span>
+          <span><h3>Rider técnico e mapa de palco</h3><p>Mapa de palco em imagem, lista de canais, backline, retorno e horários, em PDF com a marca da banda para mandar à casa antes do show.</p><span class="prazo">3 dias úteis</span></span>
+          <span class="preco">R$ 147</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="conta" id="conta" aria-live="polite" data-revela style="--d:2">
+      <div><p class="linha1" id="conta-1">Nada escolhido ainda</p><p class="linha2" id="conta-2">Marque o kit completo ou as peças de que a banda precisa.</p></div>
+      <a class="btn" href="#servicos" id="ir-ficha">Abrir a ficha</a>
+    </div>
+    <p class="condicoes" data-revela style="--d:3">No Pix, metade para começar e metade na entrega. No cartão, o kit completo sai em até 10x de R$ 70. O prazo conta a partir do dia em que a 7A recebe a ficha completa, as fotos e o primeiro pagamento. Artistas do casting da 7A não pagam por essas peças.</p>
+  </section>
+
+</main>
+
+<dialog class="zoom" id="zoom" aria-label="Press kit da Ossos do Banquete ampliado">
+  <div class="zoom-topo">
+    <p id="zoom-legenda"></p>
+    <button type="button" class="btn btn-claro" id="zoom-fechar">Fechar</button>
+  </div>
+  <button type="button" class="seta" id="zoom-ant" aria-label="Página anterior">&lsaquo;</button>
+  <figure><img id="zoom-img" src="" alt=""></figure>
+  <button type="button" class="seta" id="zoom-prox" aria-label="Próxima página">&rsaquo;</button>
+</dialog>
+
+<footer class="fim margem">
+  <img src="img/logo-7a.png" alt="7A Produtora">
+  <div><p class="nome-casa">Aqui o artista é levado a sério</p><p class="casa-linha">7A Produtora · Criar, produzir, transformar</p></div>
+  <dl>
+    <dt>WhatsApp</dt><dd><a href="https://wa.me/5531992233295">(31) 99223-3295</a></dd>
+    <dt>E-mail</dt><dd><a href="mailto:contato@7aprodutora.com.br">contato@7aprodutora.com.br</a></dd>
+    <dt>Instagram</dt><dd><a href="https://instagram.com/7a_produtora">@7a_produtora</a></dd>
+  </dl>
+</footer>
+
+<script>
+(function () {
+  var SERV = { id: { nome: "Identidade da marca", preco: 447, prazo: 12 }, pk: { nome: "Press kit", preco: 297, prazo: 7 }, rd: { nome: "Rider técnico e mapa de palco", preco: 147, prazo: 3 } };
+  var KIT = { preco: 697, prazo: 15, parcela: "10x de R$ 70 no cartão" };
+  var $ = function (id) { return document.getElementById(id); };
+  var $$ = function (sel) { return Array.prototype.slice.call(document.querySelectorAll(sel)); };
+  var noSite = /(^|\.)7aprodutora\.com\.br$|\.workers\.dev$/.test(location.hostname);
+  var FICHA = noSite ? "/kit-de-estrada-ficha" : "kit-de-estrada-ficha.html";
+  var NOMES = { id: "identidade", pk: "presskit", rd: "rider" };
+  function reais(n) { return "R$ " + n.toLocaleString("pt-BR"); }
+
+  var caixas = $$("[data-serv]");
+  function escolhidos() { return caixas.filter(function (c) { return c.checked; }).map(function (c) { return c.dataset.serv; }); }
+  function pedido() {
+    var e = escolhidos();
+    if (!e.length) return null;
+    if (e.length === 3) return { lista: e, nome: "Kit completo", preco: KIT.preco, prazo: KIT.prazo, separado: 891 };
+    var preco = 0, prazo = 0;
+    e.forEach(function (k) { preco += SERV[k].preco; prazo = Math.max(prazo, SERV[k].prazo); });
+    if (e.indexOf("id") >= 0 && e.indexOf("pk") >= 0) prazo = 15;
+    return { lista: e, nome: e.map(function (k) { return SERV[k].nome; }).join(" + "), preco: preco, prazo: prazo };
+  }
+  function mostrar(animar) {
+    var p = pedido(), conta = $("conta");
+    $("s-kit").checked = escolhidos().length === 3;
+    if (!p) {
+      $("conta-1").textContent = "Nada escolhido ainda";
+      $("conta-2").textContent = "Marque o kit completo ou as peças de que a banda precisa.";
+      $("escolha-curta").innerHTML = "<b>Kit de Estrada</b>";
+      $("ir-ficha").href = "#servicos";
+    } else {
+      $("conta-1").textContent = p.nome + " · " + reais(p.preco);
+      $("conta-2").innerHTML = (p.separado ? "No Pix, ou " + KIT.parcela + ". Economia de <b>" + reais(p.separado - p.preco) + "</b> sobre as peças separadas. " : (p.lista.length === 2 ? "Com a terceira peça, o kit completo sai por " + reais(KIT.preco) + ". " : "")) + "Entrega em " + p.prazo + " dias úteis.";
+      $("escolha-curta").innerHTML = "<b>" + (p.lista.length === 3 ? "Kit completo" : p.lista.length + (p.lista.length > 1 ? " peças" : " peça")) + "</b> · " + reais(p.preco);
+      $("ir-ficha").href = FICHA + "?servico=" + (p.lista.length === 3 ? "kit" : p.lista.map(function (k) { return NOMES[k]; }).join(","));
+    }
+    if (animar) { conta.classList.remove("mudou"); void conta.offsetWidth; conta.classList.add("mudou"); }
+  }
+  caixas.forEach(function (c) { c.addEventListener("change", function () { mostrar(true); }); });
+  $("s-kit").addEventListener("change", function () {
+    var marcar = $("s-kit").checked;
+    caixas.forEach(function (c) { c.checked = marcar; });
+    mostrar(true);
+  });
+  $("ir-ficha").addEventListener("click", function (e) {
+    if (!escolhidos().length) { e.preventDefault(); $("conta-2").textContent = "Escolham pelo menos uma peça antes de abrir a ficha."; }
+  });
+  var q = (location.search.match(/[?&]servico=([a-z,-]+)/) || [])[1];
+  if (q) { var m = { identidade: "id", presskit: "pk", "press-kit": "pk", rider: "rd", kit: "id,pk,rd" }; q.split(",").map(function (s) { return m[s] || s; }).join(",").split(",").forEach(function (k) { var c = document.querySelector('[data-serv="' + k + '"]'); if (c) c.checked = true; }); }
+
+  var vid = $("video-abertura");
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) { vid.removeAttribute("autoplay"); vid.pause(); }
+  else if ("IntersectionObserver" in window) new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { var p = vid.play(); if (p && p.catch) p.catch(function () {}); } else vid.pause(); }); }).observe(vid);
+  if ("IntersectionObserver" in window) {
+    var io = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("visto"); io.unobserve(en.target); } }); }, { rootMargin: "0px 0px -8% 0px" });
+    $$("[data-revela]").forEach(function (el) { io.observe(el); });
+  } else $$("[data-revela]").forEach(function (el) { el.classList.add("visto"); });
+
+  mostrar(false);
+
+  (function () {
+    var dlg = $("zoom"), img = $("zoom-img"), leg = $("zoom-legenda");
+    var bts = $$(".paginas [data-zoom]"), at = 0, x0 = null;
+    if (!dlg || !dlg.showModal) return;
+    function ver(i) {
+      at = (i + bts.length) % bts.length;
+      var o = bts[at].querySelector("img");
+      img.src = o.src; img.alt = o.alt;
+      leg.innerHTML = "";
+      leg.appendChild(document.createTextNode(o.alt + " "));
+      var s = document.createElement("span"); s.textContent = (at + 1) + " de " + bts.length; leg.appendChild(s);
+    }
+    function abrir(i) { ver(i); dlg.showModal(); document.documentElement.style.overflow = "hidden"; }
+    function fechar() { dlg.close(); }
+    dlg.addEventListener("close", function () { document.documentElement.style.overflow = ""; if (bts[at]) bts[at].focus(); });
+    bts.forEach(function (b, i) { b.addEventListener("click", function () { abrir(i); }); });
+    $("zoom-fechar").addEventListener("click", fechar);
+    $("zoom-ant").addEventListener("click", function () { ver(at - 1); });
+    $("zoom-prox").addEventListener("click", function () { ver(at + 1); });
+    dlg.addEventListener("click", function (e) { if (e.target === dlg || e.target.tagName === "FIGURE") fechar(); });
+    dlg.addEventListener("keydown", function (e) { if (e.key === "ArrowLeft") ver(at - 1); else if (e.key === "ArrowRight") ver(at + 1); });
+    dlg.addEventListener("touchstart", function (e) { x0 = e.touches[0].clientX; }, { passive: true });
+    dlg.addEventListener("touchend", function (e) { if (x0 === null) return; var dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) ver(at + (dx < 0 ? 1 : -1)); });
+  })();
+
+  (function () {
+    var cs = document.querySelectorAll(".carimbo");
+    if (!("IntersectionObserver" in window)) return;
+    var ob = new IntersectionObserver(function (es) { es.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("bate"); ob.unobserve(en.target); } }); }, { threshold: .6 });
+    Array.prototype.forEach.call(cs, function (c) { ob.observe(c); });
+  })();
+})();
+</script>
+</body>
+</html>
