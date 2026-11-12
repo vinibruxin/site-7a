@@ -10,7 +10,7 @@ export { prepararBanco };
 export const STATUS = ["consulta", "reservado", "confirmado", "realizado", "cancelado"];
 const NOMES_STATUS = { consulta: "Consulta", reservado: "Reservado", confirmado: "Confirmado", realizado: "Realizado", cancelado: "Cancelado" };
 
-const CAMPOS_SHOW = ["data", "hora", "artista", "artista_texto", "contratante_id", "evento", "local", "cidade", "status", "cache", "pct", "despesas", "recebido", "repassado", "publicar", "link", "obs"];
+const CAMPOS_SHOW = ["data", "hora", "artista", "artista_texto", "contratante_id", "particular", "cep", "endereco", "numero", "complemento", "bairro", "uf", "referencia", "evento", "local", "cidade", "status", "cache", "pct", "despesas", "recebido", "repassado", "publicar", "link", "obs"];
 
 const horaOk = (s) => (/^\d{2}:\d{2}$/.test(s || "") ? s : "");
 const centavos = (v) => {
@@ -28,12 +28,22 @@ function linkSeguro(u) {
 
 function limparShow(s) {
   const pct = s?.pct === "" || s?.pct == null ? null : Number(s.pct);
+  const particular = s?.particular ? 1 : 0;
   const r = {
     data: dataOk(s?.data),
     hora: horaOk(s?.hora),
     artista: /^[a-z0-9-]{0,60}$/.test(s?.artista || "") ? s.artista || "" : "",
     artista_texto: txt(s?.artista_texto, 120),
-    contratante_id: Number.isInteger(Number(s?.contratante_id)) && Number(s.contratante_id) > 0 ? Number(s.contratante_id) : null,
+    // um show é de um contratante ou é particular (sem contratante); nunca os dois
+    contratante_id: !particular && Number.isInteger(Number(s?.contratante_id)) && Number(s.contratante_id) > 0 ? Number(s.contratante_id) : null,
+    particular,
+    cep: txt(s?.cep, 9),
+    endereco: txt(s?.endereco, 160),
+    numero: txt(s?.numero, 20),
+    complemento: txt(s?.complemento, 80),
+    bairro: txt(s?.bairro, 80),
+    uf: txt(s?.uf, 2).toUpperCase(),
+    referencia: txt(s?.referencia, 300),
     evento: txt(s?.evento, 160),
     local: txt(s?.local, 160),
     cidade: txt(s?.cidade, 80),

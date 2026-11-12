@@ -168,6 +168,8 @@ a.item:active { transform: scale(.995); }
 .ficha .c3 { grid-column: span 3; }
 .ficha .c4 { grid-column: span 4; }
 .ficha .c6 { grid-column: 1 / -1; }
+.endereco-show { display: contents; }
+.endereco-show[hidden] { display: none; }
 .ficha .dica { display: block; margin-top: 6px; font-size: 13px; font-weight: 500; color: var(--cinza); }
 .acoes-rapidas { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
 .salvar-barra { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; padding: 10px 0 calc(14px + env(safe-area-inset-bottom, 0px)); background: var(--preto); margin-top: 24px; z-index: 5; }
@@ -827,11 +829,12 @@ a.item:active { transform: scale(.995); }
     const doContratante = novo ? Number(new URLSearchParams(query || "").get("c")) || null : null;
     const base = contratante(doContratante);
     const s = novo
-      ? { data: "", hora: "", artista: Object.keys(artistas)[0] || "", artista_texto: "", contratante_id: doContratante, evento: "", local: base ? base.nome : "", cidade: base ? base.cidade : "", status: "consulta", cache: 0, pct: D.config.pct_padrao === "" ? null : Number(D.config.pct_padrao), despesas: 0, recebido: 0, repassado: 0, publicar: 1, link: "", obs: "" }
+      ? { data: "", hora: "", artista: Object.keys(artistas)[0] || "", artista_texto: "", contratante_id: doContratante, particular: 0, cep: "", endereco: "", numero: "", complemento: "", bairro: "", uf: "", referencia: "", evento: "", local: base ? base.nome : "", cidade: base ? base.cidade : "", status: "consulta", cache: 0, pct: D.config.pct_padrao === "" ? null : Number(D.config.pct_padrao), despesas: 0, recebido: 0, repassado: 0, publicar: 1, link: "", obs: "" }
       : D.shows.find((x) => x.id === Number(chave));
     if (!s) { tela.innerHTML = '<a class="voltar" href="#shows">Voltar para shows</a><p class="vazio">Show não encontrado.</p>'; return; }
     const listaArt = [...Object.entries(artistas), ["", "Outro artista"]];
-    const listaCont = [["", "Sem contratante"], ...D.contratantes.slice().sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")).map((c) => [String(c.id), c.nome])];
+    const listaCont = [["", "Sem contratante"], ["particular", "Particular"], ...D.contratantes.slice().sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR")).map((c) => [String(c.id), c.nome])];
+    const valorCont = s.particular ? "particular" : s.contratante_id ? String(s.contratante_id) : "";
     const voltar = doContratante ? `#contratante/${doContratante}` : "#shows";
     tela.innerHTML = `
       <a class="voltar" href="${voltar}">${doContratante ? "Voltar para " + esc(base ? base.nome : "o contratante") : "Voltar para shows"}</a>
@@ -842,10 +845,20 @@ a.item:active { transform: scale(.995); }
         <label>Status<select name="status">${opcoes(STATUS, s.status)}</select></label>
         <label class="meia">Data<input name="data" type="date" value="${esc(s.data)}"></label>
         <label class="meia">Hora<input name="hora" type="time" value="${esc(s.hora)}"></label>
-        <label class="c6">Contratante<select name="contratante_id">${opcoes(listaCont, s.contratante_id ? String(s.contratante_id) : "")}</select></label>
+        <label class="c6">Contratante<select name="contratante_id">${opcoes(listaCont, valorCont)}</select></label>
         <label class="c2">Nome do evento<input name="evento" value="${esc(s.evento)}" placeholder="Opcional" autocomplete="off"></label>
         <label class="c2">Local<input name="local" value="${esc(s.local)}" autocomplete="off"></label>
         <label class="c2">Cidade<input name="cidade" value="${esc(s.cidade)}" placeholder="Betim, MG" autocomplete="off"></label>
+        <div class="c6 endereco-show" id="endereco-particular"${s.particular ? "" : " hidden"}>
+          <p class="ajuda c6" style="margin:0 0 2px">Endereço completo do local, só para a produção. Não aparece na agenda pública nem na proposta.</p>
+          <label class="c2 meia">CEP<input name="cep" value="${esc(s.cep)}" placeholder="32600-000" inputmode="numeric" maxlength="9" autocomplete="off"></label>
+          <label class="c4">Rua<input name="endereco" value="${esc(s.endereco)}" placeholder="Rua do Rosário" autocomplete="off"></label>
+          <label class="c1 meia">Número<input name="numero" value="${esc(s.numero)}" placeholder="120" autocomplete="off"></label>
+          <label class="c3">Complemento<input name="complemento" value="${esc(s.complemento)}" placeholder="Apto, bloco, sala" autocomplete="off"></label>
+          <label class="c2">Bairro<input name="bairro" value="${esc(s.bairro)}" placeholder="Centro" autocomplete="off"></label>
+          <label class="c1 meia">UF<input name="uf" value="${esc(s.uf)}" placeholder="MG" maxlength="2" autocomplete="off"></label>
+          <label class="c6">Observações do endereço<textarea name="referencia" rows="2" placeholder="Ponto de referência, entrada pelos fundos, vaga para carga e descarga">${esc(s.referencia)}</textarea></label>
+        </div>
         <label class="meia">Cachê (R$)<input name="cache" inputmode="decimal" value="${campoReais(s.cache)}" placeholder="0,00" autocomplete="off"></label>
         <label class="meia">% da 7A<input name="pct" inputmode="decimal" value="${s.pct == null ? "" : String(s.pct).replace(".", ",")}" placeholder="${D.config.pct_padrao === "" ? "Defina em Ajustes" : "Padrão: " + String(D.config.pct_padrao).replace(".", ",")}" autocomplete="off"></label>
         <label class="c2 meia" title="Transporte, som, hospedagem">Despesas (R$)<input name="despesas" inputmode="decimal" value="${campoReais(s.despesas)}" placeholder="Transporte, som, hospedagem" autocomplete="off"></label>
@@ -897,7 +910,8 @@ a.item:active { transform: scale(.995); }
     const ler = () => {
       const f = Object.fromEntries(new FormData(form));
       const pct = f.pct.trim() === "" ? null : Number(f.pct.replace(",", "."));
-      return { ...f, contratante_id: f.contratante_id ? Number(f.contratante_id) : null, cache: centavos(f.cache), despesas: centavos(f.despesas), recebido: centavos(f.recebido), repassado: centavos(f.repassado), pct, publicar: form.publicar.checked ? 1 : 0, artista_texto: f.artista ? "" : f.artista_texto || "" };
+      const particular = f.contratante_id === "particular" ? 1 : 0;
+      return { ...f, particular, contratante_id: !particular && f.contratante_id ? Number(f.contratante_id) : null, cache: centavos(f.cache), despesas: centavos(f.despesas), recebido: centavos(f.recebido), repassado: centavos(f.repassado), pct, publicar: form.publicar.checked ? 1 : 0, artista_texto: f.artista ? "" : f.artista_texto || "" };
     };
     const desenharConta = () => {
       const x = ler(), k = contas(x);
@@ -922,7 +936,8 @@ a.item:active { transform: scale(.995); }
       desenharConta();
     });
     form.addEventListener("change", (ev) => {
-      if (ev.target.name === "contratante_id" && novo && ev.target.value) {
+      if (ev.target.name === "contratante_id") $("#endereco-particular").hidden = ev.target.value !== "particular";
+      if (ev.target.name === "contratante_id" && novo && ev.target.value && ev.target.value !== "particular") {
         const c = contratante(Number(ev.target.value));
         if (c && !form.local.value) form.local.value = c.nome;
         if (c && !form.cidade.value) form.cidade.value = c.cidade;

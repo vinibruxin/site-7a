@@ -257,7 +257,19 @@ const RELACIONAMENTO = [
   `CREATE INDEX IF NOT EXISTS auditoria_entidade ON auditoria(entidade, entidade_id, quando)`,
 ];
 
+// show "Particular": sem contratante, com endereço completo do local (privado, só no /admin)
+const ENDERECO_SHOW = { particular: "INTEGER NOT NULL DEFAULT 0", cep: "TEXT NOT NULL DEFAULT ''", endereco: "TEXT NOT NULL DEFAULT ''", numero: "TEXT NOT NULL DEFAULT ''", complemento: "TEXT NOT NULL DEFAULT ''", bairro: "TEXT NOT NULL DEFAULT ''", uf: "TEXT NOT NULL DEFAULT ''", referencia: "TEXT NOT NULL DEFAULT ''" };
+// SQLite não tem ADD COLUMN IF NOT EXISTS: confere antes, para a migração poder rodar de novo sem erro
+async function colunasShowParticular(env) {
+  const { results } = await env.DB.prepare("PRAGMA table_info(shows)").all();
+  const ja = new Set(results.map((r) => r.name));
+  for (const [coluna, tipo] of Object.entries(ENDERECO_SHOW)) {
+    if (!ja.has(coluna)) await env.DB.prepare(`ALTER TABLE shows ADD COLUMN ${coluna} ${tipo}`).run();
+  }
+}
+
 export const MIGRACOES = [
   { versao: 1, nome: "base", passos: BASE },
   { versao: 2, nome: "relacionamento pelo WhatsApp", passos: RELACIONAMENTO },
+  { versao: 3, nome: "shows particulares com endereço", passos: [colunasShowParticular] },
 ];
