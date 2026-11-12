@@ -1614,7 +1614,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
     const artistasOrd = Object.entries(porArtista).map(([n, l]) => [n, soma(l)]).sort((x, y) => y[1].cache - x[1].cache);
     const pendentes = fechados.filter((s) => s.data < h && (s.cache > s.recebido || (contas(s).falta_repassar || 0) > 0)).sort((x, y) => x.data.localeCompare(y.data));
     const pct = (t) => (t.semPct ? "—" : reais(t.comissao));
-    const linha = (rotulo, t) => `<tr><th scope="row">${rotulo}</th><td class="num">${t.n}</td><td class="num">${reais(t.cache)}</td><td class="num forte">${pct(t)}</td><td class="num">${reais(t.recebido)}</td><td class="num${t.receber ? " alerta" : ""}">${reais(t.receber)}</td><td class="num${t.repassar ? " alerta" : ""}">${t.semPct ? "—" : reais(t.repassar)}</td></tr>`;
+    const linha = (rotulo, t) => `<tr><th scope="row">${rotulo}</th><td class="num">${t.n}</td><td class="num">${reais(t.cache)}</td><td class="num forte">${pct(t)}</td><td class="num">${reais(t.recebido)}</td><td class="num${t.receber ? " alerta" : ""}">${reais(t.receber)}</td><td class="num">${reais(t.repassado)}</td><td class="num${t.repassar ? " alerta" : ""}">${t.semPct ? "—" : reais(t.repassar)}</td></tr>`;
     tela.innerHTML = `
       <div class="cabeca"><h1 class="display">Agenda</h1><a class="btn btn-sec" href="/api/gestao/exportar/shows.csv">Baixar planilha</a></div>
       ${subabas(SUB_AGENDA, "financeiro")}
@@ -1626,10 +1626,10 @@ a.item:active { transform: translateX(3px) scale(.99); }
         <div><dt>Falta repassar</dt><dd class="num">${tot.semPct ? "—" : reais(tot.repassar)}</dd><small>Aos artistas</small></div>
       </dl>
       <h2 class="display">Mês a mês</h2>
-      ${meses.length ? `<div class="tabela-rola"><table class="tabela"><thead><tr><th scope="col">Mês</th><th scope="col">Shows</th><th scope="col">Cachês</th><th scope="col">Comissão 7A</th><th scope="col">Recebido</th><th scope="col">Falta receber</th><th scope="col">Falta repassar</th></tr></thead>
+      ${meses.length ? `<div class="tabela-rola"><table class="tabela"><thead><tr><th scope="col">Mês</th><th scope="col">Shows</th><th scope="col">Cachês</th><th scope="col">Comissão 7A</th><th scope="col">Recebido</th><th scope="col">Falta receber</th><th scope="col">Repassado</th><th scope="col">Falta repassar</th></tr></thead>
         <tbody>${meses.map(([n, t]) => linha(n, t)).join("")}</tbody><tfoot>${linha("Total", tot)}</tfoot></table></div>` : `<p class="vazio">Nenhum show confirmado ou realizado em ${anoVisto}. Shows em consulta ou reservados não entram na conta até serem confirmados.</p>`}
-      ${artistasOrd.length ? `<h2 class="display">Por artista</h2><div class="tabela-rola"><table class="tabela"><thead><tr><th scope="col">Artista</th><th scope="col">Shows</th><th scope="col">Cachês</th><th scope="col">Comissão 7A</th><th scope="col">Cachê médio</th></tr></thead>
-        <tbody>${artistasOrd.map(([n, t]) => `<tr><th scope="row">${esc(n)}</th><td class="num">${t.n}</td><td class="num">${reais(t.cache)}</td><td class="num forte">${pct(t)}</td><td class="num">${reais(Math.round(t.cache / t.n))}</td></tr>`).join("")}</tbody></table></div>` : ""}
+      ${artistasOrd.length ? `<h2 class="display">Por artista</h2><div class="tabela-rola"><table class="tabela"><thead><tr><th scope="col">Artista</th><th scope="col">Shows</th><th scope="col">Cachês</th><th scope="col">Comissão 7A</th><th scope="col">Repassado</th><th scope="col">Cachê médio</th></tr></thead>
+        <tbody>${artistasOrd.map(([n, t]) => `<tr><th scope="row">${esc(n)}</th><td class="num">${t.n}</td><td class="num">${reais(t.cache)}</td><td class="num forte">${pct(t)}</td><td class="num">${reais(t.repassado)}</td><td class="num">${reais(Math.round(t.cache / t.n))}</td></tr>`).join("")}</tbody></table></div>` : ""}
       <h2 class="display">Para acertar</h2>
       ${pendentes.length ? `<ul class="lista">${pendentes.map((s) => { const k = contas(s); const falta = [s.cache > s.recebido ? "receber " + reais(s.cache - s.recebido) : "", (k.falta_repassar || 0) > 0 ? "repassar " + reais(k.falta_repassar) : ""].filter(Boolean).join(" · "); return itemShow(s) + `<li class="pendencia">Falta ${esc(falta)}</li>`; }).join("")}</ul>` : '<p class="vazio">Nenhum show que já passou com dinheiro pendente.</p>'}`;
     tela.querySelectorAll("[data-ano]").forEach((b) => b.addEventListener("click", () => { anoVisto = b.dataset.ano; telaFinanceiro(); }));
