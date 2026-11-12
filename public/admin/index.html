@@ -1858,13 +1858,17 @@ a.item:active { transform: translateX(3px) scale(.99); }
   function dadosAviso(s) {
     const k = contas(s);
     const [a, m, d] = (s.data || "").split("-").map(Number);
+    // show particular: no lugar do nome do local vai "Particular", com o endereço completo e as observações
+    const enderecoTxt = s.particular ? ([[s.endereco, s.numero].filter(Boolean).join(", ") + (s.complemento ? " (" + s.complemento + ")" : ""), s.bairro, [s.cidade, s.uf].filter(Boolean).join(" - "), s.referencia ? "Obs.: " + s.referencia : ""].filter(Boolean).join(" · ") || "Endereço a confirmar") : "";
     return {
       nome: nomeArtista(s),
       data: s.data ? `${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}/${a}` : "Data a definir",
       semana: s.data ? DIAS_SEMANA[new Date(Date.UTC(a, m - 1, d)).getUTCDay()] : "",
       hora: s.hora ? (s.hora_fim ? `${s.hora} às ${s.hora_fim}` : s.hora) : "Horário a definir",
       duracao: duracaoTexto(s.hora, s.hora_fim),
-      local: s.local || "Local a definir",
+      particular: !!s.particular,
+      enderecoTxt,
+      local: s.particular ? "Particular" : s.local || "Local a definir",
       cidade: s.cidade || "",
       evento: s.evento || "",
       // cachê aberto: negociado, comissão da 7A (com o %), despesas (se houver) e o líquido do artista
@@ -1876,7 +1880,7 @@ a.item:active { transform: translateX(3px) scale(.99); }
   const linhasCache = (x) => x.comissao == null
     ? [["Cachê negociado", reais(x.cache), true]]
     : [["Cachê negociado", reais(x.cache)], [`Comissão 7A (${pctAviso(x.pct)})`, "− " + reais(x.comissao)], ...(x.despesas ? [["Despesas do show", "− " + reais(x.despesas)]] : []), ["Cachê líquido do artista", reais(x.liquido), true]];
-  const textoAviso = (x) => `♦ DATA FECHADA: ${x.nome}\n\n${x.evento ? x.evento + "\n" : ""}Data: ${x.data}${x.semana ? " (" + x.semana + ")" : ""}\nHorário: ${x.hora}${x.duracao ? " (" + x.duracao + ")" : ""}\nLocal: ${x.local}${x.cidade ? ", " + x.cidade : ""}\n\n${linhasCache(x).map(([r, v]) => r + ": " + v).join("\n")}\n\n7A Produtora · (31) 99223-3295`;
+  const textoAviso = (x) => `♦ DATA FECHADA: ${x.nome}\n\n${x.evento ? x.evento + "\n" : ""}Data: ${x.data}${x.semana ? " (" + x.semana + ")" : ""}\nHorário: ${x.hora}${x.duracao ? " (" + x.duracao + ")" : ""}\nLocal: ${x.local}${x.particular ? "\nEndereço: " + x.enderecoTxt : x.cidade ? ", " + x.cidade : ""}\n\n${linhasCache(x).map(([r, v]) => r + ": " + v).join("\n")}\n\n7A Produtora · (31) 99223-3295`;
   // quebra o texto em linhas que cabem na largura
   function linhas(ctx, texto, largura) {
     const palavras = String(texto).split(/\s+/), r = [];
@@ -1915,12 +1919,18 @@ a.item:active { transform: translateX(3px) scale(.99); }
       const ll = linhas(ctx, val, W - 2 * M - 40).slice(0, 2);
       ll.forEach((l, i) => ctx.fillText(l, M + 40, y + 50 + i * 64));
       let fim = y + 50 + (ll.length - 1) * 64;
-      if (extra) { ctx.fillStyle = "#B8B2AA"; ctx.font = '500 28px "Montserrat"'; ctx.fillText(extra, M + 40, fim + 42); fim += 42; }
+      if (extra) {
+        // o extra pode quebrar em até duas linhas (endereço do show particular)
+        ctx.fillStyle = "#B8B2AA"; ctx.font = '500 28px "Montserrat"';
+        const el = linhas(ctx, extra, W - 2 * M - 40).slice(0, 2);
+        el.forEach((l, i) => ctx.fillText(l, M + 40, fim + 42 + i * 34));
+        fim += 42 + (el.length - 1) * 34;
+      }
       y = fim + 54;
     };
     item("DATA", x.data, x.semana ? x.semana[0].toUpperCase() + x.semana.slice(1) : "");
     item("HORÁRIO", x.hora, x.duracao ? "Duração: " + x.duracao : "");
-    item("LOCAL", x.local, [x.cidade, x.evento].filter(Boolean).join(" · "));
+    item("LOCAL", x.local, x.particular ? x.enderecoTxt : [x.cidade, x.evento].filter(Boolean).join(" · "));
     // cachê aberto em linhas, valores alinhados à direita; o líquido em destaque
     ctx.fillStyle = "#B5121B"; ctx.save(); ctx.translate(M + 9, y - 30); ctx.rotate(Math.PI / 4); ctx.fillRect(-8, -8, 16, 16); ctx.restore();
     ctx.fillStyle = "#B8B2AA"; ctx.font = '700 28px "Montserrat"'; ctx.fillText("CACHÊ", M + 40, y - 18);
