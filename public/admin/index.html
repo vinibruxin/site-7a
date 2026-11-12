@@ -222,6 +222,11 @@ a.item:hover { background: var(--grafite-2); }
 .estado.ok { color: #9BE3A3; }
 .estado.ruim { color: #FF8A8F; }
 .salvar-barra .apagar { margin-left: auto; }
+.previa-recibo { margin-top: 20px; max-width: 760px; }
+.previa-recibo h2 { margin: 0 0 6px; }
+.previa-folha { background: var(--offwhite); color: var(--preto); padding: 22px 24px; margin-top: 12px; border-left: 4px solid var(--vermelho); line-height: 1.5; }
+.previa-num { font: 400 30px/1 var(--f-display); margin: 0 0 12px; color: var(--vermelho); }
+.previa-emit { margin-top: 16px; font-size: 14px; color: var(--grafite); }
 
 /* conta do show */
 .conta-show { grid-column: 1 / -1; background: var(--grafite); padding: 20px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px 32px; }
@@ -2236,9 +2241,27 @@ a.item:active { transform: translateX(3px) scale(.99); }
         ${s ? `<label class="c6 marcar"><input type="checkbox" name="lancar" ${resta ? "checked" : ""}> Somar este valor no "Recebido" do show (hoje: ${reais(s.recebido)} de ${reais(s.cache)})</label>` : ""}
         <p class="c6 ajuda" style="margin:0">Depois de emitido, o recibo não muda. Se sair errado, cancele e emita outro: o número cancelado fica registrado.</p>
       </form>
-      <div class="salvar-barra"><button class="btn" type="button" id="salvar">Emitir recibo</button><p class="estado" id="estado" role="status"></p></div></div>`;
+      <div class="salvar-barra"><button class="btn btn-sec" type="button" id="previa">Ver antes de emitir</button><button class="btn" type="button" id="salvar">Emitir recibo</button><p class="estado" id="estado" role="status"></p></div>
+      <div id="previa-caixa" class="previa-recibo" aria-live="polite"></div></div>`;
     const form = $("#ficha");
     form.addEventListener("input", () => { sujo = true; estado(""); });
+    const dadosRecibo = () => { const f = Object.fromEntries(new FormData(form)); return { ...d, ...f, valor: centavos(f.valor), lancar_recebido: !!(form.lancar && form.lancar.checked) }; };
+    $("#previa").addEventListener("click", () => {
+      const dados = dadosRecibo();
+      if (!dados.valor || !dados.pagador_nome.trim() || !dados.referente.trim()) { estado("Preencha quem pagou, o valor e a que se refere para ver a prévia.", "ruim"); return; }
+      api("gestao/documentos/previa", "POST", dados).then((r) => {
+        if (r.erro) return estado(r.erro, "ruim");
+        const p = r;
+        $("#previa-caixa").innerHTML = `<h2 class="display">Prévia do recibo</h2>
+          <p class="ajuda">Assim vai ficar o recibo. O número só é dado quando você emitir.</p>
+          <div class="previa-folha">
+            <p class="previa-num">${esc(p.numero)}</p>
+            <p>Recebemos de <b>${esc(p.pagador.nome)}</b>${p.pagador.doc ? ", " + esc(p.pagador.doc) : ""}${p.pagador.endereco ? ", " + esc(p.pagador.endereco) : ""}${p.pagador.cidade ? " (" + esc(p.pagador.cidade) + ")" : ""} a quantia de <b>${reais(p.valor)}</b> (${esc(p.extenso)}), referente a ${esc(p.referente)}, paga em ${dataCurta(p.data)}${p.forma ? " por " + esc(p.forma) : ""}.</p>
+            <p class="previa-emit">${esc(p.emitente.nome || "Dados da 7A ainda não preenchidos")}${p.emitente.doc ? " · " + esc(p.emitente.doc) : ""}<br>${[p.emitente.endereco, p.emitente.cidade].filter(Boolean).map(esc).join(", ")}${p.emitente.responsavel ? "<br>" + esc(p.emitente.responsavel) : ""}</p>
+          </div>${p.faltas && p.faltas.length ? `<p class="aviso aviso-forte">Faltam dados da 7A: ${esc(p.faltas.join(", "))}. Preencha em <a href="#ajustes">Ajustes</a> antes de emitir.</p>` : ""}`;
+        estado("");
+      });
+    });
     $("#salvar").addEventListener("click", () => {
       const f = Object.fromEntries(new FormData(form));
       const dados = { ...d, ...f, valor: centavos(f.valor), lancar_recebido: !!(form.lancar && form.lancar.checked) };

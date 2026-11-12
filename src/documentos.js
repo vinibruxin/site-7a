@@ -230,6 +230,7 @@ export async function rotasDocumentos(req, env, partes, corpo, url) {
   }
 
   if (partes.length === 1 && metodo === "POST") return criar(req, env, corpo);
+  if (partes.length === 2 && partes[1] === "previa" && metodo === "POST") return previaRecibo(env, corpo);
 
   if (!id) return json({ erro: "Documento não encontrado." }, 404);
   const atual = ler(await env.DB.prepare("SELECT * FROM documentos WHERE id = ?").bind(id).first());
@@ -300,6 +301,28 @@ async function detalhar(env, d) {
     r.emissor = EMISSOR_NACIONAL;
   }
   return r;
+}
+
+// prévia do recibo: mostra como vai ficar, sem gravar nada e sem gastar número
+async function previaRecibo(env, corpo) {
+  const d = limparDocumento({ ...corpo, tipo: "recibo" });
+  if (d.erro) return json(d, 400);
+  if (!d.valor) return json({ erro: "Digite o valor recebido." }, 400);
+  if (!d.pagador_nome) return json({ erro: "Digite o nome de quem pagou." }, 400);
+  if (!d.referente) return json({ erro: "Diga a que se refere o pagamento." }, 400);
+  const { n } = await env.DB.prepare("SELECT COALESCE(MAX(numero), 0) + 1 AS n FROM documentos WHERE tipo = 'recibo'").first();
+  const emit =emitenteDe(await lerConfig(env));
+  return json({
+    numero: numeroRecibo(n) + " (numerado ao emitir)",
+    valor: d.valor,
+    extenso: porExtenso(d.valor),
+    data: d.data,
+    forma: d.forma,
+    referente: d.referente,
+    pagador: { nome: d.pagador_nome, doc: formatarDocumento(d.pagador_doc), endereco: d.pagador_endereco, cidade: d.pagador_cidade },
+    emitente: { nome: emit.nome, doc: formatarDocumento(emit.doc), endereco: emit.endereco, cidade: emit.cidade, responsavel: emit.responsavel },
+    faltas: faltasEmitente(emit, "recibo"),
+  });
 }
 
 async function criar(req, env, corpo) {
