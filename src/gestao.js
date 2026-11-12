@@ -322,13 +322,13 @@ async function enviarProposta(env, req, id, corpo) {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(para)) return json({ erro: "Confira o e-mail do contratante." }, 400);
   const mensagem = txt(corpo?.mensagem, 2000);
   const p = await env.DB.prepare(
-    `SELECT p.token, p.situacao, s.artista, s.artista_texto, s.data, s.hora, s.local, s.cidade, s.contratante_id, c.contato AS contato
+    `SELECT p.token, p.situacao, s.artista, s.artista_texto, s.data, s.hora, s.local, s.cidade, s.particular, s.contratante_id, c.contato AS contato
      FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.show_id = ?`
   ).bind(id).first();
   if (!p) return json({ erro: "Gere a proposta antes de enviar." }, 404);
   if (p.situacao !== "aprovada") return json({ erro: "Esta proposta ainda aguarda aprovação. Revise e salve no painel antes de enviar." }, 409);
   const artista = (await nomesArtistas(env, req))[p.artista] || p.artista_texto || p.artista;
-  const { html, text } = montarEmailProposta({ token: p.token, artista, slug: p.artista, contato: p.contato, data: p.data, hora: p.hora, local: p.local, cidade: p.cidade, mensagem });
+  const { html, text } = montarEmailProposta({ token: p.token, artista, slug: p.artista, contato: p.contato, data: p.data, hora: p.hora, local: p.particular ? "Particular" : p.local, cidade: p.cidade, mensagem });
   let r;
   try {
     r = await fetch("https://api.resend.com/emails", {
@@ -509,7 +509,7 @@ export async function propostaPublica(req, env, token) {
   if (!/^[a-f0-9]{24}$/.test(token)) return json({ erro: "Proposta não encontrada." }, 404);
   await prepararBanco(env);
   const p = await env.DB.prepare(
-    `SELECT p.*, s.data, s.hora, s.hora_fim, s.artista, s.artista_texto, s.evento, s.local, s.cidade, s.cache, s.status, c.nome AS contratante, c.contato
+    `SELECT p.*, s.data, s.hora, s.hora_fim, s.artista, s.artista_texto, s.evento, s.local, s.cidade, s.particular, s.cache, s.status, c.nome AS contratante, c.contato
      FROM propostas p JOIN shows s ON s.id = p.show_id LEFT JOIN contratantes c ON c.id = s.contratante_id WHERE p.token = ? AND p.situacao = 'aprovada'`
   ).bind(token).first();
   if (!p || p.status === "cancelado") return json({ erro: "Proposta não encontrada." }, 404);
@@ -538,7 +538,7 @@ export async function propostaPublica(req, env, token) {
       destaques: (a.destaques || []).slice(0, 4),
       formacao: (a.formacao || []).filter((f) => f.nome),
     },
-    data: p.data, hora: p.hora, hora_fim: p.hora_fim || "", evento: p.evento, local: p.local, cidade: p.cidade, cache: p.cache,
+    data: p.data, hora: p.hora, hora_fim: p.hora_fim || "", evento: p.evento, local: p.particular ? "Particular" : p.local, cidade: p.cidade, cache: p.cache,
     // com início e fim no show, a duração da proposta é sempre a conta entre os dois
     formato: p.formato, duracao: duracaoTexto(p.hora, p.hora_fim) || p.duracao, inclui: p.inclui, rider: p.rider, condicoes: p.condicoes, validade: p.validade,
   });
